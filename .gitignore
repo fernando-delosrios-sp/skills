@@ -1,0 +1,9 @@
+node_modules/
+.tmp/
+
+# Never commit git metadata from imported skills
+.gitmodules
+.gitattributes
+
+skills-lock.json
+tools.yaml

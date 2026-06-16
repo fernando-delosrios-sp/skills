@@ -1,0 +1,25 @@
+{
+  "name": "skills",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Curated agent skills collection compatible with npx skills",
+  "type": "module",
+  "scripts": {
+    "sync": "node scripts/sync.mjs sync",
+    "import": "node scripts/sync.mjs import",
+    "install": "node scripts/install.mjs",
+    "validate": "node scripts/sync.mjs validate"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.0.0",
+    "commander": "^12.1.0",
+    "kleur": "^4.1.5",
+    "prompts": "^2.4.2",
+    "simple-git": "^3.25.0",
+    "skills": "^1.5.11",
+    "yaml": "^2.6.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

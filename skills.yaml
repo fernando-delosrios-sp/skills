@@ -1,0 +1,76 @@
+skills:
+  - name: write-a-skill
+    category: productivity
+    source:
+      repo: mattpocock/skills
+      path: skills/productivity/write-a-skill
+    custom: false
+  - name: caveman
+    category: productivity
+    source:
+      repo: mattpocock/skills
+      path: skills/productivity/caveman
+    custom: false
+  - name: grill-me
+    category: productivity
+    source:
+      repo: mattpocock/skills
+      path: skills/productivity/grill-me
+    custom: false
+  - name: handoff
+    category: productivity
+    source:
+      repo: mattpocock/skills
+      path: skills/productivity/handoff
+    custom: false
+  - name: teach
+    category: productivity
+    source:
+      repo: mattpocock/skills
+      path: skills/productivity/teach
+    custom: false
+  - name: improve
+    category: engineering
+    source:
+      repo: shadcn/improve
+      path: skills/improve
+    custom: true
+  - name: find-docs
+    category: engineering
+    source:
+      repo: upstash/context7
+      path: skills/find-docs
+    custom: false
+  - name: diagnose
+    category: engineering
+    custom: true
+  - name: improve-codebase-architecture
+    category: engineering
+    source:
+      repo: mattpocock/skills
+      path: skills/engineering/improve-codebase-architecture
+    custom: true
+  - name: zoom-out
+    category: engineering
+    source:
+      repo: mattpocock/skills
+      path: skills/engineering/zoom-out
+    custom: false
+  - name: c4-diagram
+    category: engineering
+    source:
+      repo: aleksnikolaev/c4-diagram-skill
+      path: skills/c4-diagram
+    custom: false
+  - name: gherkin-authoring
+    category: engineering
+    source:
+      repo: melodic-software/claude-code-plugins
+      path: plugins/spec-driven-development/skills/gherkin-authoring
+    custom: false
+  - name: architecture-decision-records
+    category: engineering
+    source:
+      repo: wshobson/agents
+      path: plugins/documentation-generation/skills/architecture-decision-records
+    custom: false
