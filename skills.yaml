@@ -74,3 +74,9 @@ skills:
       repo: wshobson/agents
       path: plugins/documentation-generation/skills/architecture-decision-records
     custom: false
+  - name: changelog-generator
+    category: engineering
+    source:
+      repo: ComposioHQ/awesome-claude-skills
+      path: changelog-generator
+    custom: false
