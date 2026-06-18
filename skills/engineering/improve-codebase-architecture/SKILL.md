@@ -1,38 +1,23 @@
 ---
 name: improve-codebase-architecture
-description: Find deepening opportunities in a codebase, informed by repomix output and any openspec/specs/ or openspec/adr/ artifacts present. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable.
+description: Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.
+disable-model-invocation: true
 ---
 
 # Improve Codebase Architecture
 
 Surface architectural friction and propose **deepening opportunities** — refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability.
 
-## Glossary
+This command is _informed_ by the project's domain model and built on a shared design vocabulary:
 
-Use these terms exactly in every suggestion. Consistent language is the point — don't drift into "component," "service," "API," or "boundary." Full definitions in [LANGUAGE.md](LANGUAGE.md).
-
-- **Module** — anything with an interface and an implementation (function, class, package, slice).
-- **Interface** — everything a caller must know to use the module: types, invariants, error modes, ordering, config. Not just the type signature.
-- **Implementation** — the code inside.
-- **Depth** — leverage at the interface: a lot of behaviour behind a small interface. **Deep** = high leverage. **Shallow** = interface nearly as complex as the implementation.
-- **Seam** — where an interface lives; a place behaviour can be altered without editing in place. (Use this, not "boundary.")
-- **Adapter** — a concrete thing satisfying an interface at a seam.
-- **Leverage** — what callers get from depth.
-- **Locality** — what maintainers get from depth: change, bugs, knowledge concentrated in one place.
-
-Key principles (see [LANGUAGE.md](LANGUAGE.md) for the full list):
-
-- **Deletion test**: imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep.
-- **The interface is the test surface.**
-- **One adapter = hypothetical seam. Two adapters = real seam.**
+- Run the `/codebase-design` skill for the architecture vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Use these terms exactly in every suggestion — don't drift into "component," "service," "API," or "boundary."
+- The domain language in `CONTEXT.md` gives names to good seams; ADRs in `docs/adr/` record decisions this command should not re-litigate.
 
 ## Process
 
 ### 1. Explore
 
-If no `repomix*` file exists, run `npx repomix --style markdown` first. If it fails, fall back to cold code exploration.
-
-Read any `openspec/specs/` and `openspec/adr/` artifacts present.
+Read the project's domain glossary (`CONTEXT.md`) and any ADRs in the area you're touching first.
 
 Then use the Agent tool with `subagent_type=Explore` to walk the codebase. Don't follow rigid heuristics — explore organically and note where you experience friction:
 
@@ -44,46 +29,38 @@ Then use the Agent tool with `subagent_type=Explore` to walk the codebase. Don't
 
 Apply the **deletion test** to anything you suspect is shallow: would deleting it concentrate complexity, or just move it? A "yes, concentrates" is the signal you want.
 
-### 2. Present candidates as a markdown report
+### 2. Present candidates as an HTML report
 
-Write the architectural review as markdown and output it directly in the chat. Do not save a file unless the user asks for it. After presenting it, ask: _"Want me to save this as ARCHITECTURE-REVIEW.md in the project root?"_
+Write a self-contained HTML file to the OS temp directory so nothing lands in the repo. Resolve the temp dir from `$TMPDIR`, falling back to `/tmp` (or `%TEMP%` on Windows), and write to `<tmpdir>/architecture-review-<timestamp>.html` so each run gets a fresh file. Open it for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
 
-The report uses **Mermaid code blocks** for graph-shaped diagrams (call graphs, dependencies, sequences) where they reliably communicate the structure. Each candidate gets a **before/after visualisation**. Be visual.
+The report uses **Tailwind via CDN** for layout and styling, and **Mermaid via CDN** for diagrams where a graph/flow/sequence reliably communicates the structure. Mix Mermaid with hand-crafted CSS/SVG visuals — use Mermaid when relationships are graph-shaped (call graphs, dependencies, sequences), and hand-built divs/SVG when you want something more editorial (mass diagrams, cross-sections, collapse animations). Each candidate gets a **before/after visualisation**. Be visual.
 
-For each candidate, use the same card structure:
+For each candidate, render a card with:
 
 - **Files** — which files/modules are involved
 - **Problem** — why the current architecture is causing friction
 - **Solution** — plain English description of what would change
 - **Benefits** — explained in terms of locality and leverage, and how tests would improve
 - **Before / After diagram** — side-by-side, custom-drawn, illustrating the shallowness and the deepening
-- **Recommendation strength** — one of `Strong`, `Worth exploring`, `Speculative`, rendered as bold text or an inline badge
-- **Suggested context** — domain terms discovered during analysis that the project might want to formalise
+- **Recommendation strength** — one of `Strong`, `Worth exploring`, `Speculative`, rendered as a badge
 
 End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
 
-**Infer domain vocabulary from `openspec/specs/` if present, otherwise from repomix output, otherwise from the codebase itself. Use [LANGUAGE.md](LANGUAGE.md) vocabulary for the architecture.** If the project calls it "Order intake," talk about "the Order intake module" — not the "FooBarHandler," and not the "Order service."
+**Use CONTEXT.md vocabulary for the domain, and the `/codebase-design` vocabulary for the architecture.** If `CONTEXT.md` defines "Order," talk about "the Order intake module" — not "the FooBarHandler," and not "the Order service."
 
-**ADR conflicts**: if a candidate contradicts an existing ADR in `openspec/adr/`, flag it clearly in the card (e.g. a warning: _"contradicts ADR-0007 — but worth reopening because…"_). Don't list every theoretical refactor an ADR forbids.
+**ADR conflicts**: if a candidate contradicts an existing ADR, only surface it when the friction is real enough to warrant revisiting the ADR. Mark it clearly in the card (e.g. a warning callout: _"contradicts ADR-0007 — but worth reopening because…"_). Don't list every theoretical refactor an ADR forbids.
 
-See [MARKDOWN-REPORT.md](MARKDOWN-REPORT.md) for the full markdown scaffold, diagram patterns, and styling guidance.
+See [HTML-REPORT.md](HTML-REPORT.md) for the full HTML scaffold, diagram patterns, and styling guidance.
 
-Do NOT propose interfaces yet. After the report is output, ask the user: "Which of these would you like to explore?"
+Do NOT propose interfaces yet. After the file is written, ask the user: "Which of these would you like to explore?"
 
 ### 3. Grilling loop
 
-Once the user picks a candidate, drop into a grilling conversation. Use the `/grill-me` skill to interview them, probing the architecture-specific topics below. Walk the design tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
+Once the user picks a candidate, run the `/grilling` skill to walk the design tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
 
-Probe these topics in the grilling loop:
+Side effects happen inline as decisions crystallize — run the `/domain-modeling` skill to keep the domain model current as you go:
 
-- **Seam placement** — where the new interface should live, and whether it is a hypothetical seam (one adapter) or a real seam (two adapters).
-- **Depth and leverage** — how much behaviour the deepened module hides behind how small an interface, and what callers gain.
-- **Locality** — where change, bugs, and knowledge will concentrate after the refactor.
-- **Dependency category** — classify dependencies using [DEEPENING.md](DEEPENING.md) so the test strategy is clear.
-- **Test surface** — which tests survive at the new interface, and which shallow tests are deleted.
-- **Deletion test** — if the candidate module were deleted, would complexity vanish or reappear across callers?
-
-Side effects happen inline as decisions crystallize:
-
-- **Discovering a new domain term worth naming?** Record it in the **Suggested context** section of the report. Do not edit project files.
-- **Want to explore alternative interfaces for the deepened module?** See [INTERFACE-DESIGN.md](INTERFACE-DESIGN.md).
+- **Naming a deepened module after a concept not in `CONTEXT.md`?** Add the term to `CONTEXT.md`. Create the file lazily if it doesn't exist.
+- **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
+- **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing — skip ephemeral reasons ("not worth it right now") and self-evident ones.
+- **Want to explore alternative interfaces for the deepened module?** Run the `/codebase-design` skill and use its design-it-twice parallel sub-agent pattern.

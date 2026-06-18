@@ -387,7 +387,7 @@ adr new "Use PostgreSQL as Primary Database"
 adr new -s 3 "Deprecate MongoDB in Favor of PostgreSQL"
 
 # Generate table of contents
-adr generate toc > openspec/adr/README.md
+adr generate toc > docs/adr/README.md
 
 # Link related ADRs
 adr link 2 "Complements" 1 "Is complemented by"
