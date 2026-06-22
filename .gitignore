@@ -7,3 +7,21 @@ node_modules/
 
 skills-lock.json
 tools.yaml
+
+# AI Coding Assistants / Agents
+.agents/
+.agents
+.claude/
+.claude
+.cursor/
+.cursorrules
+.cursorignore
+.cline/
+.cline
+.aider/
+.aider*
+.continue/
+.copilot/
+.sweep/
+.cody/
+.gemini/
