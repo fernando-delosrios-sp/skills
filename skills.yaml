@@ -59,6 +59,24 @@ skills:
       repo: mattpocock/skills
       path: skills/engineering/zoom-out
     custom: false
+  - name: code-review
+    category: engineering
+    source:
+      repo: mattpocock/skills
+      path: skills/engineering/code-review
+    custom: false
+  - name: codebase-design
+    category: engineering
+    source:
+      repo: mattpocock/skills
+      path: skills/engineering/codebase-design
+    custom: false
+  - name: resolving-merge-conflicts
+    category: engineering
+    source:
+      repo: mattpocock/skills
+      path: skills/engineering/resolving-merge-conflicts
+    custom: false
   - name: c4-diagram
     category: engineering
     source:
