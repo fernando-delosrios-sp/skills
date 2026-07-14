@@ -326,3 +326,5 @@ apply:
     Pause if you hit blockers or need clarification.
 
     Enforce a changelog update for each spec change applied using the `changelog-generator` skill. Follow the `openspec-git-discipline` skill when making commits.
+
+    Always keep documentation up-to-date for any spec change introduced.
