@@ -34,7 +34,7 @@ skills:
     source:
       repo: shadcn/improve
       path: skills/improve
-    custom: true
+    custom: false
   - name: find-docs
     category: engineering
     source:
@@ -101,3 +101,12 @@ skills:
       repo: ComposioHQ/awesome-claude-skills
       path: changelog-generator
     custom: false
+  - name: openspec-git-discipline
+    category: engineering
+    source:
+      repo: intent-driven-dev/intent-driven-template
+      path: .agents/skills/openspec-git-discipline
+    custom: false
+  - name: openspec-init
+    category: engineering
+    custom: true

@@ -9,6 +9,8 @@ skills-lock.json
 tools.yaml
 
 # AI Coding Assistants / Agents
+.agent/
+.agent
 .agents/
 .agents
 .claude/
