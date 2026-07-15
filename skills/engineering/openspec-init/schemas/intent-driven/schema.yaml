@@ -53,8 +53,9 @@ artifacts:
       Create one spec file per capability listed in the proposal's Capabilities
       section.
 
-      - New capabilities: use the exact kebab-case name from the proposal
-      (specs/<capability>/spec.md).
+      - New capabilities: stick to the domain-based spec categories
+      found in the project. Do not create a spec for a more particular
+      category than the domain itself (e.g., use specs/<domain-category>/spec.md).
 
       - Modified capabilities: use the existing spec folder name from
       openspec/specs/<capability>/ when creating the delta spec at
