@@ -34,8 +34,8 @@ description: Use when the user asks to initialize, bootstrap, or set up an OpenS
 ## 5. Initial Spec Generation
 
 - **Discover Domains**: Analyze the project structure to infer logical domains (e.g., `api/`, `frontend/`, `auth/`). Ask the user to confirm or adjust these domains. Stop and wait for their response.
-- **Pre-populate**: Create the confirmed domain subdirectories in `openspec/specs/` and generate an initial `spec.md` for each to kickstart the workflow.
-- **Completion Criterion**: `openspec/specs/` contains at least one domain subdirectory with an initial `spec.md` file.
+- **Pre-populate**: Create the confirmed domain subdirectories in `openspec/specs/` and generate an initial `spec.md` for each to kickstart the workflow. If the user specifies a structural grouping (e.g., "services" or "packages"), create a spec for *each* individual service/package found in the project, not a single monolithic spec.
+- **Completion Criterion**: `openspec/specs/` contains at least one domain subdirectory with an initial `spec.md` file (or multiple, if a grouping domain was selected).
 
 ## 6. Recommended Skills Installation
 

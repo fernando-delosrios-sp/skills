@@ -32,5 +32,6 @@ Organize specifications by domain — logical groupings that make sense for the 
 - **By feature area**: `auth/`, `payments/`, `search/`
 - **By component**: `api/`, `frontend/`, `workers/`
 - **By bounded context**: `ordering/`, `fulfillment/`, `inventory/`
+- **By structural groupings (e.g. monorepos)**: If the user selects a grouping pattern like "services" or "packages", DO NOT create a single placeholder like `services/spec.md`. Instead, identify the individual services/packages within that grouping (e.g., `services/auth`, `services/billing`) and create a separate spec for each one.
 
 Help the user pre-populate the `openspec/specs/` directory with domains and initial empty spec files as needed to kickstart their workflow.
