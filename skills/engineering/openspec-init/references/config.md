@@ -9,6 +9,9 @@ context: |
   Package manager: <e.g., pnpm>
   # Provide project context as a multiline string block...
 rules:
+  # Define global rules for the project
+  global:
+    - "Always use the `changelog-generator` skill to maintain and enforce a changelog for all changes."
   # Create a subsection mapping to each of the schema's defined artifacts
   # Each artifact section should contain a list of string rules.
   # e.g., if the schema defines 'specs' and 'tasks':
