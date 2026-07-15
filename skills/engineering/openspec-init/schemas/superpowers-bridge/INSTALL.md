@@ -9,6 +9,7 @@ Check the project root for their corresponding configuration files:
 - **Cursor**: `.cursorrules`
 - **Windsurf**: `.windsurfrules`
 - **Antigravity**: `AGENTS.md`
+- **OpenCode**: `AGENTS.md`
 
 ## 2. Insert Workflow Routing
 For each configuration file that exists in the project:
