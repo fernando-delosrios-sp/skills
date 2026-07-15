@@ -15,7 +15,7 @@ description: Use when the user asks to initialize, bootstrap, or set up an OpenS
 
 - **List Schemas**: List the available default schemas from this skill's `schemas/` directory (e.g., `behaviour-driven`, `event-driven`, `intent-driven`, `minimalist`, `rapid`, `spec-driven`, `spec-driven-with-adr`, `superpowers-bridge`).
 - **Select Schema**: Ask the user to choose one of the available schemas. Stop and wait for their choice.
-- **Copy Schema**: Copy the chosen schema's directory from `schemas/` to the target repository's `openspec/schemas/` directory.
+- **Copy Schema**: Copy the chosen schema's directory from this skill's `schemas/` folder to the target repository's `openspec/schemas/` directory. You MUST copy the folder and all its contents (e.g. using `cp -r /path/to/skill/schemas/<schema-name> openspec/schemas/`). Ensure the target directory exists before copying.
 - **Validate**: Run `openspec schema validate <schema-name>` (or `npx openspec schema validate <schema-name>`). If validation fails, attempt to fix the error or ask the user for guidance.
 - **Completion Criterion**: The chosen schema directory exists in `openspec/schemas/` and validation passes.
 

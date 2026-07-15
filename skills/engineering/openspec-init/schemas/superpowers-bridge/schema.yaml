@@ -555,10 +555,16 @@ apply:
        all 8 artifacts done, spec synced into main specs, change
        under archive/.
 
-    6. **Completion (PR is the LAST step)**:
+    6. **Worktree Cleanup**:
 
-       After retrospective + archive are both done, use the Skill
-       tool to invoke **superpowers:finishing-a-development-branch**.
+       After archiving, if a dedicated worktree was created for this change,
+       merge its changes back into the original branch.
+       Once successfully merged, delete the dedicated worktree.
+
+    7. **Completion (PR is the LAST step)**:
+
+       After retrospective + archive + worktree cleanup are all done, use the Skill
+       tool to invoke **superpowers:finishing-a-development-branch** from the original branch.
 
        The branch's PR diff MUST contain the complete archived
        cycle. If it doesn't (e.g., because retrospective or archive
