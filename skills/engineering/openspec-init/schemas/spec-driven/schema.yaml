@@ -125,6 +125,7 @@ artifacts:
       - Each task MUST be a checkbox: `- [ ] X.Y Task description`
       - Tasks should be small enough to complete in one session
       - Order tasks by dependency (what must be done first?)
+      - **CRITICAL**: Always include specific tasks to update user-facing documentation, READMEs, API docs, or comments reflecting the changes.
 
       Example:
       ```
@@ -137,6 +138,7 @@ artifacts:
 
       - [ ] 2.1 Implement data export function
       - [ ] 2.2 Add CSV formatting utilities
+      - [ ] 2.3 Update API documentation for new export endpoint
       ```
 
       Reference specs for what needs to be built, design for how to build it.

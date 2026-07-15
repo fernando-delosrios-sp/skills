@@ -260,6 +260,7 @@ artifacts:
       - If implementation changes behaviour specs, include a task to run
       `openspec validate <change> --type change --strict` before archive.
 
+      - **CRITICAL**: Always include specific tasks to update user-facing documentation, READMEs, API docs, or comments reflecting the changes.
 
       Reference specs for what to build, design for how to build it, and
       <repo>/openspec/adr/ for durable architectural commitments to honor.

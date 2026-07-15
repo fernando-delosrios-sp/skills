@@ -156,6 +156,7 @@ artifacts:
       - Each task MUST be a checkbox: `- [ ] X.Y Task description`
       - Tasks should be small enough to complete in one session
       - Order tasks by dependency (what must be done first?)
+      - **CRITICAL**: Always include specific tasks to update user-facing documentation, READMEs, API docs, or comments reflecting the changes.
 
       Reference specs for what needs to be built and design.md for
       how to build it (architecture decisions, trade-offs, migration).

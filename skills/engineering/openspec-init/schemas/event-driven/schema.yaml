@@ -91,6 +91,7 @@ artifacts:
       - AsyncAPI has been validated with `asyncapi-cli validate asyncapi.yaml`.
 
       Break work into small, dependency-ordered checkbox tasks.
+      - **CRITICAL**: Always include specific tasks to update user-facing documentation, READMEs, API docs, or comments reflecting the changes.
     requires:
       - asyncapi
 
