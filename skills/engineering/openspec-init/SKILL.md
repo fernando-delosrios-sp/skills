@@ -25,7 +25,12 @@ You are an expert AI agent setting up OpenSpec for a user's repository. Follow t
 1. Build the OpenSpec configuration file at `openspec/config.yaml`.
 2. Follow the detailed instructions in this skill's `references/config.md` to properly structure the configuration, paying special attention to the `schema`, `context`, and `rules` sections, and organizing the specs by domain.
 
-## Phase 5: Recommended Skills Installation
+## Phase 5: Initial Spec Generation
+1. **CRITICAL**: Do not leave the `openspec/specs/` directory empty!
+2. Analyze the project structure and engage in a conversation with the user to discover their system's logical domains (e.g., `api/`, `frontend/`, `auth/`, `payments/`).
+3. Pre-populate the `openspec/specs/` directory by creating these domain subdirectories and their corresponding initial spec files (e.g., `openspec/specs/auth/spec.md`) to kickstart their workflow.
+
+## Phase 6: Recommended Skills Installation
 1. To ensure the user has the required behavioral skills for OpenSpec, ask the user to install the recommended skills from the central repository.
 2. Run or suggest running the following commands (or use `npm run import` if in a skills repository):
    - `npx skills add fernando-delosrios-sp/skills --skill c4-diagram`
