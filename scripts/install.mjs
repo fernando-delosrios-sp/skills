@@ -2,7 +2,7 @@
 
 import { loadSkills } from '../lib/index.mjs';
 import kleur from 'kleur';
-import prompts from 'prompts';
+import { checkbox } from '@inquirer/prompts';
 import { execSync } from 'node:child_process';
 
 async function main() {
@@ -26,21 +26,26 @@ async function main() {
     const categorySkills = byCategory[category].sort((a, b) => a.name.localeCompare(b.name));
 
     const choices = categorySkills.map((skill) => ({
-      title: `${skill.name}${skill.custom ? kleur.yellow(' *') : ''}`,
+      name: `${skill.name}${skill.custom ? kleur.yellow(' *') : ''}`,
       value: skill.name,
-      description: skill.custom ? 'custom' : '',
+      description: skill.description || (skill.custom ? 'custom' : ''),
     }));
 
-    const response = await prompts({
-      type: 'multiselect',
-      name: 'skills',
-      message: kleur.cyan(category),
-      choices,
-      hint: '- space to toggle, return to confirm',
-    });
+    try {
+      const response = await checkbox({
+        message: kleur.cyan(category),
+        choices,
+        required: false
+      });
 
-    if (response.skills && response.skills.length > 0) {
-      selectedSkills.push(...response.skills);
+      if (response && response.length > 0) {
+        selectedSkills.push(...response);
+      }
+    } catch (err) {
+      if (err.name === 'ExitPromptError') {
+        process.exit(0);
+      }
+      throw err;
     }
   }
 

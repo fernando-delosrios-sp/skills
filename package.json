@@ -11,6 +11,8 @@
     "validate": "node scripts/sync.mjs validate"
   },
   "dependencies": {
+    "@clack/prompts": "^1.7.0",
+    "@inquirer/prompts": "^8.5.2",
     "@octokit/rest": "^21.0.0",
     "commander": "^12.1.0",
     "kleur": "^4.1.5",
