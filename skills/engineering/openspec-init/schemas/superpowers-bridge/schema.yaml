@@ -3,7 +3,7 @@ version: 1
 description: >
   Spec-driven workflow integrated with Superpowers skills.
   Requirements: Superpowers plugin installed, providing skills:
-  brainstorming, writing-plans, using-git-worktrees,
+  brainstorming, writing-plans,
   subagent-driven-development, finishing-a-development-branch.
   Requires a subagent-capable platform (Claude Code, Codex, etc.) —
   this schema does not support runtimes without subagent support,
@@ -16,7 +16,7 @@ description: >
   design is required (reorganizes raw brainstorm output into structured
   Context / Goals / Decisions / Risks / Migration; referenced by tasks
   and plan for implementation guidance).
-  Apply phase uses git worktrees + subagent-driven-development
+  Apply phase uses subagent-driven-development
   (brings TDD and code-review transitively).
 
 artifacts:
@@ -248,7 +248,7 @@ artifacts:
          in specs/. Record any drift as a warning (non-blocking).
 
       5. **Implementation signal**: Confirm all code changes are
-         committed (no unstaged files in the worktree). Cite the
+         committed (no unstaged files in the working directory). Cite the
          commit range if known.
 
       6. **Front-door routing leak detector** (warning, non-blocking):
@@ -333,9 +333,8 @@ artifacts:
       Process (follow these 3 steps):
 
       1. **Gather evidence**
-         - Run `git log --oneline <base>..HEAD` in the change worktree
-           (or main checkout if the worktree was already merged) to
-           get the commit range
+         - Run `git log --oneline <base>..HEAD` in the change directory
+           to get the commit range
          - Read brainstorm.md, plan.md, tasks.md in this change
            directory for plan-vs-actual comparison
          - If verify.md contains failing items, address them BEFORE
@@ -470,7 +469,6 @@ apply:
        Confirm each appears in your available skills list before
        proceeding:
 
-       - superpowers:using-git-worktrees
        - superpowers:subagent-driven-development
          (transitively: superpowers:test-driven-development,
                         superpowers:requesting-code-review)
@@ -490,11 +488,7 @@ apply:
        may have a fallback. Print the missing list once at apply
        start so the user isn't surprised mid-cycle.
 
-    1. **Workspace**: Use the Skill tool to invoke
-       **superpowers:using-git-worktrees** to create an isolated
-       git worktree for this change.
-
-    2. **Executor — subagent-driven-development**:
+    1. **Executor — subagent-driven-development**:
 
        Use the Skill tool to invoke
        **superpowers:subagent-driven-development** to execute
@@ -503,7 +497,7 @@ apply:
        Tell the executor:
        - Read plan.md in this change directory for micro-tasks
        - Update tasks.md checkboxes as coarse tasks complete
-       - Work within the created worktree
+       - Work within the current branch
 
        IMPORTANT — transitive skill activation:
        subagent-driven-development internally enforces the
@@ -525,12 +519,12 @@ apply:
        If your platform lacks subagent support, use the built-in
        `spec-driven` schema instead of this one.
 
-    3. **Verification**: When all tasks are done, produce the
+    2. **Verification**: When all tasks are done, produce the
        `verify` artifact by invoking **openspec-verify-change**
        to check completeness, correctness, and coherence.
        Re-run verify until all blocking issues are resolved.
 
-    4. **Retrospective (write while context is hot)**:
+    3. **Retrospective (write while context is hot)**:
 
        Once verify.md shows no blocking issues, produce the
        `retrospective` artifact BEFORE opening any PR. Run the
@@ -542,7 +536,7 @@ apply:
        PR merge produces a separate trailing commit and loses the
        hot context (running tests, fresh fix memory).
 
-    5. **Archive (sync spec delta + move folder)**:
+    4. **Archive (sync spec delta + move folder)**:
 
        After retrospective.md is written, run `openspec archive -y`
        (or invoke `/opsx:archive`). This:
@@ -555,15 +549,9 @@ apply:
        all 8 artifacts done, spec synced into main specs, change
        under archive/.
 
-    6. **Worktree Cleanup**:
+    5. **Completion (PR is the LAST step)**:
 
-       After archiving, if a dedicated worktree was created for this change,
-       merge its changes back into the original branch.
-       Once successfully merged, delete the dedicated worktree.
-
-    7. **Completion (PR is the LAST step)**:
-
-       After retrospective + archive + worktree cleanup are all done, use the Skill
+       After retrospective + archive are all done, use the Skill
        tool to invoke **superpowers:finishing-a-development-branch** from the original branch.
 
        The branch's PR diff MUST contain the complete archived
