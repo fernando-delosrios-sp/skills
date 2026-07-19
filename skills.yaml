@@ -110,3 +110,39 @@ skills:
   - name: openspec-init
     category: engineering
     custom: true
+  - name: ponytail
+    category: engineering
+    source:
+      repo: DietrichGebert/ponytail
+      path: skills/ponytail
+    custom: false
+  - name: ponytail-audit
+    category: engineering
+    source:
+      repo: DietrichGebert/ponytail
+      path: skills/ponytail-audit
+    custom: false
+  - name: ponytail-debt
+    category: engineering
+    source:
+      repo: DietrichGebert/ponytail
+      path: skills/ponytail-debt
+    custom: false
+  - name: ponytail-gain
+    category: engineering
+    source:
+      repo: DietrichGebert/ponytail
+      path: skills/ponytail-gain
+    custom: false
+  - name: ponytail-help
+    category: engineering
+    source:
+      repo: DietrichGebert/ponytail
+      path: skills/ponytail-help
+    custom: false
+  - name: ponytail-review
+    category: engineering
+    source:
+      repo: DietrichGebert/ponytail
+      path: skills/ponytail-review
+    custom: false
