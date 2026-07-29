@@ -101,48 +101,21 @@ skills:
       repo: ComposioHQ/awesome-claude-skills
       path: changelog-generator
     custom: false
-  - name: openspec-git-discipline
-    category: engineering
-    source:
-      repo: intent-driven-dev/intent-driven-template
-      path: .agents/skills/openspec-git-discipline
-    custom: false
   - name: openspec-init
     category: engineering
     custom: true
-  - name: ponytail
+  - name: graphify
+    category: engineering
+    custom: true
+  - name: git-commit
     category: engineering
     source:
-      repo: DietrichGebert/ponytail
-      path: skills/ponytail
+      repo: github/awesome-copilot
+      path: skills/git-commit
     custom: false
-  - name: ponytail-audit
+  - name: code-simplification
     category: engineering
     source:
-      repo: DietrichGebert/ponytail
-      path: skills/ponytail-audit
-    custom: false
-  - name: ponytail-debt
-    category: engineering
-    source:
-      repo: DietrichGebert/ponytail
-      path: skills/ponytail-debt
-    custom: false
-  - name: ponytail-gain
-    category: engineering
-    source:
-      repo: DietrichGebert/ponytail
-      path: skills/ponytail-gain
-    custom: false
-  - name: ponytail-help
-    category: engineering
-    source:
-      repo: DietrichGebert/ponytail
-      path: skills/ponytail-help
-    custom: false
-  - name: ponytail-review
-    category: engineering
-    source:
-      repo: DietrichGebert/ponytail
-      path: skills/ponytail-review
+      repo: addyosmani/agent-skills
+      path: skills/code-simplification
     custom: false
