@@ -1,4 +1,10 @@
 skills:
+  - name: wayfinder
+    category: productivity
+    source:
+      repo: mattpocock/skills
+      path: skills/productivity/wayfinder
+    custom: false
   - name: writing-great-skills
     category: productivity
     source:
