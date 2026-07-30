@@ -10,6 +10,8 @@ Hard formatting rules (OpenSpec will validate):
 - Requirement sentences MUST contain `SHALL` or `MUST`
 - Each Requirement MUST have at least one `#### Scenario:`
 - Scenario MUST use level-4 (`####`); level-3 or bullets will silently fail
+- Scenarios MUST use Gherkin format: **GIVEN** / **WHEN** / **THEN**
+  (use **AND** for additional steps within the same clause)
 -->
 
 ## ADDED Requirements
@@ -20,8 +22,12 @@ Hard formatting rules (OpenSpec will validate):
 <!-- requirement text — MUST contain SHALL or MUST -->
 
 #### Scenario: <!-- scenario name -->
-- **WHEN** <!-- condition -->
-- **THEN** <!-- expected outcome -->
+- **GIVEN** <!-- starting context / preconditions -->
+- **WHEN** <!-- action or trigger -->
+- **THEN** <!-- observable outcome -->
+<!-- Optional additional steps:
+- **AND** <!-- another precondition, action, or outcome in the same clause -->
+-->
 
 ---
 
@@ -37,8 +43,12 @@ Modify existing Requirements. **MUST use the exact normalized header as in opens
 <!-- Complete modified requirement text — MUST contain SHALL or MUST -->
 
 #### Scenario: <!-- scenario name (can be new or modified) -->
-- **WHEN** <!-- condition -->
-- **THEN** <!-- expected outcome -->
+- **GIVEN** <!-- starting context / preconditions -->
+- **WHEN** <!-- action or trigger -->
+- **THEN** <!-- observable outcome -->
+<!-- Optional additional steps:
+- **AND** <!-- another precondition, action, or outcome in the same clause -->
+-->
 
 ---
 
@@ -67,3 +77,4 @@ Apply order during archive: RENAMED -> REMOVED -> MODIFIED -> ADDED
 
 - FROM: `### Requirement: <Old Name>`
 - TO: `### Requirement: <New Name>`
+

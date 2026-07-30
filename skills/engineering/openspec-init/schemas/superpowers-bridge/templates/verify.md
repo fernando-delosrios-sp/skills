@@ -1,6 +1,6 @@
 # Verification Report
 
-> Generated after apply's completion gate passes. Verify checks implementation correctness vs specs — not git hygiene or spec sync (apply and archive handle those). Failed checks return to apply, not warnings to defer.
+> Generated inside apply step 2 (verify-fix loop). Apply must not report done until Overall Decision is ✅ PASS — fix blocking items autonomously; do not hand verify failures to the user. Standalone `/opsx:verify` is for re-runs after interruption.
 
 **Change**: `<change-name>`
 **Verified at**: `YYYY-MM-DD HH:mm`
@@ -86,3 +86,4 @@ For manual dogfood / smoke tasks marked as `[~]` deferred in plan.md, list the e
 **Next Step**:
 
 <Explain the next action>
+
