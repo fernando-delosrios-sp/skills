@@ -35,6 +35,12 @@ skills:
       repo: mattpocock/skills
       path: skills/productivity/teach
     custom: false
+  - name: risen-prompt
+    category: productivity
+    source:
+      repo: digital-stoic-org/agent-skills
+      path: skills/experimental/edit-risen-prompt
+    custom: true
   - name: improve
     category: engineering
     source:
