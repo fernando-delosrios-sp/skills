@@ -55,13 +55,20 @@ npm run install-self
 - In GitHub Actions, sync auto-merges updates for `custom: false` skills if CI validation passes.
 - Run `npm run validate` before committing.
 
-<!-- Source: superpowers-bridge/templates/adopters/CLAUDE.md.fragment.md -->
-<!-- Drop this section into your project's CLAUDE.md so Claude routes future work using this schema correctly. -->
+<!-- Source: superpowers-bridge/templates/adopters/AGENTS.md.fragment.md -->
+<!-- Drop this section into your project's AGENTS.md so agents route future work using this schema correctly. -->
 <!-- Adjust the schema name and bridge repo URL if you customized them; otherwise keep as-is. -->
+
+## Agent communication
+
+- Use **plain English** — avoid jargon unless the user already uses it.
+- Keep explanations **succinct**. State the conclusion first; add detail only when it helps a decision.
+- When a topic could go deep, **offer to develop it further** — do not unprompted long dissertations or essay-length replies.
+- When you need input, **ask one question at a time** and wait for the answer before the next.
 
 ## Workflow routing (read on session start)
 
-This repo uses [`superpowers-bridge`](https://github.com/JiangWay/openspec-schemas/tree/main/superpowers-bridge) to bridge OpenSpec and Superpowers. Integration rules (language, artifact paths, PRECHECK) follow that bridge's README; this section is the routing guidance for Claude.
+This repo uses [`superpowers-bridge`](https://github.com/JiangWay/openspec-schemas/tree/main/superpowers-bridge) to bridge OpenSpec and Superpowers. Integration rules (language, artifact paths, PRECHECK) follow that bridge's README; this section is the routing guidance for agents.
 
 ### Entry routing
 
