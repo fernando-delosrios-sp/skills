@@ -124,7 +124,7 @@ skills:
     source:
       repo: github/awesome-copilot
       path: skills/git-commit
-    custom: false
+    custom: true
   - name: code-simplification
     category: engineering
     source:
