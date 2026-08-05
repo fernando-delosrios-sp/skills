@@ -150,44 +150,59 @@ Reference scaffolded resources by name/ID from the Scaffold registry. Use `find-
 
 **Done when:** every var has a CONFIG-GUIDE block with no rejected obtain patterns; `<env>/progress.md` marks Document complete.
 
-## Harvest — Phase 4b (iterative)
+## Harvest — Phase 4b (iterative, hold between rounds)
 
 Requires Arm-ready complete. **Tool-first** — run mapped MCPs, skills, **and CLIs** before manual paste. Agent executes CLI commands; do not only print them. See [TOOLING.md](TOOLING.md).
+
+**Hold** — Harvest is a loop with mandatory pauses. Do **not** enter Forge, generate deployment files, or treat Harvest as complete until the user explicitly declares it **finished**. Partial progress is not completion.
 
 **Iterative loop** — not one pass. Repeat until the user declares Harvest **finished** (they may unblock blockers between rounds by creating resources, granting access, or pasting values).
 
 Each round:
 
 1. **Scaffold** any newly unblocked resources (Phase 3c mini-pass)
-2. **Collect** — MCP → skill → CLI per var's chain; manual only when automated paths failed or opt-out
+2. **Collect** — attempt **every** pending **Required: yes** var in the current service cluster — MCP → skill → CLI per chain; manual only when automated paths failed or opt-out. Do not skip vars that remain `pending`.
 3. **Validate** → write `.deploy-mate/<env>/.env` (`chmod 600`) → update Harvest status + `Via:` note
-4. **Report** — vars collected, validated, blocked; what user action would unblock next round
-5. **Ask** — "Continue Harvest or mark finished?"
+4. **Report** — full status table: every Catalog var with Collected / Validated / Blocker / pending. Name specific user actions for blockers.
+5. **Stop** — ask: "Continue Harvest or mark finished?" **Wait for the user's reply.** Do not start the next round, Forge, or any post-Harvest work in the same turn.
 
 Follow [CONFIG-GUIDE.md](CONFIG-GUIDE.md) Harvest protocol. Group by source service. Never overwrite existing `.env` values silently. Do not echo secrets in chat.
 
-**Done when:** user declares Harvest finished **and** every **Required: yes** var is Collected + Validated (with `via:` recorded) or has an explicit Blocker the user accepts.
+**Forbidden during Harvest:** advancing to Forge; marking Harvest finished without user saying so; treating optional vars as sufficient when **Required: yes** vars remain pending without accepted Blockers.
+
+**Done when:** user declares Harvest finished **and** every **Required: yes** var is Collected + Validated (with `via:` recorded) or has an explicit Blocker the user accepts; `<env>/progress.md` marks Harvest finished with date.
 
 ## Forge — Phase 5
 
-Requires Document complete. Always invoke `deployment-pipeline-design` for pipeline structure. On-demand: `cicd-pipeline-generator`, stack-specific deployment skills.
+Requires Document complete **and** Harvest finished. **Strategy before artifacts** — agree on the deployment approach with the user before creating any repo files.
 
-Produce:
+### Forge proposal (gate — no repo files until sign-off)
+
+1. **Draft** — invoke `deployment-pipeline-design` for pipeline structure. From `architecture.md`, Catalog, and tooling map, write `.deploy-mate/<env>/deployment.md` **strategy sections only** (see [ARTIFACTS.md](ARTIFACTS.md)): platform choice, CI/CD flow, container/build approach, env injection method, rollback outline, optional scope (observability, DNS, migrations).
+2. **Present** — summarize the proposed strategy in chat; call out trade-offs and open questions.
+3. **Dialog** — ask for feedback. Revise the proposal until the user approves or accepts explicit deferrals.
+4. **Sign-off** — record approval in `deployment.md` → Sign-off and `<env>/progress.md`. **Do not proceed** until sign-off is recorded.
+
+On-demand during proposal: `cicd-pipeline-generator`, stack-specific deployment skills — for options and comparison, not file generation yet.
+
+### Forge artifacts (after sign-off)
+
+Only after strategy sign-off, generate repo files:
 
 | Output | Location |
 |--------|----------|
-| Process doc | `.deploy-mate/<env>/deployment.md` |
+| Process doc | `.deploy-mate/<env>/deployment.md` (complete Steps + Generated files) |
 | CI workflow | `.github/workflows/*.yml` when applicable |
 | Container config | `Dockerfile`, `docker-compose.yml` |
 | Platform config | `fly.toml`, `vercel.json`, `infra/*.tf`, etc. |
 
 List every generated file in `deployment.md` and `<env>/progress.md`. Reference var **names** from `.env` only. Existing files: show diff and confirm before overwrite.
 
-Observability, DNS, and migrations — only when project or user requires.
+Observability, DNS, and migrations — only when agreed in the Forge proposal.
 
 **Deploy action** is blocked until `.env` is complete. Artifacts and files are ready; user triggers deploy.
 
-**Done when:** `deployment.md` exists, all generated files are listed, and overwrites are confirmed.
+**Done when:** strategy sign-off recorded, `deployment.md` exists with all generated files listed, and overwrites are confirmed.
 
 ## Re-runs
 
@@ -200,5 +215,8 @@ Diff existing artifacts against current repo state. In `<env>/progress.md`, mark
 | Survey sign-off | Catalog through Harvest |
 | Arm-ready complete | Scaffold, Harvest |
 | Scaffold acknowledged | Harvest (first pass) |
+| Harvest round end | Next round, Forge — **hold until user replies** |
+| Harvest finished (user declared) | Forge |
 | Document complete | Forge |
+| Forge strategy sign-off | Repo deploy files (workflows, Dockerfile, fly.toml, …) |
 | `.env` complete | Deploy action |

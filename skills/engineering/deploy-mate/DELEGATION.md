@@ -12,7 +12,8 @@ Fallbacks when mapped MCPs/skills cannot cover a source service. **Default path 
 | 3c | Scaffold | Create placeholder resources via ready CLIs | User creates manually; record in registry |
 | 4a | Document | Per-var obtain playbooks; `find-docs` for vendor steps | — |
 | 4b | Harvest | Tool-first loop: MCP → skill → **CLI** (agent runs) → manual | `find-docs` for manual fallback steps |
-| 5 | Forge | `deployment-pipeline-design` | `cicd-pipeline-generator`, stack-specific deployment skills |
+| 5 | Forge proposal | `deployment-pipeline-design` — strategy dialog before files | `cicd-pipeline-generator`, stack-specific deployment skills (options only) |
+| 5 | Forge artifacts | After strategy sign-off — generate repo files | `cicd-pipeline-generator`, stack-specific deployment skills |
 
 ## Excluded
 
@@ -50,3 +51,10 @@ Detect, install, authenticate, and verify local CLIs — see [TOOLING.md](TOOLIN
 ## Scaffold delegation
 
 Prefer CLI scaffold commands when Arm-ready status is `ready`. When CLI cannot create (permissions, billing), guide user through console steps from CONFIG-GUIDE § Scaffold and record result in Scaffold registry.
+
+## Forge delegation
+
+**Proposal first** — invoke `deployment-pipeline-design` to draft strategy; present trade-offs and ask for feedback. Do **not** generate `.github/workflows/*`, `Dockerfile`, `fly.toml`, or other repo deploy files until strategy sign-off is recorded.
+
+After sign-off, invoke `cicd-pipeline-generator` and stack-specific deployment skills to produce artifacts aligned with the approved strategy.
+

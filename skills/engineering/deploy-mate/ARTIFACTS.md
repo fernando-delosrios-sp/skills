@@ -21,7 +21,8 @@ Status: in-progress | complete
 - [ ] Scaffold — placeholder resources staged
 - [ ] Document — obtain playbooks (hard gate)
 - [ ] Harvest — .env collection — in-progress | finished <date>
-- [ ] Forge — deployment artifacts
+- [ ] Forge — strategy sign-off: pending | approved <date>
+- [ ] Forge — deployment artifacts generated
 
 ## Harvest rounds
 | Round | Date | Collected | Validated | Blocked | User action |
@@ -143,6 +144,8 @@ flowchart TB
 
 ## deployment.md
 
+Write **strategy sections first** (Forge proposal). Repo files only after Sign-off.
+
 ```markdown
 # Deployment — <env>
 
@@ -150,27 +153,46 @@ flowchart TB
 - [ ] Document complete (obtain playbooks)
 - [ ] Harvest finished — `.env` complete (deploy blocked until done)
 
-## Overview
-<strategy: platform, CI/CD, containers>
+## Proposed strategy
+
+<!-- Forge proposal — draft and revise with user before any repo file generation -->
+
+### Platform & runtime
+<target platform, region, scaling notes>
+
+### CI/CD flow
+<trigger → build → test → deploy stages; branch/tag policy>
+
+### Build & containers
+<Dockerfile vs buildpack, multi-stage, compose if local>
+
+### Env injection
+<how `.env` vars reach runtime — platform secrets, GitHub Actions, …>
+
+### Rollback
+<how to revert a bad deploy>
+
+### Optional scope
+- Observability: … | deferred
+- DNS: … | deferred
+- Migrations: … | deferred
+
+## Sign-off
+- [ ] User approved strategy — <date or pending>
+- Open questions resolved: …
 
 ## Steps
+<!-- Fill after sign-off -->
 1. …
 
 ## Generated files
+<!-- Fill after sign-off — list every repo file created -->
 | File | Purpose |
 |------|---------|
 
 ## Env var references
 Names only — values in `.deploy-mate/<env>/.env`:
 - `VAR_NAME` — used by …
-
-## Rollback
-<brief rollback notes>
-
-## Optional (if in scope)
-- Observability: …
-- DNS: …
-- Migrations: …
 ```
 
 ## .env (gitignore)
@@ -185,3 +207,4 @@ Add to project `.gitignore` if missing:
 ```
 .deploy-mate/**/.env
 ```
+

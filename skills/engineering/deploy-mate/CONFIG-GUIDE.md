@@ -109,19 +109,29 @@ Rules:
 
 Requires **Arm-ready** — mapped tools installed and verified (or opted out). See [TOOLING.md](TOOLING.md).
 
-Run **after** each var's Document block exists. **Iterative** — repeat rounds until user declares Harvest **finished**.
+Run **after** each var's Document block exists. **Iterative** — repeat rounds until user declares Harvest **finished**. **Hold between rounds** — never advance to Forge or start artifact generation from within Harvest.
+
+### Anti-rush rules
+
+| Forbidden | Why |
+|-----------|-----|
+| Enter Forge while Harvest is in-progress | Strategy and files wait for finished Harvest |
+| Mark Harvest finished without user saying so | Only the user closes the loop |
+| Skip pending **Required: yes** vars in a round | Every pending required var gets an attempt or Blocker update |
+| Start next round in the same turn as the report | User must reply first |
+| Treat partial collection as "good enough" | Report must list **every** Catalog var |
 
 ### Each round
 
 1. **Review blockers** — read Harvest status; ask user what they unblocked since last round
 2. **Scaffold** — create any newly approved resources (see § Scaffold)
 3. **Collect by service cluster** — infrastructure → third-party APIs → platform creds → app-generated → optional config
-4. **Per var:** MCP → skill → **CLI** per primary chain when status is `ready`. Agent **runs** CLI commands
+4. **Per var:** MCP → skill → **CLI** per primary chain when status is `ready`. Agent **runs** CLI commands. Vars still `pending` must be attempted — record Blocker if all methods fail
 5. **Manual fallback** — Document steps only when all automated methods failed or opt-out
 6. **Validate** — run Verify command from the block
 7. **Write** to `.deploy-mate/<env>/.env` (`chmod 600`). Diff before overwrite. Record `Via:` and `Round:`
-8. **Report** — table of collected / validated / blocked; specific user actions for next round
-9. **Ask** — "Continue Harvest or mark finished?"
+8. **Report** — table listing **every** var: Collected / Validated / Blocker / pending. Specific user actions for each blocker
+9. **Stop** — ask: "Continue Harvest or mark finished?" **End the turn.** Do not continue until user replies
 
 User may paste values, grant access, or create resources between rounds — re-run affected vars next round.
 
@@ -132,7 +142,7 @@ Harvest ends when **both**:
 - User explicitly declares Harvest **finished**
 - Every **Required: yes** var is Collected + Validated (with `via:`) or has a Blocker the user accepts
 
-Record final round in `<env>/progress.md` → Harvest rounds table.
+Record final round in `<env>/progress.md` → Harvest rounds table. Only then may Forge begin.
 
 ## Grouping order
 
@@ -149,3 +159,4 @@ Record final round in `<env>/progress.md` → Harvest rounds table.
 - Platform MCPs — install and call per [TOOLING.md](TOOLING.md)
 - **Local CLIs** — install, auth, run per [TOOLING.md](TOOLING.md); primary path for many services
 - `env-secrets-manager` — vault sync when user prefers over local `.env`
+
