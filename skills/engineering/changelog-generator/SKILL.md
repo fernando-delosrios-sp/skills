@@ -63,83 +63,72 @@ You are a **technical release writer** specializing in user-facing changelogs. Y
 
 **Scope resolution order:** explicit user range → last git tag to `HEAD` → newest `## YYYY-MM-DD` in `CHANGELOG.md` to today.
 
+See `reference.md` for category mapping, format examples, model specs, and audience modes.
+
 ---
 
-## STEPS
+## PHASES
 
-**Model specification:** Use **Sonnet** for STEPS 1–4 (gathering, parsing, classification, diff analysis). Use **Opus** for STEPS 5–6 (user-facing prose, tone, merging duplicates). Use **Sonnet** for STEP 7 (validation checklist).
+**Model specification:** Sonnet for Phases 1–2; Opus for Phase 3; Sonnet for Phase 4. See `reference.md`.
 
-### STEP 1: Context Engineering — Load scope and sources
+Every bullet must **trace** to a commit, diff, or OpenSpec capability — do not invent features or fixes.
+
+### Phase 1: Scope
 
 - Resolve commit range per INPUT scope rules.
 - Read `@./CHANGELOG.md` if it exists; note newest date section and whether today's section already exists.
 - If an OpenSpec change is active, read proposal Capabilities and Impact; list every user-visible capability as a checklist.
 - Run `git log` for the resolved range; capture commit messages and hashes.
-- Save as `.ctx/01-scope-and-sources.md`
-- **CHECKPOINT:** Confirm commit range, audience mode (public default), and OpenSpec checklist (if any) before proceeding.
+- Set audience mode (public default).
+- **CHECKPOINT:** Confirm commit range, audience mode, and OpenSpec checklist (if any) before proceeding.
+- **Done when:** commit range resolved, audience mode set, OpenSpec capability checklist listed (or confirmed absent).
 
-### STEP 2: Information Gathering — Commits, diffs, and grouping
+### Phase 2: Analyze
 
 - Group commits by spec, feature, or logical change — **not one bullet per commit**.
 - For each group with `feat`, `fix`, or breaking signal, read the relevant diff; note user-visible outcomes.
 - Exclude internal-only work: tests, CI, refactors with no user impact, chore unless operator-facing.
 - Optionally enrich from PR descriptions when they exist; do not fail if none exist.
-- Save as `.ctx/02-grouped-changes.md`
-- **CHECKPOINT:** User validates grouped changes cover the intended release scope.
-
-### STEP 3: Content Organization — Classify and structure
-
-Map each grouped change to a category:
-
-| Prefix / signal                     | Section             |
-| ----------------------------------- | ------------------- |
-| `feat:`                             | ✨ New Features     |
-| `fix:`                              | 🐛 Fixes            |
-| `perf:` or user-visible `refactor:` | 🔧 Improvements     |
-| `BREAKING CHANGE` or `!`            | ⚠️ Breaking Changes |
-| `docs:`                             | 📚 Documentation    |
-| removal / sunset                    | 🗑️ Removed          |
-| deprecation notice                  | ⏳ Deprecated       |
-
+- Map each group to a category per `reference.md`.
 - Assign release date: `YYYY-MM-DD` (today unless user specifies otherwise).
-- Add optional semver when a tag applies: `## 2026-07-24 · v2.5.0`.
-- Add scope labels for multi-surface products: `[API]`, `[UI]`, `[CLI]`.
-- Save as `.ctx/03-classified-outline.md`
-
-### STEP 4: Analysis — Coverage and gaps
-
 - Cross-check grouped changes against OpenSpec user-visible Capabilities checklist (when present).
 - Flag missing capabilities, duplicate titles, or empty categories.
 - Identify breaking changes needing migration bullets.
-- Save as `.ctx/04-coverage-gaps.md`
-- **CHECKPOINT:** Resolve gaps (missing capabilities, misclassified items) before drafting prose.
+- Present structured checkpoint block:
 
-### STEP 5: Synthesis — Pass 1 (Draft)
+```markdown
+### Changelog scope
+- Range: `<range>`
+- Mode: public | internal
+- OpenSpec capabilities: N listed, M traced, K gaps
+
+### Grouped changes
+| Group | Category | Trace |
+|---|---|---|
+| Dynamic forms | ✨ New Features | abc1234, def5678 |
+
+### Gaps
+- [ ] Capability X — no commit evidence (flag, do not fabricate)
+```
+
+- **CHECKPOINT:** Resolve gaps (missing capabilities, misclassified items) before drafting prose.
+- **Done when:** grouped changes table presented; every user-visible capability traced or flagged as gap; gaps resolved.
+
+### Phase 3: Draft
 
 - Write one bullet per user-visible change: `- **Title** — Description.`
 - Public mode: benefits-focused; no ticket numbers or internal jargon.
 - Internal mode: may include scope labels, commit hashes `(abc1234)`, or PR links when available.
-- Breaking changes: add nested migration bullet when users must act:
-  ```markdown
-  - **Auth token format** — Tokens now use JWT; legacy opaque tokens are rejected.
-    - Migration: regenerate tokens via Settings → API Keys before 2026-08-01.
-  ```
-- Save as `.ctx/05-draft-changelog.md`
-
-### STEP 6: Documentation — Pass 2 (Edit) and write CHANGELOG.md
-
+- Breaking changes: add nested migration bullet when users must act (see `reference.md`).
 - Merge duplicates; drop internal noise; enforce voice and format.
 - Omit empty category sections entirely.
-- Insert `---` between release sections.
-- Update `CHANGELOG.md`:
-  - **Prepend** new section at top (newest first).
-  - If today's `## YYYY-MM-DD` exists, **merge into it** — do not duplicate the heading.
-  - Re-run for same range **replaces** that section's content.
-- Save final section as `.ctx/06-final-changelog-section.md`
+- Present the full `## YYYY-MM-DD` release section in chat for review.
+- **CHECKPOINT:** User approves draft before writing to disk.
+- **Done when:** full release section prose presented in chat; user approves at checkpoint.
 
-### STEP 7: Review — Validate before saving
+### Phase 4: Ship
 
-Confirm all gates pass:
+- Confirm all validation gates pass:
 
 - [ ] ISO 8601 date heading (`YYYY-MM-DD`)
 - [ ] Emoji subheadings use canonical text labels (emoji is decorative)
@@ -148,9 +137,15 @@ Confirm all gates pass:
 - [ ] Every ⚠️ entry states who is affected + migration when applicable
 - [ ] All user-visible OpenSpec Capabilities represented (when proposal exists)
 - [ ] Idempotent merge — no duplicate date headings or repeated bullets
+- [ ] Every bullet traces to a commit, diff, or OpenSpec capability
 
-- Save validation report as `.ctx/07-validation-report.md`
-- **CHECKPOINT:** Present final changelog section to user for review before commit/publish.
+- Update `CHANGELOG.md`:
+  - **Prepend** new section at top (newest first).
+  - If today's `## YYYY-MM-DD` exists, **merge into it** — do not duplicate the heading.
+  - Re-run for same range **replaces** that section's content.
+  - Insert `---` between release sections.
+- **CHECKPOINT:** Present final changelog section and brief summary before commit/publish.
+- **Done when:** `CHANGELOG.md` updated; all validation gates confirmed; user approves.
 
 ---
 
@@ -158,25 +153,7 @@ Confirm all gates pass:
 
 ### Deliverable
 
-An updated `@./CHANGELOG.md` with a new or merged release section in this format:
-
-```markdown
-## 2026-07-24
-
-### ✨ New Features
-
-- **Dynamic forms and user data collection** — Example ISC form configuration with cascading dropdowns (buildings, locations, rooms) and CSV-backed reference data for structured user input during provisioning or access requests.
-
-### 📚 Documentation
-
-- Expanded README for dynamic forms: how dropdowns chain together and how user selections persist.
-
-### 🐛 Fixes
-
-- Restored promotional screenshot accidentally removed from the dynamic forms guide.
-
----
-```
+An updated `@./CHANGELOG.md` with a new or merged release section. See `reference.md` for format example.
 
 ### Audience
 
@@ -189,16 +166,16 @@ An updated `@./CHANGELOG.md` with a new or merged release section in this format
 - Descriptions explain **what changed for the user**, not which files moved.
 - Breaking changes always include actionable migration guidance when users must act.
 - Tone is concise, professional, and scannable.
+- Every bullet **traces** to a commit, diff, or OpenSpec capability.
 
 ### Final package
 
 - Updated `CHANGELOG.md` at repo root
-- `.ctx/` folder with numbered artifacts (`01-` through `07-`) for resumability
 - Brief summary of: range used, capabilities covered, categories populated, anything excluded as internal-only
 
 ### Quality gates
 
-- All STEP 7 validation checks pass
+- All Phase 4 validation checks pass
 - User checkpoint approved before treating changelog as final
 
 ---
@@ -222,17 +199,14 @@ An updated `@./CHANGELOG.md` with a new or merged release section in this format
 - Entry format: `- **Title** — Description.` (em dash, not hyphen)
 - Separators: `---` between release sections only
 
-### No hallucinations
+### Trace discipline
 
 - Every bullet must trace to a commit, diff, or OpenSpec capability — do not invent features or fixes.
 - If a capability is listed in the proposal but no commit evidence exists, flag it at the checkpoint rather than fabricating an entry.
 
 ### Checkpoint discipline
 
-- Do not write to `CHANGELOG.md` until STEP 4 gaps are resolved and STEP 6 draft is reviewed.
+- Do not write to `CHANGELOG.md` until Phase 2 gaps are resolved and Phase 3 draft is approved.
 - Pause at every **CHECKPOINT**; wait for user confirmation before continuing.
-
-### Resumability
-
-- If interrupted, resume from the highest-numbered `.ctx/0X-*.md` file present.
-- Maintain `.ctx/00-index.md` listing all context files and current step.
+- If interrupted, re-invoke with the same range — re-derive analysis from git, OpenSpec, and `CHANGELOG.md`; idempotent merge prevents duplicates.
+- For cross-session handoff, optionally use `/handoff` — not a skill requirement.
