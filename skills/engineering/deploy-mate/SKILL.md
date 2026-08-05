@@ -40,17 +40,26 @@ Read manifests, infra configs, specs, and README. Draft `.deploy-mate/<env>/arch
 | `inferred` | Reasonable deduction; cite what you read |
 | `unknown` | Not determined — blocks sign-off for prod components |
 
-**Legwork first.** Invoke skills only when:
+### Diagram (mandatory)
+
+Every `architecture.md` **must** include a `## Diagram` section — text-only architecture is incomplete.
+
+1. **Deploy topology** — embedded Mermaid in `architecture.md` showing runtime components, deploy targets, and external services (always).
+2. **Container view** — invoke `c4-diagram` when the system has 3+ containers; link the generated `.drawio` file from `architecture.md`. Use `design-doc-mermaid` or platform diagram skills when Mermaid layout is insufficient.
+
+Diagram labels must match component names in the tables below.
+
+**Legwork first** for evidence gaps. Invoke `find-docs`, `find-skills` (niche stack) only when:
 
 - Any production component is `inferred` with no strong evidence
 - Stack or platform is ambiguous after file scan
 - User asks for deeper analysis
 
-On-demand: `find-docs`, `design-doc-mermaid`, `c4-diagram`, platform diagram skills, `find-skills` (niche stack). **Excluded:** `graphify`, `improve-codebase-architecture`.
+**Excluded:** `graphify`, `improve-codebase-architecture`.
 
 Present draft; **gate** — do not proceed until user sign-off on architecture.
 
-**Done when:** `architecture.md` exists, every prod component is `confirmed` or explicitly accepted by user, and sign-off is recorded in `progress.md`.
+**Done when:** `architecture.md` exists with a populated `## Diagram` section (Mermaid + linked C4 when applicable), every prod component is `confirmed` or explicitly accepted by user, and sign-off is recorded in `progress.md`.
 
 ## Phase 2 — Env key inventory
 

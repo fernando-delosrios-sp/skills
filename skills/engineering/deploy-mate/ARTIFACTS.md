@@ -42,6 +42,28 @@ Status: in-progress | complete
 ## Summary
 <one paragraph>
 
+## Diagram
+
+<!-- Mandatory. Do not sign off without this section. -->
+
+### Deploy topology
+
+```mermaid
+flowchart TB
+  subgraph deploy["Deploy target — <platform>"]
+    app["<app>"]
+  end
+  db[("<db>")]
+  ext["<external service>"]
+  app --> db
+  app --> ext
+```
+
+### Container view
+
+<!-- When 3+ containers: invoke c4-diagram, link file here -->
+<!-- [architecture-<env>.drawio](./architecture-<env>.drawio) -->
+
 ## Components
 
 | Component | Role | Confidence | Evidence |
@@ -125,3 +147,4 @@ Add to project `.gitignore` if missing:
 ```
 .deploy-mate/**/.env
 ```
+
