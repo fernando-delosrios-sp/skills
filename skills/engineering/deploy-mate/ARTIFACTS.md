@@ -128,9 +128,10 @@ flowchart TB
 
 <!-- One ### block per var — full template in CONFIG-GUIDE.md. Summary index: -->
 
-| Name | Class | Required | Source service | Document | Harvest |
-|------|-------|----------|----------------|----------|---------|
-| `VAR_NAME` | secret | yes | Stripe | done | pending |
+| Name | Class | Deploy scope | Required | Source service | Document | Harvest |
+|------|-------|--------------|----------|----------------|----------|---------|
+| `VAR_NAME` | secret | deploy-critical | yes | Stripe | done | pending |
+| `SLACK_BOT_TOKEN` | secret | local-dev | no | Slack | done | excluded |
 
 ---
 
@@ -207,4 +208,5 @@ Add to project `.gitignore` if missing:
 ```
 .deploy-mate/**/.env
 ```
+
 

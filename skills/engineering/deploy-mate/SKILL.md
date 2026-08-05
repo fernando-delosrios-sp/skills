@@ -26,6 +26,8 @@ Each **leading word** names one phase. Use it in chat, artifacts, and `progress.
 
 **Catalog ≠ Harvest.** Catalog names vars; Harvest collects values. **Arm-ready ≠ Harvest.** Arm-ready makes tools work; Harvest uses them. **Scaffold ≠ Forge.** Scaffold stages empty platform shells; Forge generates repo deploy files.
 
+**Deploy scope** — every Catalog var is tagged `deploy-critical`, `local-dev`, or `runtime-derived`. Harvest collects **deploy-critical** only; never deploy app code to obtain config.
+
 ## Artifacts
 
 ```
@@ -84,13 +86,14 @@ Present draft; **gate** — do not proceed until user sign-off on architecture.
 From architecture and code (`process.env`, `.env.example`, deploy configs, README), list every env var **name**. For each, record in `configuration.md`:
 
 - **Class:** `secret` | `config` | `derived`
-- **Required** for this `<env>` (yes/no + default if optional)
-- **Consumed by** (service + evidence path)
+- **Deploy scope:** `deploy-critical` | `local-dev` | `runtime-derived` — see [CONFIG-GUIDE.md](CONFIG-GUIDE.md) § Deploy scope
+- **Required** for this `<env>` (yes/no + default if optional) — **only** for `deploy-critical` vars does Required: yes block Harvest
+- **Consumed by** (service + evidence path — cite deploy config vs local dev script)
 - **Source service** (Stripe, Neon, Fly, etc.)
 
-Names only — no values. See [CONFIG-GUIDE.md](CONFIG-GUIDE.md) for classes.
+Names only — no values. When the same name appears in both deploy and local dev paths, split into separate Catalog entries or document both consumers with scope per path.
 
-**Done when:** every runtime dependency in `architecture.md` maps to a named var with class and source service, or an explicit "none needed" note.
+**Done when:** every runtime dependency in `architecture.md` maps to a named var with class, deploy scope, and source service, or an explicit "none needed" note; every var in `.env.example` is classified — none left `unknown` scope.
 
 ## Arm — Phase 3
 
@@ -123,15 +126,17 @@ Create **placeholder platform resources** the deployment will need — not the a
 
 Examples: Fly app shell, Neon project + database, Vercel project link, S3 bucket, Stripe restricted key scaffold, GitHub repo/environment, empty K8s namespace.
 
+**Forbidden:** deploying application code (`fly deploy`, `vercel deploy`, `slack run`, `npm run deploy`, uploading bundles) to obtain env vars. Scaffold creates **empty shells** — IDs, names, tokens from platform APIs — not runtime outputs from a running app.
+
 For each resource:
 
 1. Check whether it already exists (CLI list/describe)
 2. If missing and user approves, create with minimal config — record name, ID, region in `configuration.md` → **Scaffold registry**
 3. Update affected Catalog vars — newly available IDs/names become obtainable in Document/Harvest
 
-Re-run Scaffold during Harvest when a blocker is "resource does not exist."
+Re-run Scaffold during Harvest when a blocker is "resource does not exist" — still **no app deploy**.
 
-**Done when:** every Catalog var whose obtain path requires a platform resource either has that resource scaffolded and recorded, or has an explicit defer/blocker with user acknowledgment.
+**Done when:** every **deploy-critical** Catalog var whose obtain path requires a platform resource either has that resource scaffolded and recorded, or has an explicit defer/blocker with user acknowledgment.
 
 ## Document — Phase 4a (hard gate)
 
@@ -154,23 +159,25 @@ Reference scaffolded resources by name/ID from the Scaffold registry. Use `find-
 
 Requires Arm-ready complete. **Tool-first** — run mapped MCPs, skills, **and CLIs** before manual paste. Agent executes CLI commands; do not only print them. See [TOOLING.md](TOOLING.md).
 
-**Hold** — Harvest is a loop with mandatory pauses. Do **not** enter Forge, generate deployment files, or treat Harvest as complete until the user explicitly declares it **finished**. Partial progress is not completion.
+**Deploy scope filter** — Harvest collects **deploy-critical** vars only. See [CONFIG-GUIDE.md](CONFIG-GUIDE.md) § Deploy scope. `local-dev` vars get Harvest status `excluded — local-dev` (placeholder optional, user may supply). `runtime-derived` vars get `excluded — runtime-derived` — document in Catalog/Document but never block Harvest or trigger deploy.
+
+**Hold** — Harvest is a loop with mandatory pauses. Do **not** enter Forge, generate deployment files, **deploy the application**, or treat Harvest as complete until the user explicitly declares it **finished**. Partial progress is not completion.
 
 **Iterative loop** — not one pass. Repeat until the user declares Harvest **finished** (they may unblock blockers between rounds by creating resources, granting access, or pasting values).
 
 Each round:
 
-1. **Scaffold** any newly unblocked resources (Phase 3c mini-pass)
-2. **Collect** — attempt **every** pending **Required: yes** var in the current service cluster — MCP → skill → CLI per chain; manual only when automated paths failed or opt-out. Do not skip vars that remain `pending`.
+1. **Scaffold** any newly unblocked resources (Phase 3c mini-pass) — platform shells only, **never app deploy**
+2. **Collect** — attempt **every** pending **deploy-critical** var with Required: yes in the current service cluster — MCP → skill → CLI per chain; manual only when automated paths failed or opt-out. Skip `local-dev` and `runtime-derived` unless user explicitly requests collection.
 3. **Validate** → write `.deploy-mate/<env>/.env` (`chmod 600`) → update Harvest status + `Via:` note
-4. **Report** — full status table: every Catalog var with Collected / Validated / Blocker / pending. Name specific user actions for blockers.
+4. **Report** — full status table: every Catalog var with scope, Collected / Validated / excluded / Blocker / pending. Name specific user actions for deploy-critical blockers only.
 5. **Stop** — ask: "Continue Harvest or mark finished?" **Wait for the user's reply.** Do not start the next round, Forge, or any post-Harvest work in the same turn.
 
 Follow [CONFIG-GUIDE.md](CONFIG-GUIDE.md) Harvest protocol. Group by source service. Never overwrite existing `.env` values silently. Do not echo secrets in chat.
 
-**Forbidden during Harvest:** advancing to Forge; marking Harvest finished without user saying so; treating optional vars as sufficient when **Required: yes** vars remain pending without accepted Blockers.
+**Forbidden during Harvest:** advancing to Forge; marking Harvest finished without user saying so; deploying app code to obtain vars; treating `local-dev`/`runtime-derived` gaps as blockers; treating optional vars as sufficient when **deploy-critical** Required: yes vars remain pending without accepted Blockers.
 
-**Done when:** user declares Harvest finished **and** every **Required: yes** var is Collected + Validated (with `via:` recorded) or has an explicit Blocker the user accepts; `<env>/progress.md` marks Harvest finished with date.
+**Done when:** user declares Harvest finished **and** every **deploy-critical** var with Required: yes is Collected + Validated (with `via:` recorded) or has an explicit Blocker the user accepts; `<env>/progress.md` marks Harvest finished with date.
 
 ## Forge — Phase 5
 
@@ -219,4 +226,4 @@ Diff existing artifacts against current repo state. In `<env>/progress.md`, mark
 | Harvest finished (user declared) | Forge |
 | Document complete | Forge |
 | Forge strategy sign-off | Repo deploy files (workflows, Dockerfile, fly.toml, …) |
-| `.env` complete | Deploy action |
+| `.env` deploy-critical complete | Deploy action |

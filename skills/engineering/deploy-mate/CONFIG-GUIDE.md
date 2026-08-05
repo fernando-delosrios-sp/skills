@@ -10,6 +10,45 @@ Per-variable playbook for **Document** (obtain steps) and **Harvest** (value col
 | `config` | `PORT`, region, feature flags | May have defaults; state default vs required override |
 | `derived` | Connection URL built from parts | Document formula; collect parts, not the assembled URL unless user prefers |
 
+## Deploy scope
+
+Every Catalog var gets a **Deploy scope** — what role it plays in deployment readiness for `<env>`. Harvest and Scaffold obey this; mis-scoped vars cause false blockers and premature deploys.
+
+| Scope | Meaning | Harvest behavior |
+|-------|---------|------------------|
+| `deploy-critical` | Required for CI/CD deploy to `<env>` — cited in workflow, Dockerfile, platform config, or prod entrypoint | Must collect + validate (or accepted Blocker) |
+| `local-dev` | Only for local development — dev scripts, `docker-compose` dev profile, socket-mode runners, `.env.example` leftovers | Status `excluded — local-dev`; placeholder in `.env` optional; **never** block Harvest |
+| `runtime-derived` | Appears only after app is deployed or running — output of deploy, not input | Status `excluded — runtime-derived`; document only; **never** deploy to obtain |
+
+### How to classify
+
+Trace **consumption evidence** to the deploy path, not every reference in the repo:
+
+1. **Deploy path** — `.github/workflows/*`, `fly.toml`, `vercel.json`, prod Dockerfile `ENV`, platform secret mappings, prod `process.env` in server entrypoint
+2. **Local path** — `package.json` dev scripts, `docker-compose.override.yml`, README "local setup", Slack socket-mode / `slack run`, debug configs
+3. **When both exist** — same var name may differ by scope (e.g. `SLACK_SERVICE_TOKEN` deploy-critical, `SLACK_BOT_TOKEN` local-dev only)
+
+If uncertain, ask the user once during Catalog — do not default to deploy-critical.
+
+### Example — Slack tokens
+
+| Var | Scope | Needed for | Harvest |
+|-----|-------|------------|---------|
+| `SLACK_SERVICE_TOKEN` | deploy-critical | CI/CD deploy | Collect + validate |
+| `SLACK_BOT_TOKEN` | local-dev | `slack run` / socket mode locally | `excluded — local-dev`; placeholder OK |
+| `SLACK_APP_TOKEN` | local-dev | `slack run` / socket mode locally | `excluded — local-dev`; placeholder OK |
+
+Do **not** deploy the app or run `slack run` to obtain local-dev tokens during Harvest.
+
+### Deploy-for-config guardrails
+
+| Forbidden | Instead |
+|-----------|---------|
+| `fly deploy`, `vercel deploy`, `slack run`, uploading app bundles | Scaffold empty platform resource; collect token from console/CLI API |
+| Treating all `.env.example` vars as deploy-critical | Classify each by consumption path |
+| Blocker on `local-dev` var | Mark excluded; continue Harvest |
+| Deploying to "unlock" a `runtime-derived` var | Exclude; note as post-deploy output in Document |
+
 ## Per-variable block (required in configuration.md)
 
 Use one block per var — not a single summary table row.
@@ -20,8 +59,9 @@ Use one block per var — not a single summary table row.
 | Field | Value |
 |-------|-------|
 | Class | secret \| config \| derived |
-| Required | yes \| no (default: `<value>`) |
-| Consumed by | `<service>` — cite `file:line` or deploy config |
+| Deploy scope | deploy-critical \| local-dev \| runtime-derived |
+| Required | yes \| no (default: `<value>`) — Required: yes blocks Harvest **only** when scope is deploy-critical |
+| Consumed by | `<service>` — cite `file:line`; tag `(deploy)` or `(local-dev)` |
 | Purpose | One sentence: what breaks without it |
 | Collection method | mcp \| skill \| cli \| manual |
 | Tool | MCP: `<server>/<tool>` · Skill: `<name>` · CLI: `<command>` |
@@ -66,11 +106,12 @@ Minimum **5 numbered steps**. Each step is one concrete action — a click path,
 #### Harvest status
 
 - [ ] Documented
-- [ ] Tool attempted — MCP / skill / **CLI** per [TOOLING.md](TOOLING.md)
+- [ ] Tool attempted — MCP / skill / **CLI** per [TOOLING.md](TOOLING.md) _(deploy-critical only)_
 - [ ] Collected in `.env`
 - [ ] Validated
-- Via: `<mcp-server/tool | skill-name | cli | manual>`
-- Blocker: `<none | describe — include what user must do>`
+- Via: `<mcp-server/tool | skill-name | cli | manual | excluded>`
+- Status: `pending | collected | excluded — local-dev | excluded — runtime-derived | blocker`
+- Blocker: `<none | describe — deploy-critical only>`
 - Round: `<harvest round number when last attempted>`
 ```
 
@@ -102,8 +143,9 @@ Rules:
 1. **List first** — always check existing resources before creating
 2. **User approval** — confirm name, region, org before create
 3. **Minimal** — empty shell only; no app code deploy
-4. **Record** — ID, name, region, CLI output summary in Scaffold registry
-5. **Re-enter during Harvest** — when Blocker is "resource missing", mini Scaffold pass then retry collection
+4. **No deploy-for-config** — never run deploy commands to obtain vars; see § Deploy scope
+5. **Record** — ID, name, region, CLI output summary in Scaffold registry
+6. **Re-enter during Harvest** — when Blocker is "resource missing", mini Scaffold pass then retry collection
 
 ## Harvest protocol (Phase 4b)
 
@@ -117,20 +159,22 @@ Run **after** each var's Document block exists. **Iterative** — repeat rounds 
 |-----------|-----|
 | Enter Forge while Harvest is in-progress | Strategy and files wait for finished Harvest |
 | Mark Harvest finished without user saying so | Only the user closes the loop |
-| Skip pending **Required: yes** vars in a round | Every pending required var gets an attempt or Blocker update |
+| Skip pending **deploy-critical** Required: yes vars in a round | Every pending deploy-critical var gets an attempt or Blocker update |
 | Start next round in the same turn as the report | User must reply first |
-| Treat partial collection as "good enough" | Report must list **every** Catalog var |
+| Treat partial collection as "good enough" | Report must list **every** Catalog var with scope |
+| Deploy app code to obtain vars (`fly deploy`, `slack run`, …) | Config inputs ≠ deploy outputs; use Scaffold + console/CLI |
+| Block Harvest on `local-dev` or `runtime-derived` vars | Excluded by scope — not deployment gaps |
 
 ### Each round
 
 1. **Review blockers** — read Harvest status; ask user what they unblocked since last round
 2. **Scaffold** — create any newly approved resources (see § Scaffold)
-3. **Collect by service cluster** — infrastructure → third-party APIs → platform creds → app-generated → optional config
-4. **Per var:** MCP → skill → **CLI** per primary chain when status is `ready`. Agent **runs** CLI commands. Vars still `pending` must be attempted — record Blocker if all methods fail
+3. **Collect by service cluster** — infrastructure → third-party APIs → platform creds → app-generated → optional config. **Only `deploy-critical` vars.**
+4. **Per var:** if scope is `local-dev` or `runtime-derived`, set excluded status and skip collection. Else MCP → skill → **CLI** per primary chain when status is `ready`. Agent **runs** CLI commands. Pending deploy-critical vars must be attempted — record Blocker if all methods fail
 5. **Manual fallback** — Document steps only when all automated methods failed or opt-out
 6. **Validate** — run Verify command from the block
 7. **Write** to `.deploy-mate/<env>/.env` (`chmod 600`). Diff before overwrite. Record `Via:` and `Round:`
-8. **Report** — table listing **every** var: Collected / Validated / Blocker / pending. Specific user actions for each blocker
+8. **Report** — table listing **every** var with Deploy scope: Collected / Validated / excluded / Blocker / pending. User actions only for deploy-critical blockers
 9. **Stop** — ask: "Continue Harvest or mark finished?" **End the turn.** Do not continue until user replies
 
 User may paste values, grant access, or create resources between rounds — re-run affected vars next round.
@@ -140,7 +184,9 @@ User may paste values, grant access, or create resources between rounds — re-r
 Harvest ends when **both**:
 
 - User explicitly declares Harvest **finished**
-- Every **Required: yes** var is Collected + Validated (with `via:`) or has a Blocker the user accepts
+- Every **deploy-critical** var with Required: yes is Collected + Validated (with `via:`) or has a Blocker the user accepts
+
+`local-dev` and `runtime-derived` vars may remain excluded — that does not block completion.
 
 Record final round in `<env>/progress.md` → Harvest rounds table. Only then may Forge begin.
 
@@ -159,4 +205,5 @@ Record final round in `<env>/progress.md` → Harvest rounds table. Only then ma
 - Platform MCPs — install and call per [TOOLING.md](TOOLING.md)
 - **Local CLIs** — install, auth, run per [TOOLING.md](TOOLING.md); primary path for many services
 - `env-secrets-manager` — vault sync when user prefers over local `.env`
+
 

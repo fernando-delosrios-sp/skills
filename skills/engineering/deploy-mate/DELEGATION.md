@@ -11,7 +11,7 @@ Fallbacks when mapped MCPs/skills cannot cover a source service. **Default path 
 | 3b | Arm-ready | Install, configure, verify MCPs, skills, **and local CLIs** — collaborate on auth | User opt-out → next method |
 | 3c | Scaffold | Create placeholder resources via ready CLIs | User creates manually; record in registry |
 | 4a | Document | Per-var obtain playbooks; `find-docs` for vendor steps | — |
-| 4b | Harvest | Tool-first loop: MCP → skill → **CLI** (agent runs) → manual | `find-docs` for manual fallback steps |
+| 4b | Harvest | Tool-first loop for **deploy-critical** vars only: MCP → skill → **CLI** → manual | `find-docs` for manual fallback steps |
 | 5 | Forge proposal | `deployment-pipeline-design` — strategy dialog before files | `cicd-pipeline-generator`, stack-specific deployment skills (options only) |
 | 5 | Forge artifacts | After strategy sign-off — generate repo files | `cicd-pipeline-generator`, stack-specific deployment skills |
 
@@ -38,7 +38,11 @@ Only **after** tool-first attempt fails or user opted out:
 - `find-docs` — current vendor console/CLI steps for manual fallback
 - Manual collection — CONFIG-GUIDE Document steps verbatim
 
-Do **not** skip MCP, skill, or **CLI** invocation when mapped and status is `ready`. Do **not** print CLI commands without running them unless the user must complete an interactive login in their terminal.
+Do **not** skip MCP, skill, or **CLI** invocation when mapped and status is `ready`. Do **not** print CLI commands without running them unless the user must complete an interactive login in their terminal. Do **not** deploy application code or run dev runners (`slack run`, `fly deploy`, …) to obtain env vars — classify scope in Catalog instead.
+
+## Harvest scope (Phase 4b)
+
+Before collecting, check each var's **Deploy scope** in `configuration.md`. Only `deploy-critical` vars enter the collection loop. `local-dev` → excluded (placeholder optional). `runtime-derived` → excluded (document only). See CONFIG-GUIDE § Deploy scope.
 
 ## MCP setup (Arm-ready)
 
@@ -57,4 +61,5 @@ Prefer CLI scaffold commands when Arm-ready status is `ready`. When CLI cannot c
 **Proposal first** — invoke `deployment-pipeline-design` to draft strategy; present trade-offs and ask for feedback. Do **not** generate `.github/workflows/*`, `Dockerfile`, `fly.toml`, or other repo deploy files until strategy sign-off is recorded.
 
 After sign-off, invoke `cicd-pipeline-generator` and stack-specific deployment skills to produce artifacts aligned with the approved strategy.
+
 

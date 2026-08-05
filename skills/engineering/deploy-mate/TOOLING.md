@@ -123,11 +123,13 @@ vercel link --yes
 aws s3 mb s3://<env>-<app>-assets --region <region>
 ```
 
-Re-run Scaffold during Harvest when blockers reference missing resources.
+Re-run Scaffold during Harvest when blockers reference missing resources. **Never** run deploy commands (`fly deploy`, `vercel deploy`, `slack run`, …) — see [CONFIG-GUIDE.md](CONFIG-GUIDE.md) § Deploy scope.
 
 ## Harvest — tool-first collection
 
-For each var, attempt methods in order until value retrieved. **Skip none that are mapped and `ready`.**
+Collect **deploy-critical** vars only. Skip `local-dev` and `runtime-derived` — mark excluded per [CONFIG-GUIDE.md](CONFIG-GUIDE.md) § Deploy scope.
+
+For each deploy-critical var, attempt methods in order until value retrieved. **Skip none that are mapped and `ready`.**
 
 | Priority | Method | Action |
 |----------|--------|--------|
@@ -205,3 +207,4 @@ npx skills search <keyword>
 - Auth: `neonctl auth` — profile `<user@email>`
 - Verified: `neonctl projects list` → 3 projects
 ```
+
