@@ -1,39 +1,52 @@
 # deploy-mate — delegation map
 
-Reach for these only when agent-first **legwork** is insufficient or the user asks.
+Fallbacks when mapped MCPs/skills cannot cover a source service. **Default path is Arm-ready install + use per [TOOLING.md](TOOLING.md)** — not manual-first.
 
 ## By phase
 
-| Phase | Always | On-demand |
-|-------|--------|-----------|
-| 1 | Agent file analysis; Mermaid deploy topology in `architecture.md`; `c4-diagram` when 3+ containers | `find-docs`, `find-skills` (niche stack), `design-doc-mermaid`, platform diagram skills |
-| 3–4 | Agent tooling map and configuration docs in `configuration.md` | `find-skills`, MCP catalogs (niche/unfamiliar stack); Platform MCPs, `env-secrets-manager` |
-| 5 | `deployment-pipeline-design` | `cicd-pipeline-generator`, stack-specific deployment skills |
+| Phase | Word | Always | Fallback only |
+|-------|------|--------|---------------|
+| 1 | Survey | Agent file analysis; Mermaid deploy topology; `c4-diagram` when 3+ containers | `find-docs`, `find-skills` (niche stack), `design-doc-mermaid` |
+| 3 | Arm | Collection + deploy tooling map; `find-skills` for unmapped services | MCP catalog search |
+| 3b | Arm-ready | Install, configure, verify MCPs, skills, **and local CLIs** — collaborate on auth | User opt-out → next method |
+| 3c | Scaffold | Create placeholder resources via ready CLIs | User creates manually; record in registry |
+| 4a | Document | Per-var obtain playbooks; `find-docs` for vendor steps | — |
+| 4b | Harvest | Tool-first loop: MCP → skill → **CLI** (agent runs) → manual | `find-docs` for manual fallback steps |
+| 5 | Forge | `deployment-pipeline-design` | `cicd-pipeline-generator`, stack-specific deployment skills |
 
 ## Excluded
 
 Do not invoke: `graphify`, `improve-codebase-architecture`.
 
-## When to delegate (Phase 1)
+## When to delegate (Survey)
 
-Diagrams are **not** optional — see SKILL.md Phase 1. Additional delegation when:
+Diagrams are **not** optional — see SKILL.md Survey. Additional delegation when:
 
 - Production component remains `inferred` after file scan
 - Stack or platform ambiguous after reading manifests and README
 - User requests deeper analysis or alternate diagram formats
 
-Invoke `find-skills` only when the stack is niche or unfamiliar — not for every Phase 1 run.
+## When to delegate (Arm)
 
-## When to delegate (Phase 3)
+`find-skills` when a source service has no obvious MCP/skill in the Arm map.
 
-Map tooling agent-first from manifests and README. Invoke `find-skills` or MCP catalogs only when:
+## When to delegate (Harvest)
 
-- Deploy target stack is niche or unfamiliar after file scan
-- No obvious MCP or skill mapping exists for a target
-- User asks for tooling recommendations
+Only **after** tool-first attempt fails or user opted out:
 
-## MCP setup (Phase 3b)
+- `find-docs` — current vendor console/CLI steps for manual fallback
+- Manual collection — CONFIG-GUIDE Document steps verbatim
 
-Guide only — show `npx` commands and config paths. Do not install or authenticate without user confirmation.
+Do **not** skip MCP, skill, or **CLI** invocation when mapped and status is `ready`. Do **not** print CLI commands without running them unless the user must complete an interactive login in their terminal.
 
+## MCP setup (Arm-ready)
 
+Execute MCP/skill install/configure/verify — see [TOOLING.md](TOOLING.md) § A.
+
+## CLI setup (Arm-ready)
+
+Detect, install, authenticate, and verify local CLIs — see [TOOLING.md](TOOLING.md) § B. Guide user through install when agent cannot run it (sudo, GUI installer). Interactive logins (`fly auth login`) require user action in terminal — wait for confirmation, then verify. Present status table and get user ack before Scaffold/Harvest.
+
+## Scaffold delegation
+
+Prefer CLI scaffold commands when Arm-ready status is `ready`. When CLI cannot create (permissions, billing), guide user through console steps from CONFIG-GUIDE § Scaffold and record result in Scaffold registry.
