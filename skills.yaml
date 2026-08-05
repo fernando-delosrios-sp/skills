@@ -125,6 +125,9 @@ skills:
       repo: github/awesome-copilot
       path: skills/git-commit
     custom: true
+  - name: deploy-mate
+    category: engineering
+    custom: true
   - name: code-simplification
     category: engineering
     source:
