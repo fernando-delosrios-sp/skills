@@ -190,6 +190,36 @@ Harvest ends when **both**:
 
 Record final round in `<env>/progress.md` → Harvest rounds table. Only then may Forge begin.
 
+## Inject protocol
+
+Push **deploy-critical** var values from `.deploy-mate/<env>/.env` to remote targets. **Never echo values in chat.** Full command protocols: [COMMANDS.md](COMMANDS.md) § inject.
+
+### CI/CD orchestrator vs runtime
+
+| Target | Command | Examples | Typical timing |
+|--------|---------|----------|----------------|
+| **CI/CD orchestrator** | `inject ci` | GitHub Actions secrets/environments, GitLab CI variables | After Harvest finish; before or alongside Forge |
+| **Runtime platform** | `inject runtime` | Fly secrets, Vercel env, AWS SSM, K8s secrets | After Forge artifacts (when mapping references platform config) |
+
+Each var's **Deploy mapping** in `configuration.md` must name both paths when vars reach runtime via CI **and** when vars are injected at the platform separately.
+
+### Rules
+
+1. **CHECKPOINT** — present inject plan (var **names** + targets only); wait for user approval before any write
+2. **Scope** — inject **deploy-critical** vars only; never `local-dev` or `runtime-derived`
+3. **Record** — update `<env>/progress.md` Inject CI / Inject runtime with var names and targets — no values
+4. **Verify** — optional read-only metadata check after inject (see [TOOLING.md](TOOLING.md) § Inject verify)
+5. **Strategy-dependent** — `deployment.md` determines which inject commands are required before `deploy`
+
+### Forbidden
+
+| Forbidden | Instead |
+|-----------|---------|
+| Echoing secret values in chat or progress.md | Record names and targets only |
+| Injecting before Harvest finished | Complete Harvest first |
+| Skipping inject when strategy requires it | Run `inject ci` and/or `inject runtime` per deployment.md |
+| Using deploy to push secrets | Use `inject`; `deploy` ships the app |
+
 ## Grouping order
 
 1. Infrastructure the app depends on (DB, cache, object storage)
@@ -205,5 +235,6 @@ Record final round in `<env>/progress.md` → Harvest rounds table. Only then ma
 - Platform MCPs — install and call per [TOOLING.md](TOOLING.md)
 - **Local CLIs** — install, auth, run per [TOOLING.md](TOOLING.md); primary path for many services
 - `env-secrets-manager` — vault sync when user prefers over local `.env`
+
 
 

@@ -18,11 +18,15 @@ Status: in-progress | complete
 - [ ] Catalog — var name inventory
 - [ ] Arm — tooling map (deploy + collection)
 - [ ] Arm-ready — tooling verified — `<ready>/<total> ready`, `<opt-out> opt-out`, `<manual-only> manual-only` — **0 pending**
-- [ ] Scaffold — placeholder resources staged
+- [ ] Scaffold — placeholder resources staged — acknowledged <date>
 - [ ] Document — obtain playbooks (hard gate)
 - [ ] Harvest — .env collection — in-progress | finished <date>
 - [ ] Forge — strategy sign-off: pending | approved <date>
 - [ ] Forge — deployment artifacts generated
+- [ ] Inject CI — pending | done <date>
+- [ ] Inject runtime — pending | done <date>
+- [ ] Deploy — pending | <date> outcome: …
+- [ ] Verify — pending | passed | failed <date>
 
 ## Harvest rounds
 | Round | Date | Collected | Validated | Blocked | User action |
@@ -214,6 +218,7 @@ Add to project `.gitignore` if missing:
 ```
 .deploy-mate/**/.env
 ```
+
 
 
 

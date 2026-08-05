@@ -1,6 +1,6 @@
 # deploy-mate — delegation map
 
-Fallbacks when mapped MCPs/skills cannot cover a source service. **Default path is Arm-ready install + use per [TOOLING.md](TOOLING.md)** — not manual-first.
+Command entry points: [COMMANDS.md](COMMANDS.md). Fallbacks when mapped MCPs/skills cannot cover a source service. **Default path is Arm-ready install + use per [TOOLING.md](TOOLING.md)** — not manual-first.
 
 ## By phase
 
@@ -14,6 +14,10 @@ Fallbacks when mapped MCPs/skills cannot cover a source service. **Default path 
 | 4b | Harvest | Tool-first loop for **deploy-critical** vars only: MCP → skill → **CLI** → manual | `find-docs` for manual fallback steps |
 | 5 | Forge proposal | `deployment-pipeline-design` — strategy dialog before files | `cicd-pipeline-generator`, stack-specific deployment skills (options only) |
 | 5 | Forge artifacts | After strategy sign-off — generate repo files | `cicd-pipeline-generator`, stack-specific deployment skills |
+| 5a | Inject CI | `gh secret set`, GitHub API, GitLab CLI per Deploy mapping | `env-secrets-manager`, `find-docs` for vendor syntax |
+| 5b | Inject runtime | `fly secrets set`, `vercel env add`, `aws ssm put-parameter`, … | `find-docs`, platform MCPs when mapped |
+| 6 | Deploy | Deploy tooling CLI/MCP/workflow dispatch | Stack-specific deployment skills |
+| 7 | Verify | Commands from `deployment.md` → Steps | `find-docs` for platform health checks |
 
 ## Excluded
 
@@ -62,5 +66,23 @@ Prefer CLI scaffold commands when Arm-ready status is `ready`. When CLI cannot c
 
 After sign-off, invoke `cicd-pipeline-generator` and stack-specific deployment skills to produce artifacts aligned with the approved strategy.
 
+## Inject delegation
+
+**CI orchestrator** — prefer ready CLIs from Deploy tooling:
+
+- GitHub: `gh secret set`, `gh api repos/…/environments/…/secrets`
+- GitLab: `glab variable set` or API per Deploy mapping
+
+**Runtime platform** — prefer ready CLIs:
+
+- Fly: `fly secrets set`
+- Vercel: `vercel env add`
+- AWS: `aws ssm put-parameter` / Secrets Manager
+
+When user prefers vault over direct push: `env-secrets-manager`. When CLI syntax unclear: `find-docs`. **Never** echo values; **never** skip CHECKPOINT approval.
+
+## Verify delegation
+
+Run health/smoke commands from `deployment.md` → Steps. Use Deploy tooling CLIs (`fly status`, workflow watch via `gh run watch`, curl health URLs). On failure, point user to Rollback section — do not auto-rollback.
 
 

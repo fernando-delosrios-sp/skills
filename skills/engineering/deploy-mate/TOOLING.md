@@ -259,4 +259,18 @@ npx skills search <keyword>
 - Verified: `neonctl projects list` → 3 projects
 ```
 
+## Inject verify (post-inject, read-only)
+
+After **inject ci** or **inject runtime**, confirm secrets landed without reading values:
+
+| Platform | Verify command | Expected |
+|----------|----------------|----------|
+| GitHub Actions | `gh secret list` | Secret **names** present |
+| Fly | `fly secrets list -a <app>` | Secret **names** present |
+| Vercel | `vercel env ls` | Var **names** for target env |
+| AWS SSM | `aws ssm describe-parameters --parameter-filters "Key=Name,Values=/<env>/…"` | Parameter names exist |
+
+Redact any accidental value leakage in setup notes. Inject verify is metadata-only — never decrypt or print secret values.
+
+
 
