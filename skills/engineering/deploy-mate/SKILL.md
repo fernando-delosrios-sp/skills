@@ -110,15 +110,28 @@ Every var must have at least one automated path (`mcp`, `skill`, or `cli`) befor
 
 **Independent preliminary process** — complete before Scaffold or Harvest. **Collaborate with the user** on every auth step; do not assume credentials exist.
 
-Execute both checklists in [TOOLING.md](TOOLING.md):
+Execute the Arm-ready protocol in [TOOLING.md](TOOLING.md) — **one tooling row at a time**:
 
-**MCPs/skills:** install → configure → authenticate (`mcp_auth`) → verify with read-only call
+1. **Discover** → **install** (if needed) → **authenticate** → **verify** with a read-only command or MCP call
+2. **Update** the row's **Status** in `configuration.md` → Collection tooling (and Deploy tooling) **immediately** after each attempt — never leave rows at `pending` once Arm-ready has started
+3. **Record** verify output in MCP setup notes or CLI setup notes (redact secrets)
+4. Repeat for **every** mapped row — MCP, skill, and CLI
 
-**Local CLIs:** detect (`which`, `--version`) → install if missing (guide user; run when approved) → authenticate (`fly auth login`, `gh auth login`, …) → verify with read-only command (`fly apps list`, `aws sts get-caller-identity`, …)
+Terminal statuses only: `ready | opt-out | manual-only`. Intermediate: `needs-auth | not-installed | install-failed`. **`pending` is forbidden when marking Arm-ready complete.**
 
-User may **opt out** per service — record `opt-out` and downgrade affected vars to the next method. Do not enter Scaffold or Harvest while any non-opt-out mapped tool or CLI remains unverified.
+| Status | When |
+|--------|------|
+| `ready` | Verify command/call succeeded; evidence in setup notes |
+| `opt-out` | User declined this tool; affected vars downgraded to next method |
+| `manual-only` | No MCP/CLI mapped — manual is the only path; set explicitly after confirming no tool exists |
 
-**Done when:** every mapped MCP, skill, and CLI is `ready` or `opt-out`; verify results in MCP setup notes and CLI setup notes; user confirms tooling is usable.
+User may **opt out** per service — record `opt-out` and downgrade affected vars to the next method. Do not enter Scaffold or Harvest while any row remains `pending` or a non-opt-out tool is unverified.
+
+**Hold** — after processing all rows, present the tooling audit table (see TOOLING.md). Ask user to confirm. **Wait for reply** before Scaffold or Harvest.
+
+**Forbidden:** marking Arm-ready complete while Collection or Deploy tooling rows are still `pending`; skipping verify because values already exist in `.env`; updating `progress.md` without updating tooling table Status columns.
+
+**Done when:** every Collection tooling **and** Deploy tooling row has terminal status (`ready`, `opt-out`, or `manual-only`); each `ready` row has verify evidence in setup notes; tooling audit table presented; user confirms tooling is usable; `<env>/progress.md` cites `N/N tooling rows terminal`.
 
 ## Scaffold — Phase 3c (gate before Harvest)
 
@@ -220,7 +233,8 @@ Diff existing artifacts against current repo state. In `<env>/progress.md`, mark
 | Gate | Blocks |
 |------|--------|
 | Survey sign-off | Catalog through Harvest |
-| Arm-ready complete | Scaffold, Harvest |
+| Arm-ready complete | Scaffold, Harvest — **zero `pending` tooling rows** |
+| Arm-ready audit ack | Scaffold, Harvest — user confirmed tooling table |
 | Scaffold acknowledged | Harvest (first pass) |
 | Harvest round end | Next round, Forge — **hold until user replies** |
 | Harvest finished (user declared) | Forge |

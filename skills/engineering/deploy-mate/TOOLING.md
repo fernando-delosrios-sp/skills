@@ -22,7 +22,36 @@ Use `find-docs` for current CLI install/auth commands when unsure. Use `find-ski
 
 **Independent preliminary process.** **Collaborate with the user** — auth often requires their browser, credentials, or approval. Do not enter Scaffold or Harvest until complete.
 
-**Default: do not skip.** Proceed only when every mapped MCP, skill, **and CLI** is `ready` or explicitly `opt-out` per service.
+**Default: do not skip.** Proceed only when **every** Collection tooling **and** Deploy tooling row has a terminal status — zero rows remain `pending`.
+
+### Status state machine
+
+| Status | Meaning | Blocks Arm-ready complete? |
+|--------|---------|---------------------------|
+| `pending` | Not yet attempted | **Yes** — must resolve |
+| `needs-auth` | Installed but auth incomplete | **Yes** — finish auth or opt-out |
+| `not-installed` | CLI/MCP missing | **Yes** — install or opt-out |
+| `install-failed` | Install failed | **Yes** — retry or opt-out |
+| `ready` | Verify succeeded; evidence in setup notes | No |
+| `opt-out` | User declined; vars downgraded | No |
+| `manual-only` | No tool mapped; manual is sole path | No |
+
+**`pending` after Arm-ready starts is a failure mode** — update the row or the phase is not done.
+
+### Per-row protocol
+
+Process **every row** in Collection tooling and Deploy tooling tables, in order:
+
+1. **Detect** — `which <cli>`, `GetMcpTools`, or read skill `SKILL.md`
+2. **Install** — if missing and mapped; guide user when agent cannot install
+3. **Authenticate** — `mcp_auth`, `fly auth login`, etc.; wait for user on interactive flows
+4. **Verify** — run read-only command or MCP tool call; **agent runs the command**, does not assume success from existing `.env` values
+5. **Update row** — set Status + Verify evidence pointer in `configuration.md` tooling table
+6. **Update setup notes** — record path, version, auth profile, verify command + result summary (redact secrets)
+
+If no MCP/CLI exists for a row and primary chain is `manual`, set Status → `manual-only` after confirming with `find-skills` / `find-docs`.
+
+If user opts out, set Status → `opt-out` with reason in setup notes; downgrade affected var blocks.
 
 ### A. MCP & skills
 
@@ -32,8 +61,8 @@ For each mapped MCP or skill:
 2. **Install** — skill: `npx skills add …`; MCP: `.cursor/mcp.json` or Cursor Settings → MCP
 3. **Configure** — document auth env vars (names only)
 4. **Authenticate** — `mcp_auth` when status is `needsAuth`; **wait for user** if browser flow required
-5. **Verify** — read-only tool call; record in setup notes
-6. **Status** — `ready | needs-auth | install-failed | opt-out`
+5. **Verify** — read-only tool call; record command + result in MCP setup notes
+6. **Update Status** — `ready | needs-auth | install-failed | opt-out` in tooling table
 
 ### B. Local CLIs (required when mapped)
 
@@ -79,9 +108,35 @@ For each mapped CLI:
    ```
 
 5. **Record** — CLI path, version, auth profile, verify output (redact secrets) in `configuration.md` → CLI setup notes
-6. **Status** — `ready | needs-auth | not-installed | opt-out`
+6. **Update Status** — `ready | needs-auth | not-installed | opt-out` in tooling table
 
-7. **Confirm with user** — present tooling status table; get explicit ack before Scaffold/Harvest
+### Tooling audit (mandatory before Scaffold/Harvest)
+
+After all rows processed, present this table in chat — must match `configuration.md`:
+
+| Source / target | Tool | Status | Verify command | Result |
+|-----------------|------|--------|----------------|--------|
+| Render | Render MCP | ready | `list_services` | 1 service |
+| Slack | slack CLI | opt-out | — | user declined; manual fallback |
+| OpenAI LLM | — | manual-only | — | no tool mapped |
+
+**Completion check:** count rows — `pending` must be **0**. Ask user: "Arm-ready audit complete — proceed to Scaffold/Harvest?" **Wait for reply.**
+
+Updating `progress.md` Arm-ready without zero pending rows in `configuration.md` **fails the gate**.
+
+### Anti-rush rules (Arm-ready)
+
+| Forbidden | Why |
+|-----------|-----|
+| Mark Arm-ready complete with `pending` tooling rows | Status table is the source of truth, not progress narrative |
+| Skip verify because `.env` already has values | Verify proves tool access, not file contents |
+| Set `ready` without verify evidence in setup notes | Status must be auditable |
+| Narrative opt-out in progress.md without row Status → `opt-out` | Every row must be terminal in configuration.md |
+| Batch-skip rows "not needed for CI/CD" | Use `opt-out` or `manual-only` per row with reason |
+
+### When user opts out
+
+Record `opt-out` with reason in setup notes. Set row Status → `opt-out`. Downgrade affected vars to the next available method (`cli` → `manual`). Update each var block.
 
 ### MCP config template (project-local)
 
@@ -98,10 +153,6 @@ For each mapped CLI:
   }
 }
 ```
-
-### When user opts out
-
-Record `opt-out` with reason. Downgrade affected vars to the next available method (`cli` → `manual`). Update each var block.
 
 ## Scaffold — platform resource staging
 
@@ -207,4 +258,5 @@ npx skills search <keyword>
 - Auth: `neonctl auth` — profile `<user@email>`
 - Verified: `neonctl projects list` → 3 projects
 ```
+
 

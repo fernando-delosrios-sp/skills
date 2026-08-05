@@ -8,7 +8,7 @@ Fallbacks when mapped MCPs/skills cannot cover a source service. **Default path 
 |-------|------|--------|---------------|
 | 1 | Survey | Agent file analysis; Mermaid deploy topology; `c4-diagram` when 3+ containers | `find-docs`, `find-skills` (niche stack), `design-doc-mermaid` |
 | 3 | Arm | Collection + deploy tooling map; `find-skills` for unmapped services | MCP catalog search |
-| 3b | Arm-ready | Install, configure, verify MCPs, skills, **and local CLIs** — collaborate on auth | User opt-out → next method |
+| 3b | Arm-ready | Install, verify **each tooling row**; update Status in configuration.md; tooling audit | User opt-out → row Status `opt-out` |
 | 3c | Scaffold | Create placeholder resources via ready CLIs | User creates manually; record in registry |
 | 4a | Document | Per-var obtain playbooks; `find-docs` for vendor steps | — |
 | 4b | Harvest | Tool-first loop for **deploy-critical** vars only: MCP → skill → **CLI** → manual | `find-docs` for manual fallback steps |
@@ -46,11 +46,11 @@ Before collecting, check each var's **Deploy scope** in `configuration.md`. Only
 
 ## MCP setup (Arm-ready)
 
-Execute MCP/skill install/configure/verify — see [TOOLING.md](TOOLING.md) § A.
+Execute per-row protocol for each mapped MCP/skill — see [TOOLING.md](TOOLING.md) § A. Update tooling table Status after verify. Do not mark Arm-ready complete while rows remain `pending`.
 
 ## CLI setup (Arm-ready)
 
-Detect, install, authenticate, and verify local CLIs — see [TOOLING.md](TOOLING.md) § B. Guide user through install when agent cannot run it (sudo, GUI installer). Interactive logins (`fly auth login`) require user action in terminal — wait for confirmation, then verify. Present status table and get user ack before Scaffold/Harvest.
+Detect, install, authenticate, and verify each mapped CLI — see [TOOLING.md](TOOLING.md) § B. **Run verify commands**; record output in setup notes before Status → `ready`. Present tooling audit table; get user ack before Scaffold/Harvest.
 
 ## Scaffold delegation
 
@@ -61,5 +61,6 @@ Prefer CLI scaffold commands when Arm-ready status is `ready`. When CLI cannot c
 **Proposal first** — invoke `deployment-pipeline-design` to draft strategy; present trade-offs and ask for feedback. Do **not** generate `.github/workflows/*`, `Dockerfile`, `fly.toml`, or other repo deploy files until strategy sign-off is recorded.
 
 After sign-off, invoke `cicd-pipeline-generator` and stack-specific deployment skills to produce artifacts aligned with the approved strategy.
+
 
 

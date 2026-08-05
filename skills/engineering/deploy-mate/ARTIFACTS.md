@@ -17,7 +17,7 @@ Status: in-progress | complete
 - [ ] Survey — sign-off: pending | approved <date>
 - [ ] Catalog — var name inventory
 - [ ] Arm — tooling map (deploy + collection)
-- [ ] Arm-ready — install & verify (MCP + skill + CLI) — all ready | opt-out
+- [ ] Arm-ready — tooling verified — `<ready>/<total> ready`, `<opt-out> opt-out`, `<manual-only> manual-only` — **0 pending**
 - [ ] Scaffold — placeholder resources staged
 - [ ] Document — obtain playbooks (hard gate)
 - [ ] Harvest — .env collection — in-progress | finished <date>
@@ -99,15 +99,15 @@ flowchart TB
 
 ### Deploy tooling
 
-| Deploy target | MCP / skill | Notes |
-|---------------|-------------|-------|
-| | | |
+| Deploy target | MCP / skill | Local CLI | Status | Verify evidence |
+|---------------|-------------|-----------|--------|-----------------|
+| | | | pending \| ready \| opt-out \| manual-only | setup notes § |
 
 ### Collection tooling
 
-| Source service | Vars | MCP / skill | Local CLI | Primary chain | Status |
-|----------------|------|-------------|-----------|---------------|--------|
-| | | | `flyctl` | cli → manual | pending \| ready \| opt-out |
+| Source service | Vars | MCP / skill | Local CLI | Primary chain | Status | Verify evidence |
+|----------------|------|-------------|-----------|---------------|--------|-----------------|
+| | | | `flyctl` | cli → manual | pending \| ready \| opt-out \| manual-only | setup notes § |
 
 ## Scaffold registry
 
@@ -120,9 +120,10 @@ flowchart TB
 ## CLI setup notes
 
 ### `<cli-name>`
-- Path: `<which output>` (version)
-- Auth: `<login command>` — profile/account
-- Verified: `<read-only command>` → result summary
+- Path: `<which output>` (version) — or `not-installed`
+- Auth: `<login command>` — profile/account — or `n/a (manual-only)`
+- Verified: `<read-only command>` → `<result summary>` — **required before Status → ready**
+- Status: `ready | opt-out | manual-only | needs-auth | not-installed`
 
 ## Environment variables
 
@@ -140,7 +141,12 @@ flowchart TB
 (Full per-variable block per CONFIG-GUIDE.md — include How to obtain steps, Format & validation, Deploy mapping, Harvest status)
 
 ## MCP setup notes
-<install steps, config paths — or "skipped">
+
+### `<server-id>`
+- Installed: `<path or npx package>`
+- Auth: `<mcp_auth / env var names>` — or `needs-auth`
+- Verified: `<read-only tool call>` → `<result summary>` — **required before Status → ready**
+- Status: `ready | opt-out | needs-auth | install-failed`
 ```
 
 ## deployment.md
@@ -208,5 +214,6 @@ Add to project `.gitignore` if missing:
 ```
 .deploy-mate/**/.env
 ```
+
 
 
