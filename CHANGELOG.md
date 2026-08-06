@@ -16,6 +16,10 @@ All notable changes to this skills collection are documented here.
 
 - **Upstream git adapter** — Consolidated shallow clone, skill tree walking, and HEAD SHA resolution into `lib/upstream-adapter.mjs`. Sync, import, and overlay extract now share one URL normalization path and `{ relPath, content }[]` tree shape; unit tests can inject a filesystem fixture without network access.
 
+- **Unified overlay pending state** — Replaced timestamp-based `isOverlayPending` with route-based `isPendingApply(skillName)` on the overlay pipeline. Sync summary, manifest cleanup, and audit/prepare now share one pending authority; generator-only skills and invalid `blended_ref` edge cases align with audit routing.
+
+- **Overlay YAML layer** — Introduced `lib/overlay-yaml.mjs` for generator merge resolution, generated-path classification, and deterministic `openai-manifest` derivation. Broke the generator ↔ overlay circular dependency; extract no longer uses runtime dynamic imports to reach generator-config.
+
 - **Overlay lock schema** — Extended `.locks/upstream.json` with `applied_upstream_sha`, `overlay_hash`, `universal_overlay_hash`, and `blended_ref` for deterministic restore vs remerge routing.
 
 - **`npm run update`** — Now runs sync → static → audit → auto-restore → prepare remerge manifests (agent apply only when upstream or overlay changed).
@@ -87,6 +91,7 @@ All notable changes to this skills collection are documented here.
 - **openspec-git-discipline** — Replaced by git-commit for session-scoped conventional commits.
 
 - **diagnose skill** — Removed; diagnosing-bugs covers structured bug diagnosis.
+
 
 
 

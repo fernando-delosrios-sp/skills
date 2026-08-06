@@ -123,10 +123,13 @@ The **skill-overlay** skill performs intelligent semantic merging. It activates 
 - `overlays/<name>/OVERLAY.yaml` — per-skill customization intent (semantic + static ops + generator overrides)
 - `overlays/<name>/files/` — static file payloads for add/replace ops
 - `.locks/upstream.json` — last-synced upstream SHAs and overlay apply timestamps
+- `lib/locks.mjs` — pure overlay route helpers (`getOverlayRoute`, `isOverlayRoutePending`); pending authority is `isPendingApply` on the pipeline
 - `lib/upstream-adapter.mjs` — upstream git seam (`cloneRepo`, `readSkillTree`, `getHeadSha`); used by sync, import, and overlay extract
-- `lib/overlay-pipeline.mjs` — deep public interface for overlay lifecycle (`audit`, `restore`, `static`, `prepare`, `extract`)
-- `lib/overlay-model.mjs` — overlay discovery, YAML load/validate, partitioning, hashing (internal)
-- `lib/overlay-audit.mjs` — route determination and hash comparison (internal)
+- `lib/overlay-pipeline.mjs` — deep public interface for overlay lifecycle (`audit`, `restore`, `static`, `prepare`, `extract`); exposes `isPendingApply(skillName)` as single pending check for sync and cleanup
+- `lib/overlay-yaml.mjs` — overlay YAML load/validate/partition and generator merge resolution; generated-path helpers (internal)
+- `lib/overlay-model.mjs` — overlay discovery and content hashing; delegates YAML primitives to overlay-yaml (internal)
+- `lib/generator-config.mjs` — generator validation for `npm run validate`; re-exports resolution from overlay-yaml
+- `lib/overlay-audit.mjs` — route determination, hash comparison, and `isPendingApply` (internal; re-exported via pipeline)
 - `lib/overlay-static.mjs` — static add/replace/remove file ops (internal)
 - `lib/overlay-manifest.mjs` — remerge and generator apply manifests (internal)
 - `lib/overlay-extract.mjs` — overlay draft extraction from diffs (internal)

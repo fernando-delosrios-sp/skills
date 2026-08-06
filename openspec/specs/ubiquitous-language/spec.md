@@ -4,9 +4,7 @@
 
 Shared domain vocabulary for this project. All specs, design docs, code identifiers,
 and user-facing copy MUST align with the terms defined here.
-
 ## Requirements
-
 ### Requirement: Glossary maintenance
 
 The project SHALL maintain an authoritative glossary of domain terms with unambiguous
@@ -45,6 +43,28 @@ listed as a separate entry with its bounded context noted.
 - **GIVEN** two subsystems use the same word with different meanings
 - **WHEN** both meanings appear in specs or code
 - **THEN** each meaning MUST have its own glossary entry naming the bounded context
+
+### Requirement: Overlay route glossary entry
+
+The glossary SHALL define **Overlay route** as the audit-determined next action for a customized source skill.
+
+#### Scenario: Route values documented
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up Overlay route
+- **THEN** the definition MUST list the four values: `restore`, `remerge`, `fresh`, `none`
+- **AND** MUST note the bounded context is overlays / overlay-pipeline
+
+### Requirement: Pending apply glossary entry
+
+The glossary SHALL define **Pending apply** as the state where a source skill needs semantic overlay merge or first-time blend.
+
+#### Scenario: Pending apply definition
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up Pending apply
+- **THEN** the definition MUST state it corresponds to overlay routes `fresh` or `remerge`
+- **AND** MUST explicitly note that lock timestamp comparison is not the authority
 
 ## Term entries
 
@@ -107,3 +127,22 @@ listed as a separate entry with its bounded context noted.
 **Definition**: A skill tree under `.agents/skills/` used during active development before changes land in `skills/`.
 **Aliases**: agents skill copy
 **Notes**: Not the canonical install path.
+
+### Term: Overlay route
+**Context**: overlay-pipeline
+**Definition**: The audit-determined next action for a customized source skill: `restore` (inputs unchanged, re-checkout blend), `remerge` (upstream or overlay changed, needs semantic merge), `fresh` (never applied), or `none` (no overlay or generators).
+**Aliases**: overlay routing
+**Notes**: Resolved by `getOverlayRoute` in `locks.mjs`; full audit via `auditSkill`.
+
+### Term: Pending apply
+**Context**: overlays
+**Definition**: A source skill that needs semantic overlay merge or first-time blend after sync. Equivalent to overlay routes `fresh` or `remerge`.
+**Aliases**: overlay pending
+**Notes**: Authoritative check is `isPendingApply(skillName)` — not `overlay_applied_at` vs `synced_at` timestamp comparison.
+
+### Term: Generator
+**Context**: overlays / overlay-yaml
+**Definition**: An agent manifest producer declared in universal `overlays/OVERLAY.yaml` and optionally overridden per skill via `generators.add` or `generators.disable` in `overlays/<name>/OVERLAY.yaml`.
+**Aliases**: overlay generator
+**Notes**: Merge resolution lives in `lib/overlay-yaml.mjs`; outputs are agent-applied via the skill-overlay skill, not executed by npm scripts.
+
