@@ -18,6 +18,10 @@ All notable changes to this skills collection are documented here.
 
 - **extract-overlay drafts** — `draftInstructions()` emits intent-only hints instead of embedding local file blobs that encouraged literal restore.
 
+### 🐛 Fixes
+
+- **Overlay prepare routing** — Guard pending manifest preparation when a skill has neither a per-skill overlay nor configured generators; skip with a warning in batch mode and return a clear error for explicit `--skill` calls.
+
 ### 🗑️ Removed
 
 - **apply-skill-overlay** — Renamed to **skill-overlay** with mode-based structure (audit, restore, apply, extract, reconcile).
