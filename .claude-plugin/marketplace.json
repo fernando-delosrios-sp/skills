@@ -1,0 +1,48 @@
+{
+  "plugins": [
+    {
+      "name": "engineering",
+      "source": "./skills/engineering",
+      "skills": [
+        "./c4-diagram",
+        "./changelog-generator",
+        "./code-simplification",
+        "./codebase-design",
+        "./deploy-mate",
+        "./diagnosing-bugs",
+        "./domain-modeling",
+        "./gherkin-authoring",
+        "./git-commit",
+        "./grill-with-docs",
+        "./improve",
+        "./improve-codebase-architecture",
+        "./openspec-init",
+        "./wayfinder",
+        "./zoom-out"
+      ]
+    },
+    {
+      "name": "internal",
+      "source": "./skills/internal",
+      "skills": [
+        "./skill-overlay"
+      ]
+    },
+    {
+      "name": "productivity",
+      "source": "./skills/productivity",
+      "skills": [
+        "./caveman",
+        "./grill-me",
+        "./grilling",
+        "./handoff",
+        "./risen-prompt",
+        "./search",
+        "./teach",
+        "./to-questionnaire",
+        "./wait-what",
+        "./writing-for-agents"
+      ]
+    }
+  ]
+}

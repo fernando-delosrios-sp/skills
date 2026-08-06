@@ -10,6 +10,8 @@ All notable changes to this skills collection are documented here.
 
 - **`npm run overlay -- audit` / `restore`** — Fingerprint upstream SHA and overlay hashes in `.locks/upstream.json`; auto-restore blended skills during `npm run update` when inputs are identical.
 
+- **`.claude-plugin/marketplace.json`** — Category plugin manifest for the upstream `skills` CLI. `npx skills add fernando-delosrios-sp/skills` now groups skills under Engineering, Productivity, and Internal instead of a flat searchable list.
+
 ### 🔧 Improvements
 
 - **Overlay lock schema** — Extended `.locks/upstream.json` with `applied_upstream_sha`, `overlay_hash`, `universal_overlay_hash`, and `blended_ref` for deterministic restore vs remerge routing.
@@ -18,9 +20,15 @@ All notable changes to this skills collection are documented here.
 
 - **extract-overlay drafts** — `draftInstructions()` emits intent-only hints instead of embedding local file blobs that encouraged literal restore.
 
+- **Interactive install (`npm run install`)** — Single category-tabbed picker: categories across the top, `←`/`→` to switch, `↑`/`↓` to navigate skills, non-looping lists, and selection counts per category.
+
+- **Marketplace manifest tooling** — `lib/marketplace-manifest.mjs` generates `.claude-plugin/marketplace.json` from `skills/*/skills.json`; `npm run validate` checks it stays in sync.
+
 ### 🐛 Fixes
 
 - **Overlay prepare routing** — Guard pending manifest preparation when a skill has neither a per-skill overlay nor configured generators; skip with a warning in batch mode and return a clear error for explicit `--skill` calls.
+
+- **`npx skills add` install UI** — Grouped category selection replaces the upstream flat search picker that stacked duplicate prompts after navigation.
 
 ### 🗑️ Removed
 
@@ -66,8 +74,6 @@ All notable changes to this skills collection are documented here.
 
 - **improve skill** — Pivoted to plan-based execution with an audit playbook for structured codebase improvement.
 
-- **Interactive install** — Category-based skill selection now uses `@inquirer/prompts` for a smoother `npm run install` experience.
-
 ### 🐛 Fixes
 
 - **deploy-mate scope guardrails** — Prevents Harvest from running deploy-for-config scenarios outside Deploy scope, reducing accidental mis-routing during secret collection.
@@ -79,4 +85,5 @@ All notable changes to this skills collection are documented here.
 - **openspec-git-discipline** — Replaced by git-commit for session-scoped conventional commits.
 
 - **diagnose skill** — Removed; diagnosing-bugs covers structured bug diagnosis.
+
 
