@@ -19,17 +19,22 @@ The overlay lifecycle SHALL expose a single public module (`lib/overlay-pipeline
 
 ### Requirement: Overlay model submodule
 
-The repository SHALL provide `lib/overlay-model.mjs` owning overlay discovery, YAML load/validate, change partitioning, and content hashing. This module MUST NOT perform git checkout, clone, or manifest file writes.
+The repository SHALL provide `lib/overlay-model.mjs` owning overlay discovery and content hashing. YAML load, validate, partition, and generator merge resolution SHALL live in `lib/overlay-yaml.mjs`. The model module MUST NOT perform git checkout, clone, or manifest file writes.
 
 #### Scenario: Model layer is pure filesystem and YAML
 
-- **WHEN** `loadOverlay`, `partitionChanges`, `hashOverlay`, or `discoverOverlays` runs
+- **WHEN** `hashOverlay`, `hashUniversalOverlay`, or `discoverOverlays` runs
 - **THEN** the operation MUST be implemented in `overlay-model.mjs` without git I/O
 
-#### Scenario: Generator-config loads model only
+#### Scenario: YAML primitives delegate to overlay-yaml
 
-- **WHEN** `lib/generator-config.mjs` needs `hasOverlay` or `loadOverlay`
-- **THEN** it MUST import from `overlay-model.mjs`, not from the monolithic `overlays.mjs`
+- **WHEN** `loadOverlay`, `partitionChanges`, or `hasOverlay` runs via `overlay-model.mjs`
+- **THEN** the operation MUST delegate to `overlay-yaml.mjs` without duplicating parse logic
+
+#### Scenario: Generator-config loads YAML layer only
+
+- **WHEN** `lib/generator-config.mjs` needs overlay YAML or generator resolution
+- **THEN** it MUST import from `overlay-yaml.mjs` (or re-exports via `overlay-model.mjs`), not from `overlay-extract.mjs`, `overlay-manifest.mjs`, or the pipeline barrel
 
 ### Requirement: Static operations submodule
 
@@ -47,7 +52,7 @@ The repository SHALL provide `lib/overlay-static.mjs` owning static add/replace/
 
 ### Requirement: Manifest preparation submodule
 
-The repository SHALL provide `lib/overlay-manifest.mjs` owning remerge manifest and generator-only manifest generation in `.tmp/overlay-apply/`.
+The repository SHALL provide `lib/overlay-manifest.mjs` owning remerge manifest and generator-only manifest generation in `.tmp/overlay-apply/`. Generator lists for manifest preparation MUST be resolved via `overlay-yaml.mjs`, not `generator-config.mjs`.
 
 #### Scenario: Pending remerge manifest
 
@@ -59,9 +64,14 @@ The repository SHALL provide `lib/overlay-manifest.mjs` owning remerge manifest 
 - **WHEN** a skill has generators but no per-skill overlay YAML
 - **THEN** `prepareGeneratorManifest` MUST produce a generator apply manifest without requiring semantic changes
 
+#### Scenario: Manifest resolves generators from YAML layer
+
+- **WHEN** `prepareGeneratorManifest` or generator sections of `prepareOverlayManifest` assemble generator instructions
+- **THEN** they MUST call `resolveGeneratorsForSkill` from `overlay-yaml.mjs`
+
 ### Requirement: Extract submodule
 
-The repository SHALL provide `lib/overlay-extract.mjs` owning overlay draft extraction from local diffs (canonical tree, agents tree, or git commit).
+The repository SHALL provide `lib/overlay-extract.mjs` owning overlay draft extraction from local diffs (canonical tree, agents tree, or git commit). Extract MUST classify generator-managed paths using static imports from `overlay-yaml.mjs` — not runtime dynamic imports of `generator-config.mjs`.
 
 #### Scenario: Extract from agents working copy
 
@@ -73,6 +83,24 @@ The repository SHALL provide `lib/overlay-extract.mjs` owning overlay draft extr
 - **GIVEN** a skill already has an overlay directory
 - **WHEN** extract runs without `--force`
 - **THEN** the extract submodule MUST skip the skill with status `skipped`
+
+#### Scenario: No dynamic import cycle breaker
+
+- **WHEN** a maintainer inspects `lib/overlay-extract.mjs`
+- **THEN** it MUST NOT use `await import('./generator-config.mjs')` or other runtime imports solely to break circular dependencies
+
+#### Scenario: Extract skips generator-only local adds
+
+- **GIVEN** a local-only file path is declared as a generator output and absent from upstream
+- **WHEN** extract converts a diff to overlay changes
+- **THEN** the path MUST NOT produce a static add operation in the draft overlay
+
+#### Scenario: Extract skips modify when local matches derived generator content
+
+- **GIVEN** a modified file path is a generator output
+- **AND** local content equals `expectedContentForPath` for that path
+- **WHEN** extract converts a diff to overlay changes
+- **THEN** the modify MUST NOT produce a semantic overlay change entry
 
 ### Requirement: Backward-compatible export surface
 
@@ -143,4 +171,5 @@ Call sites that need pending detection (`lib/sync.mjs`, `lib/tmp.mjs`, and futur
 - **GIVEN** a unit test injects mocked lock entries and hash values via `deps`
 - **WHEN** `isPendingApply(skillName, deps)` is called
 - **THEN** it MUST return the correct boolean without executing git operations
+
 

@@ -204,7 +204,7 @@ Every generator entry requires:
 | `file` | no | Skill-relative output path — enables validate, manifest current-content, extract-overlay skip, static-pin skip |
 | `description` | no | Human note for overlay authoring |
 
-All generators are **agent-applied** via the **skill-overlay** skill. Config is resolved and validated by [`lib/generator-config.mjs`](lib/generator-config.mjs) — no code execution.
+All generators are **agent-applied** via the **skill-overlay** skill. Config is resolved by [`lib/overlay-yaml.mjs`](lib/overlay-yaml.mjs) and validated by [`lib/generator-config.mjs`](lib/generator-config.mjs) — no code execution. Extract skips generator output paths (and modify diffs matching frontmatter-derived content for `openai-manifest`) via the same yaml layer.
 
 ### Universal overlay — `overlays/OVERLAY.yaml`
 
