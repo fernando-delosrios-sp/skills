@@ -11,6 +11,7 @@ import {
   extractAllOverlays,
   auditAllSkills,
   restoreAllSkills,
+  printOverlayApplyPrompt,
 } from '../lib/overlays.mjs';
 import { runUpdate } from '../lib/update.mjs';
 import { runClean } from '../lib/clean.mjs';
@@ -230,7 +231,9 @@ overlay
         );
       }
 
-      console.log(kleur.dim('\nIn Cursor: "skill-overlay apply <skill-name>"'));
+      printOverlayApplyPrompt({
+        skillNames: options.skill ? [options.skill] : results.map((result) => result.skill),
+      });
     } catch (err) {
       console.error(kleur.red(`Error: ${err.message}`));
       process.exit(1);
@@ -265,7 +268,9 @@ overlay
         console.log(kleur.dim(`    ${r.generatorCount ?? 0} generator(s)`));
       }
 
-      console.log(kleur.dim('\nIn Cursor: "skill-overlay apply <skill-name>"'));
+      printOverlayApplyPrompt({
+        skillNames: options.skill ? [options.skill] : results.map((result) => result.skill),
+      });
     } catch (err) {
       console.error(kleur.red(`Error: ${err.message}`));
       process.exit(1);

@@ -37,14 +37,14 @@ npm run overlay -- audit [--skill <name>]
 npm run overlay -- restore [--skill <name>]
 
 # Cursor, remerge/fresh only:
-# "skill-overlay apply domain-modeling"
+# "skill-overlay apply all pending overlays"
 
 npm run validate
 git diff
 git commit   # blended_ref must point at this commit for future restores
 ```
 
-When multiple skills need remerge, apply **one at a time** unless the user asked for all.
+After `npm run update`, apply **all pending overlays** in one Cursor session unless the user scoped to a single skill (`--skill <name>`).
 
 ## Shared rules (all modes)
 
@@ -103,6 +103,20 @@ Tell the user restore means **inputs were identical** — no agent merge was nee
 ## Mode: apply
 
 Re-merge overlay intent onto fresh upstream when audit route = `remerge` or `fresh`.
+
+### Batch apply (default after `npm run update`)
+
+When the user says **"skill-overlay apply all pending overlays"** (or equivalent):
+
+1. List manifests in `.tmp/overlay-apply/` (or read `npm run overlay -- audit` for remerge/fresh skills)
+2. Apply each skill in manifest order — semantic changes, then generators per skill
+3. Run `npm run validate` once after all skills are blended
+4. Commit all blended skill dirs in one commit
+5. `recordBlend` for **each** skill with current `sha`, hashes, and shared `blended_ref`
+6. Clean manifests: `npm run clean -- --manifests` (or `--skill <name>` per skill)
+7. Report a summary table of all skills processed
+
+Use single-skill apply only when the user names one skill or passed `--skill <name>` to npm.
 
 ### 1. Confirm routing
 
@@ -243,7 +257,13 @@ Use when user explicitly asks to reconcile, or apply surfaces structural conflic
 
 ## Example
 
-**User:** "skill-overlay apply domain-modeling"
+**User:** "skill-overlay apply all pending overlays"
+
+1. Audit — collect all skills with route remerge/fresh
+2. For each manifest in `.tmp/overlay-apply/`, merge semantic instructions and apply generators
+3. Validate, commit once, recordBlend for each skill, clean manifests, report summary
+
+**User:** "skill-overlay apply domain-modeling" (single-skill scope)
 
 1. Audit — route must be remerge/fresh
 2. Read manifest + OVERLAY.yaml
