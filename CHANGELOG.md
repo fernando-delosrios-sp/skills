@@ -14,6 +14,8 @@ All notable changes to this skills collection are documented here.
 
 ### 🔧 Improvements
 
+- **Skill path resolution** — Centralized canonical, agents, overlay, and git-prefix path helpers in `lib/skill-paths.mjs`. Overlay audit, extract, validate, and index re-exports now share one path authority; layout changes touch a single module.
+
 - **Upstream git adapter** — Consolidated shallow clone, skill tree walking, and HEAD SHA resolution into `lib/upstream-adapter.mjs`. Sync, import, and overlay extract now share one URL normalization path and `{ relPath, content }[]` tree shape; unit tests can inject a filesystem fixture without network access.
 
 - **Unified overlay pending state** — Replaced timestamp-based `isOverlayPending` with route-based `isPendingApply(skillName)` on the overlay pipeline. Sync summary, manifest cleanup, and audit/prepare now share one pending authority; generator-only skills and invalid `blended_ref` edge cases align with audit routing.
@@ -91,6 +93,7 @@ All notable changes to this skills collection are documented here.
 - **openspec-git-discipline** — Replaced by git-commit for session-scoped conventional commits.
 
 - **diagnose skill** — Removed; diagnosing-bugs covers structured bug diagnosis.
+
 
 
 

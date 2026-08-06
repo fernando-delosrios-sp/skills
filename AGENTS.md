@@ -125,6 +125,9 @@ The **skill-overlay** skill performs intelligent semantic merging. It activates 
 - `.locks/upstream.json` — last-synced upstream SHAs and overlay apply timestamps
 - `lib/locks.mjs` — pure overlay route helpers (`getOverlayRoute`, `isOverlayRoutePending`); pending authority is `isPendingApply` on the pipeline
 - `lib/upstream-adapter.mjs` — upstream git seam (`cloneRepo`, `readSkillTree`, `getHeadSha`); used by sync, import, and overlay extract
+- `lib/skill-paths.mjs` — pure path resolution for canonical, agents, overlay, and git-prefix locations; used by overlay submodules, validate, and index re-exports
+- `lib/skill-md.mjs` — shared SKILL.md frontmatter parsing (`parseFrontmatter`)
+- `lib/validate.mjs` — layered validation: `validateStructure()` (well-formed repo), `validateBlendState()` (git blend locks), `validateRepo()` (both)
 - `lib/overlay-pipeline.mjs` — deep public interface for overlay lifecycle (`audit`, `restore`, `static`, `prepare`, `extract`); exposes `isPendingApply(skillName)` as single pending check for sync and cleanup
 - `lib/overlay-yaml.mjs` — overlay YAML load/validate/partition and generator merge resolution; generated-path helpers (internal)
 - `lib/overlay-model.mjs` — overlay discovery and content hashing; delegates YAML primitives to overlay-yaml (internal)

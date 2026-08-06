@@ -78,6 +78,29 @@ The glossary SHALL define **Generator** as an agent manifest producer declared i
 - **AND** MUST note the bounded context is overlays / overlay-yaml
 - **AND** MUST reference that merge resolution lives in `overlay-yaml.mjs`
 
+### Requirement: Canonical tree glossary entry
+
+The glossary SHALL define **Canonical tree** as the install source-of-truth skill directory under `skills/<category>/<name>/`.
+
+#### Scenario: Canonical tree definition
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up Canonical tree
+- **THEN** the definition MUST state it is overwritten on sync for source skills
+- **AND** MUST note path resolution lives in `lib/skill-paths.mjs` as `canonicalDir`
+
+### Requirement: Agents tree glossary entry
+
+The glossary SHALL define **Agents tree** as the flat dev working copy under `.agents/skills/<name>/`.
+
+#### Scenario: Agents tree definition
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up Agents tree
+- **THEN** the definition MUST state it is used by `extract-overlay --from-agents`
+- **AND** MUST note it is NOT the install source of truth
+- **AND** MUST note path resolution lives in `lib/skill-paths.mjs` as `agentsDir`
+
 ## Term entries
 
 ### Term: Skill
@@ -137,8 +160,20 @@ The glossary SHALL define **Generator** as an agent manifest producer declared i
 ### Term: Working copy
 **Context**: global
 **Definition**: A skill tree under `.agents/skills/` used during active development before changes land in `skills/`.
-**Aliases**: agents skill copy
-**Notes**: Not the canonical install path.
+**Aliases**: agents skill copy (see Agents tree)
+**Notes**: Not the canonical install path. Prefer **Agents tree** when referring to the flat dev tree at `.agents/skills/<name>/`.
+
+### Term: Canonical tree
+**Context**: skill-paths / skill-catalog
+**Definition**: The install source-of-truth skill directory at `skills/<category>/<name>/`. Overwritten on sync for source skills.
+**Aliases**: canonical skill tree
+**Notes**: Resolved as `canonicalDir` by `lib/skill-paths.mjs`.
+
+### Term: Agents tree
+**Context**: skill-paths / tooling
+**Definition**: A flat dev working copy at `.agents/skills/<name>/` used during active development before changes land in the canonical tree.
+**Aliases**: agents skill copy (see Working copy)
+**Notes**: Resolved as `agentsDir` by `lib/skill-paths.mjs`. Used by `extract-overlay --from-agents`. Not the install source of truth.
 
 ### Term: Overlay route
 **Context**: overlay-pipeline
@@ -157,5 +192,6 @@ The glossary SHALL define **Generator** as an agent manifest producer declared i
 **Definition**: An agent manifest producer declared in universal `overlays/OVERLAY.yaml` and optionally overridden per skill via `generators.add` or `generators.disable` in `overlays/<name>/OVERLAY.yaml`.
 **Aliases**: overlay generator
 **Notes**: Merge resolution lives in `lib/overlay-yaml.mjs`; outputs are agent-applied via the skill-overlay skill, not executed by npm scripts.
+
 
 
