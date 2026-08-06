@@ -35,7 +35,7 @@ artifacts:
       Create specification files that define WHAT the system should do.
 
       Create one spec file per capability listed in the proposal's Capabilities section.
-      - New capabilities: use the exact kebab-case name from the proposal (specs/<capability>/spec.md).
+      - New capabilities: stick to the domain-based spec categories found in the project. Do not create a spec for a more particular category than the domain itself (e.g., use specs/<domain-category>/spec.md).
       - Modified capabilities: use the existing spec folder name from openspec/specs/<capability>/ when creating the delta spec at specs/<capability>/spec.md.
 
       Delta operations (use ## headers):
@@ -125,6 +125,7 @@ artifacts:
       - Each task MUST be a checkbox: `- [ ] X.Y Task description`
       - Tasks should be small enough to complete in one session
       - Order tasks by dependency (what must be done first?)
+      - **CRITICAL**: Always include specific tasks to update user-facing documentation, READMEs, API docs, or comments reflecting the changes.
 
       Example:
       ```
@@ -137,6 +138,7 @@ artifacts:
 
       - [ ] 2.1 Implement data export function
       - [ ] 2.2 Add CSV formatting utilities
+      - [ ] 2.3 Update API documentation for new export endpoint
       ```
 
       Reference specs for what needs to be built, design for how to build it.
@@ -151,3 +153,8 @@ apply:
   instruction: |
     Read context files, work through pending tasks, mark complete as you go.
     Pause if you hit blockers or need clarification.
+
+    Enforce a changelog update for each spec change applied using the `changelog-generator` skill. Follow the `git-commit` skill when making commits.
+
+    Always keep documentation up-to-date for any spec change introduced.
+

@@ -11,6 +11,8 @@ artifacts:
     generates: tasks.md
     description: Implementation checklist with trackable tasks
     template: tasks.md
+    instruction: |
+      - **CRITICAL**: Always include specific tasks to update user-facing documentation, READMEs, API docs, or comments reflecting the changes.
     requires:
       - specs
 apply:

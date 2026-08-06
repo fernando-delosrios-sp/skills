@@ -61,11 +61,14 @@ async function main() {
 
   console.log(kleur.dim(`\nInstalling ${selectedSkills.length} skill(s)...\n`));
 
+  const skillArgs = selectedSkills.flatMap((name) => ['--skill', name]);
+
   try {
-    execSync(`skills add . --skill ${selectedSkills.join(',')}`, { stdio: 'inherit' });
+    execSync(['npx', 'skills', 'add', '.', ...skillArgs].join(' '), { stdio: 'inherit' });
   } catch (err) {
     process.exit(1);
   }
 }
 
 main();
+

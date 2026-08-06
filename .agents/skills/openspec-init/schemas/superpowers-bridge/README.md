@@ -1,7 +1,5 @@
 # superpowers-bridge Schema
 
-[English](./README.md) · [繁體中文](./README.zh-TW.md)
-
 [![Schema Structure](https://github.com/JiangWay/openspec-schemas/actions/workflows/validate-schemas.yml/badge.svg?branch=main)](https://github.com/JiangWay/openspec-schemas/actions/workflows/validate-schemas.yml)
 [![Upstream Drift](https://img.shields.io/github/issues-search/JiangWay/openspec-schemas?query=is%3Aopen%20label%3Aupstream-version-check&label=Upstream%20Drift&color=yellow)](https://github.com/JiangWay/openspec-schemas/issues?q=is%3Aopen+label%3Aupstream-version-check)
 [![OpenSpec baseline](https://img.shields.io/badge/OpenSpec_baseline-1.4.1-0277bd)](#compatibility)
@@ -186,8 +184,8 @@ If any condition is missing, keep brainstorming. When all five hold:
 
 | Anti-pattern | Why it's wrong |
 |---|---|
-| Letting brainstorming write to `docs/superpowers/specs/` after the schema is installed | Bypasses redirection at [schema.yaml](./schema.yaml) lines 35-39; produces orphan artifacts |
-| Letting writing-plans write to `docs/superpowers/plans/` | Same reason (schema.yaml lines 169-171) |
+| Letting brainstorming write to `docs/superpowers/specs/` after the schema is installed | Bypasses the brainstorm artifact's output redirection; produces orphan artifacts |
+| Letting writing-plans write to `docs/superpowers/plans/` | Same reason (plan artifact output redirection) |
 | Promoting to opsx with unresolved blocking TBDs | Those TBDs will block apply phase too — promotion just defers the same problem |
 | Opening a change for bug fix / typo / config tweak | Process ceremony exceeds actual risk; slows delivery without value |
 
@@ -210,8 +208,8 @@ Differences from `spec-driven`:
 | Entry | proposal (manual) | **brainstorm** (invokes brainstorming skill) |
 | Plan layer | tasks (coarse) | tasks + **plan** (TDD micro-steps) |
 | apply requires | tasks | **plan** |
-| apply method | standard task-by-task | **worktree + subagent-driven-development** (with TDD + code-review transitive) |
-| Post-apply | (none) | **verify** + **retrospective** artifacts |
+| apply method | standard task-by-task | **subagent-driven-development** on current branch (TDD + code-review transitive) |
+| Post-apply | (none) | **verify** + **retrospective** artifacts (produced inside apply steps 2–3) |
 | New artifacts | — | brainstorm, plan, verify, retrospective |
 
 ### Lifecycle (apply orchestration + timing notes)
@@ -222,7 +220,7 @@ The Artifact DAG above shows **file-existence** dependencies. The runtime lifecy
 flowchart TD
     Start([/opsx:propose · /opsx:new])
 
-    subgraph Plan ["📝 PLANNING — 7 artifacts"]
+    subgraph Plan ["📝 PLANNING — 6 artifacts"]
         direction TB
         BS["<b>brainstorm.md</b><br/><i>superpowers:brainstorming</i>"]
         PROP["<b>proposal.md</b>"]
@@ -240,19 +238,19 @@ flowchart TD
         DES -. ref .-> PL
     end
 
-    subgraph Apply ["⚙️ APPLY — 7 ordered steps (requires: plan, tracks: tasks.md)"]
+    subgraph Apply ["⚙️ APPLY — steps 0–5 (requires: plan, tracks: tasks.md)"]
         direction TB
-        A0["<b>0. Pre-flight skill check</b>"]
-        A1["<b>1. Workspace</b><br/><i>using-git-worktrees</i>"]
-        A2["<b>2. Executor</b><br/><i>subagent-driven-development</i><br/>↳ TDD + code-review (transitive)"]
-        A3["<b>3. Verification</b><br/><i>openspec-verify-change</i> → verify.md"]
-        A4["<b>4. Retrospective</b> → retrospective.md<br/>(BEFORE PR; hot context)"]
-        A5["<b>5. Archive</b><br/><i>openspec archive -y</i><br/>(sync delta + move folder)"]
-        A6["<b>6. Completion</b><br/><i>finishing-a-development-branch</i><br/>🏁 PR is LAST"]
+        A0["<b>0. Pre-flight</b><br/>skills + CLI tools"]
+        A1["<b>1. Executor</b><br/><i>subagent-driven-development</i><br/>↳ TDD + code-review (transitive)"]
+        A1b["<b>1b. Completion gate</b><br/>tasks · tests · lint · validate · commit"]
+        A2["<b>2. Verify-fix loop</b><br/><i>openspec-verify-change</i> → verify.md<br/>(BLOCKING until ✅ PASS)"]
+        A3["<b>3. Retrospective</b> → retrospective.md<br/>(BEFORE PR; hot context)"]
+        A4["<b>4. Archive</b><br/>backfill · sync · <b>git commit (4d)</b> · gate"]
+        A5["<b>5. Completion</b><br/><i>finishing-a-development-branch</i><br/>🏁 PR is LAST"]
 
-        A0 --> A1 --> A2 --> A3
-        A3 -. blocking → fix .-> A2
-        A3 --> A4 --> A5 --> A6
+        A0 --> A1 --> A1b --> A2
+        A2 -. FAIL → fix → 1b .-> A2
+        A2 --> A3 --> A4 --> A5
     end
 
     Start --> BS
@@ -263,8 +261,8 @@ flowchart TD
     classDef capstone fill:#e8f5e9,stroke:#2e7d32,color:#000
 
     class BS,PROP,DES,SP,TK,PL artifact
-    class A0,A1,A2,A3,A4,A5 step
-    class A6 capstone
+    class A0,A1,A1b,A2,A3,A4 step
+    class A5 capstone
 ```
 
 ASCII fallback (CLI-readable):
@@ -277,23 +275,26 @@ PLANNING ━━━━━━━━━━━━━━━━━━━━━━━�
                                                                        │
                           apply.requires: [plan], apply.tracks: tasks  ▼
 APPLY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  0. Pre-flight skill check
-  1. superpowers:using-git-worktrees
-  2. superpowers:subagent-driven-development (+ TDD + code-review transitive)
-  3. openspec-verify-change → verify.md ◄┐
-                              │           │ blocking → fix
-                              ▼           │
+  0. Pre-flight — required skills + CLI tools on PATH
+  1. using-git-worktrees (isolated workspace)
+  2. subagent-driven-development (+ TDD + code-review transitive)
+  2b. Completion gate — all tasks [x], tests green, lint, validate, clean tree
+  3. Verify-fix loop — openspec-verify-change → verify.md ◄┐
+                              │ FAIL → fix → 2b              │ until ✅ PASS
+                              ▼                              │
   4. retrospective.md (BEFORE PR; hot context)
-  5. openspec archive -y (sync delta + move folder)
-  6. superpowers:finishing-a-development-branch (🏁 PR is LAST)
+  5. Archive — backfill → cleanup → openspec archive -y → commit (5d) → post-commit gate (5e)
+  6. finishing-a-development-branch (🏁 PR is LAST)
 ```
 
 > **Timing notes** (full rationale in "Six design touches" #6):
-> - `verify.md` declares `requires: plan` in the graph but is actually produced inside apply step 3.
-> - `retrospective.md` declares `requires: verify` and per Step 4 is produced **before** the PR opens — so the PR diff includes the complete archived cycle (all artifacts done, spec synced, change folder under `archive/`).
-> - The `requires:` edges are file-existence dependencies for OpenSpec's graph engine; runtime ordering lives in instruction prose.
+> - `verify.md` declares `requires: plan` in the graph but is produced inside apply **step 3** (verify-fix loop), not as a separate post-apply chore.
+> - `retrospective.md` declares `requires: verify` and runs in apply **step 4** — **before** the PR opens.
+> - Archive (apply **step 5**) runs `openspec archive -y` **and** a required git commit; archive is incomplete until the post-commit gate passes.
+> - Standalone `/opsx:verify` and `/opsx:archive` are for interruption recovery — a normal `/opsx:apply` cycle must not skip the verify-fix loop or archive commit.
+> - The `requires:` edges are file-existence dependencies for OpenSpec's graph engine; runtime ordering lives in [schema.yaml](./schema.yaml) `apply.instruction`.
 
-### Seven Superpowers touchpoints
+### Six Superpowers touchpoints
 
 | # | Superpowers skill | Where it's invoked | Trigger |
 |---|---|---|---|
@@ -303,9 +304,13 @@ APPLY ━━━━━━━━━━━━━━━━━━━━━━━━�
 | 4 | `superpowers:subagent-driven-development` | apply step 2 | Direct |
 | 5 | `superpowers:test-driven-development` | (activated inside #4) | **Transitive** |
 | 6 | `superpowers:requesting-code-review` | (activated inside #4) | **Transitive** |
-| 7 | `superpowers:finishing-a-development-branch` | apply step 4 | Direct |
+| 7 | `superpowers:finishing-a-development-branch` | apply step 6 | Direct |
 
-Plus one OpenSpec built-in: `openspec-verify-change` (apply step 3, produces `verify.md`).
+Plus optional helpers when present: `changelog-generator`.
+
+Archive step **4d** invokes **git-commit** when available; manual conventional commit if the skill is absent (commit is still required — not optional).
+
+Plus one OpenSpec built-in: `openspec-verify-change` (apply step 2 verify-fix loop, produces `verify.md`).
 
 > **No `executing-plans` fallback.** This schema is opinionated: it requires a subagent-capable platform (Claude Code, Codex, etc.). The alternative executor `superpowers:executing-plans` does not transitively activate TDD or code-review (verified against its [SKILL.md](https://github.com/obra/superpowers/blob/main/skills/executing-plans/SKILL.md)) — falling back would silently degrade Superpowers' core value. If your platform lacks subagent support, use the built-in `spec-driven` schema instead.
 
@@ -325,11 +330,10 @@ Implemented purely via context injection at invocation time, not by modifying sk
 ### Quick flow (recommended)
 ```bash
 /opsx:ff my-feature    # one-shot: scaffold + brainstorm + proposal + design + specs + tasks + plan
-/opsx:apply            # worktree + subagent-driven-development (with TDD + code-review)
-/opsx:verify           # produces verify.md (7 checks)
-/opsx:continue         # → retrospective (produces retrospective.md, §0 + 6 sections)
-/opsx:archive          # archive
+/opsx:apply            # executor + completion gate + verify-fix loop + retro + archive commit + PR
 ```
+
+> `/opsx:apply` owns the full post-plan cycle. Do not treat `/opsx:verify` or `/opsx:archive` as substitutes during a normal apply — they are for interruption recovery only (see Apply phase walkthrough).
 
 ### Step-by-step flow
 ```bash
@@ -340,10 +344,15 @@ Implemented purely via context injection at invocation time, not by modifying sk
 /opsx:continue         # → specs
 /opsx:continue         # → tasks
 /opsx:continue         # → plan
-/opsx:apply            # → implementation + worktree + subagent-driven-development
-/opsx:verify           # → verify.md (post-apply, runs the 7 checks)
-/opsx:continue         # → retrospective.md (post-verify, evidence-first §0 + 6 sections)
-/opsx:archive
+/opsx:apply            # steps 0–5: implement → verify-fix → retro → archive + commit → PR
+```
+
+### Interruption recovery
+```bash
+/opsx:continue <name>  # resume planning artifacts
+/opsx:apply <name>     # resume or re-run apply (includes verify-fix loop)
+/opsx:verify <name>    # re-run verify.md only (failures route back to apply step 2)
+/opsx:archive <name>   # run full archive sequence (4a–4e), not just `openspec archive -y`
 ```
 
 ### Switching back to spec-driven
@@ -358,56 +367,102 @@ Implemented purely via context injection at invocation time, not by modifying sk
 
 ## Apply phase walkthrough
 
-`/opsx:apply` triggers the steps inside [schema.yaml](./schema.yaml)'s `apply.instruction`:
+`/opsx:apply` triggers the steps inside [schema.yaml](./schema.yaml)'s `apply.instruction` (RISEN-structured: Role / INPUT / STEPS / EXPECTATIONS / NARROWING).
 
-#### 0. Pre-flight — verify required Superpowers skills
+#### 0. Pre-flight — skills and tooling
 
-Confirms these skills are installed before proceeding:
+Confirms these **required** skills appear in the available skills list before proceeding:
 
-- `superpowers:using-git-worktrees`
-- `superpowers:subagent-driven-development` (transitive: `test-driven-development`, `requesting-code-review`)
-- `superpowers:finishing-a-development-branch`
+- `subagent-driven-development` (transitive: `test-driven-development`, `requesting-code-review`)
+- `finishing-a-development-branch`
 
-Missing skill → STOP with explicit error. No silent fallback, no manual mode within this schema. The user should either install Superpowers or switch to the built-in `spec-driven` schema for that change.
+Optional (use when present): `changelog-generator`, `openspec-verify-change`.
 
-> The v0 version of this schema once placed an "auto-commit change artifacts to current branch" step here. It was removed after the [PR #970 review](https://github.com/Fission-AI/OpenSpec/pull/970): handling untracked change directories is the worktree skill's responsibility, not the schema's.
+`git-commit` is invoked in archive step **4d** (manual fallback if the skill is absent — the commit itself is still required).
 
-#### 1. Workspace — `superpowers:using-git-worktrees`
+Also confirms project CLI tools from `plan.md` are on PATH (`mvn`/`mvnw`, `node`/`npm`, `docker`, `jq`, `gh`/`glab`, etc.).
 
-Creates `.worktrees/<change-name>/`, switches to a new branch, runs setup, confirms a clean test baseline.
+Missing **required** skill or tool → STOP with explicit error. No silent fallback. Install Superpowers or switch to the built-in `spec-driven` schema for that change.
 
-#### 2. Executor — `superpowers:subagent-driven-development`
+#### 1. Executor — `subagent-driven-development`
 
-Main agent reads `plan.md`, dispatches a fresh subagent per micro-task. Each subagent transitively activates:
+Invoke via the Skill tool on the **current branch** (this schema does not mandate a worktree). Tell the executor:
 
-- **TDD** (`superpowers:test-driven-development`): write failing test → watch it fail → minimal code → pass; production code without prior test gets deleted
-- **Per-task code review** (`superpowers:requesting-code-review`): spec-compliance review + code-quality review; critical issues block forward motion
+- Read `plan.md` micro-tasks; update `tasks.md` checkboxes as coarse tasks complete
+- Do NOT mark `[x]` until tests pass and lint is clean for touched files
+- Complete Documentation and Changelog task groups last
+- Every `#### Scenario:` in delta specs must map to a passing automated test
+- Run `openspec validate --all --json`; fix any `"valid": false` items
 
-Coarse `tasks.md` checkboxes tick as tasks complete. After all tasks, a final code review covers the whole implementation.
+Transitive (do NOT invoke manually):
 
-This schema does NOT support `superpowers:executing-plans` as a fallback. See the "Six design touches" section below for rationale.
+- **TDD** (`test-driven-development`): RED-GREEN-REFACTOR; production code without a prior failing test is deleted
+- **Code review** (`requesting-code-review`): per-task review + final review before apply concludes
 
-#### 3. Verification — `openspec-verify-change`
+This schema does NOT support `executing-plans` as a fallback. See Design touch #4.
 
-Produces `verify.md` from 7 checks: structural validation (`openspec validate --all --json`), task completion, delta-spec sync state, design/specs coherence (non-blocking warning), implementation signal (committed code), front-door routing leak detector (non-blocking warning), and deferred-dogfood vs automated-test equivalence. The last check blocks only when `plan.md` has `[~]` deferrals but the equivalence section is empty (gap analysis skipped); otherwise it is informational.
+#### 1b. Completion gate (re-run after every fix in step 2)
 
-Failures route back to the corresponding artifact for fix; verify can be re-run.
+Mechanical checks before verify and after every verify-fix iteration:
 
-> **Steps 4–6 are the canonical post-verify sequence: retro → archive → PR. Reordering produces incomplete PRs (retrospective + archive land as trailing post-merge commits, losing hot context).**
+- All `tasks.md` checkboxes `[x]` (including Documentation and Changelog)
+- Tests: canonical command from `plan.md` exit 0; every scenario has a passing test
+- Lint/format: commands from `plan.md`; zero new warnings from this change
+- `openspec validate --all --json` — every item `"valid": true`
+- Documentation and changelog tasks reflect actual behavior
+- Working tree clean (`git status --porcelain` empty) before entering step 2
 
-#### 4. Retrospective — `retrospective` artifact (recommended; per Entry & exit gates skip rules, trivial fixes may skip)
+#### 2. Verify-fix loop (BLOCKING)
 
-Evidence-first reflection: §0 Evidence (quantitative front-matter — commit count, diff size, tasks-done ratio, dependencies, validate state, etc.) plus 6 analysis sections (Wins / Misses / Plan deviations / Skill compliance / Surprises / Promote candidates). Each claim cites a commit / file / measurable fact, typically referencing §0 instead of inlining evidence per bullet. The procedure is embedded in the artifact's instruction — no external skill required (Decision 3 in the design spec defers Claude Code plugin packaging to v1.x).
+Apply owns verification end-to-end. Repeat until `verify.md` shows ✅ PASS:
 
-Written **before** opening the PR so retro lands in the same PR diff.
+1. Invoke **openspec-verify-change** (or run the verify artifact checks manually)
+2. On ❌ FAIL: fix immediately — do NOT ask the user, do NOT open a PR
+3. Re-run step 1b, return to (1)
 
-#### 5. Archive — `openspec archive -y` (or `/opsx:archive`)
+Verify checks (see verify artifact instruction):
 
-Syncs delta specs into `openspec/specs/<capability>/spec.md` and moves the change folder to `openspec/changes/archive/YYYY-MM-DD-<name>/`. Run **before** the PR opens so the diff reflects the complete archived cycle (all artifacts done, spec synced, folder under archive/).
+- Structural validation (`openspec validate --all --json`)
+- Task completion (all checkboxes `[x]`)
+- Spec scenario test coverage (each `#### Scenario:` → automated test)
+- Design/specs coherence (material drift is FAIL)
+- Deferred dogfood vs automated-test equivalence (when `plan.md` has `[~]` rows)
 
-#### 6. Completion — `superpowers:finishing-a-development-branch`
+Verify deliberately does **not** re-check git housekeeping — apply step 1b owns the clean tree; archive handles spec sync.
 
-Confirms tests are green, presents merge / PR / keep-branch / discard options, cleans up the worktree. **PR is the last step** — if retro or archive haven't been done, finish them first.
+Standalone `/opsx:verify` is for interruption re-runs only; failures route back to apply step 2.
+
+> **Steps 3–5 are the canonical post-verify sequence: retro → archive (+ commit) → PR.** Reordering produces incomplete PRs or uncommitted archive output.
+
+#### 3. Retrospective — `retrospective` artifact
+
+Produce `retrospective.md` while context is hot, **before** opening any PR. PRECHECK: `verify.md` exists and ✅ PASS is checked (not ❌ FAIL).
+
+Evidence-first: §0 Evidence plus §1–§6 analysis (Wins / Misses / Plan deviations / Skill compliance / Surprises / Promote candidates). Trivial single-commit fixes may skip with a one-liner reason.
+
+After writing, proceed immediately to apply step 4 (Archive).
+
+#### 4. Archive — backfill, sync, commit, gate
+
+`/opsx:archive` MUST run the full sequence — not just `openspec archive -y`. Archive is incomplete until step **(e)** passes (including **(d) commit**).
+
+| Sub-step | Action |
+|---|---|
+| **4a** | Backfill missing artifacts via `openspec status --change <name> --json` |
+| **4b** | Move stray `docs/superpowers/specs/` into change artifacts; delete strays |
+| **4c** | Run `openspec archive -y` if still under `openspec/changes/<name>/` (skip if already under `archive/`) |
+| **4d** | **Commit archive output** (required sub-step — CLI does NOT commit): `git status --porcelain` → stage `openspec/specs/` + `openspec/changes/` (+ 4a/4b paths) → invoke **git-commit** via Skill tool, or conventional commit manually if skill absent — do not skip when porcelain is non-empty |
+| **4e** | **Post-commit gate**: `git status --porcelain` empty; if 4c ran (or change is archived), latest commit includes synced specs + archive folder |
+
+> `openspec archive -y` syncs specs and moves the folder; **4d is part of archive**, not a separate optional step. Skipping 4d because `git-commit` is missing is a schema violation — use the manual fallback instead.
+
+> v0 once delegated all commit responsibility to the worktree skill ([PR #970](https://github.com/Fission-AI/OpenSpec/pull/970)). v1 apply step 4 restores an explicit **post-sync commit inside archive** because the CLI leaves synced specs and moved folders uncommitted by design.
+
+#### 5. Completion — `finishing-a-development-branch` (PR LAST)
+
+PRECHECK: archive post-commit gate (4e) passed.
+
+Invoke **finishing-a-development-branch**. The PR diff MUST contain the complete archived cycle (all artifacts, synced specs, change under `archive/`, committed on the branch). Do NOT reorder.
 
 ---
 
@@ -419,9 +474,9 @@ Confirms tests are green, presents merge / PR / keep-branch / discard options, c
 | New change (interactive) | `/opsx:new <name> --schema superpowers-bridge` then `/opsx:continue` |
 | New change (one-shot) | `/opsx:ff <name>` |
 | Resume an interrupted change | `/opsx:continue <name>` |
-| Enter implementation | `/opsx:apply <name>` |
-| Manual verify | `/opsx:verify <name>` |
-| Archive | `/opsx:archive <name>` |
+| Enter implementation | `/opsx:apply <name>` (includes verify-fix, retro, archive commit, PR) |
+| Re-run verify after interruption | `/opsx:verify <name>` (failures → apply step 2) |
+| Archive (full sequence) | `/opsx:archive <name>` (4a–4e — not CLI-only) |
 | Use built-in (skip brainstorm) | `/opsx:new <name> --schema spec-driven` |
 | List all schemas in the project | `openspec schemas` |
 | Inspect a change's progress | `openspec status --change <name> --json` |
@@ -438,11 +493,13 @@ Each artifact / apply step that invokes a Superpowers skill runs a PRECHECK at t
 
 ### 2. Schema-level vs prompt-level integration
 
-Integration lives entirely in `instruction:` fields (pure prompts). If Superpowers upgrades a skill's behavior, the schema doesn't change. We only touch `schema.yaml` if a skill is renamed or removed.
+Integration lives entirely in `description:` and `instruction:` fields (pure prompts). Each artifact and the apply phase use **RISEN structure** (Role / INPUT / STEPS / EXPECTATIONS / NARROWING) so agents get consistent section boundaries without changing OpenSpec's schema graph.
+
+If Superpowers upgrades a skill's behavior, the schema doesn't change. We only touch `schema.yaml` if a skill is renamed or removed.
 
 ### 3. Transitive dependencies made explicit
 
-TDD and code-review are normally hidden inside `subagent-driven-development`'s SKILL.md. Our schema's apply step 2a instruction lists these two transitive activations explicitly, so a reader can see "what actually happens during apply" at a glance.
+TDD and code-review are normally hidden inside `subagent-driven-development`'s SKILL.md. Our schema's apply step 1 instruction lists these two transitive activations explicitly, so a reader can see "what actually happens during apply" at a glance.
 
 ### 4. Opinionated: subagent platforms only, no manual fallback
 
@@ -450,16 +507,22 @@ This schema requires a subagent-capable platform (Claude Code, Codex, etc.). The
 
 ### 5. Evidence-based PRECHECK for verify and retrospective (Layer 2 capability detection)
 
-Each timing-sensitive artifact runs concrete shell evidence checks at the start of its instruction:
+Each timing-sensitive artifact runs concrete evidence checks at the start of its instruction:
 
-- **verify**: `git log <base>..HEAD | wc -l > 0` AND `grep -c '^- \[x\]' tasks.md > 0`
-- **retrospective**: `test -f verify.md` AND `! grep -q '^- \[x\] ❌ FAIL' verify.md`
+- **verify** (apply step 1b must have passed first): no unchecked tasks in `tasks.md`; tests green per `plan.md`; `openspec validate --all --json` all valid
+- **retrospective**: `test -f verify.md` AND ✅ PASS checked (not ❌ FAIL)
 
-The LLM does not need to interpret timing prose — it runs commands and reads results. This is layer 2 of concern #1 / mitigation for concern #2.
+The LLM runs commands and reads results rather than inferring timing from graph edges alone. This is layer 2 of concern #1 / mitigation for concern #2.
 
 ### 6. verify and retrospective are time-mismatched artifacts (known limitation)
 
-`verify.requires: [plan]` and `retrospective.requires: [verify]` are file-existence dependencies in the schema graph, but each instruction explicitly states "MUST run AFTER apply phase / verify pass". This is intentional misalignment — OpenSpec's engine only checks predecessor file existence. Engine-native fix awaits a `post_apply` phase concept upstream (analogous to spec-kit's `after_implement` hook); evidence-based PRECHECK above is the v1 mitigation.
+`verify.requires: [plan]` and `retrospective.requires: [verify]` are file-existence dependencies in the schema graph, but runtime ordering is enforced in `apply.instruction`:
+
+- verify runs in apply **step 2** (verify-fix loop), after step **1b** completion gate
+- retrospective runs in apply **step 3**, after verify PASS
+- archive + commit runs in apply **step 4**, before PR in step **5**
+
+OpenSpec's engine only checks predecessor file existence. Engine-native fix awaits a `post_apply` phase concept upstream; evidence-based PRECHECK and apply-step prose are the v1 mitigation.
 
 ---
 
@@ -537,7 +600,7 @@ If a Superpowers skill is unavailable:
 
 - [schema.yaml](./schema.yaml) — machine-readable schema definition
 - [templates/](./templates/) — markdown templates per artifact
-- [README.zh-TW.md](./README.zh-TW.md) — 繁體中文版
 - [obra/superpowers](https://github.com/obra/superpowers) — Superpowers skill source
 - [Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec) — OpenSpec
 - [OpenSpec PR #970](https://github.com/Fission-AI/OpenSpec/pull/970) — original review thread that drove this design
+

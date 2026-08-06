@@ -1,16 +1,23 @@
-<!-- Source: superpowers-bridge/templates/adopters/CLAUDE.md.fragment.md -->
-<!-- Drop this section into your project's CLAUDE.md so Claude routes future work using this schema correctly. -->
+<!-- Source: superpowers-bridge/templates/adopters/AGENTS.md.fragment.md -->
+<!-- Drop this section into your project's AGENTS.md (or CLAUDE.md / .cursorrules) so agents route future work using this schema correctly. -->
 <!-- Adjust the schema name and bridge repo URL if you customized them; otherwise keep as-is. -->
+
+## Agent communication
+
+- Use **plain English** — avoid jargon unless the user already uses it.
+- Keep explanations **succinct**. State the conclusion first; add detail only when it helps a decision.
+- When a topic could go deep, **offer to develop it further** — do not unprompted long dissertations or essay-length replies.
+- When you need input, **ask one question at a time** and wait for the answer before the next.
 
 ## Workflow routing (read on session start)
 
-This repo uses [`superpowers-bridge`](https://github.com/JiangWay/openspec-schemas/tree/main/superpowers-bridge) to bridge OpenSpec and Superpowers. Integration rules (language, artifact paths, PRECHECK) follow that bridge's README; this section is the routing guidance for Claude.
+This repo uses [`superpowers-bridge`](https://github.com/JiangWay/openspec-schemas/tree/main/superpowers-bridge) to bridge OpenSpec and Superpowers. Integration rules (language, artifact paths, PRECHECK) follow that bridge's README; this section is the routing guidance for agents.
 
 ### Entry routing
 
 | Trigger you observe | What to do |
 |---|---|
-| User starts a narrative "design discussion / let's brainstorm" | Run verbal `superpowers:brainstorming`, but **do NOT** write to `docs/superpowers/specs/`. Once the conversation converges per the 5 criteria below, promote to `/opsx:propose` |
+| User starts a narrative "design discussion / let's brainstorm" | Run verbal `brainstorming`, but **do NOT** write to `docs/superpowers/specs/`. Once the conversation converges per the 5 criteria below, promote to `/opsx:propose` |
 | User invokes `/opsx:new` / `/opsx:ff` / `/opsx:propose` directly | Follow the schema's flow; artifact instructions inject at each step |
 | User explicitly says bug fix / typo / config tweak / doc update | Direct PR — **do NOT** open a change (see skip rules below) |
 | User is mid-change | Advance with `/opsx:continue`, `/opsx:apply`, `/opsx:verify`, or `/opsx:archive` |

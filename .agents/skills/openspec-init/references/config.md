@@ -9,6 +9,9 @@ context: |
   Package manager: <e.g., pnpm>
   # Provide project context as a multiline string block...
 rules:
+  # Define global rules for the project
+  global:
+    - "Always use the `changelog-generator` skill to maintain and enforce a changelog for all changes."
   # Create a subsection mapping to each of the schema's defined artifacts
   # Each artifact section should contain a list of string rules.
   # e.g., if the schema defines 'specs' and 'tasks':
@@ -27,10 +30,15 @@ To build a meaningful `context` section:
 
 ## Organize Specs by Domain
 
-Organize specifications by domain — logical groupings that make sense for the system. Common patterns include:
+**Mandatory**: Every initialized project MUST include `openspec/specs/ubiquitous-language/spec.md`.
+Seed it from `references/ubiquitous-language-spec.md`. New domain terms introduced in any
+change MUST be reflected here before archive.
+
+Organize additional specifications by domain — logical groupings that make sense for the system. Common patterns include:
 
 - **By feature area**: `auth/`, `payments/`, `search/`
 - **By component**: `api/`, `frontend/`, `workers/`
 - **By bounded context**: `ordering/`, `fulfillment/`, `inventory/`
+- **By structural groupings (e.g. monorepos)**: If the user selects a grouping pattern like "services" or "packages", DO NOT create a single placeholder like `services/spec.md`. Instead, identify the individual services/packages within that grouping (e.g., `services/auth`, `services/billing`) and create a separate spec for each one.
 
 Help the user pre-populate the `openspec/specs/` directory with domains and initial empty spec files as needed to kickstart their workflow.
