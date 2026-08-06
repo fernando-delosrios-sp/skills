@@ -15,7 +15,7 @@ import {
 } from '../lib/overlay-pipeline.mjs';
 import { runUpdate } from '../lib/update.mjs';
 import { runClean } from '../lib/clean.mjs';
-import { validateRepo } from '../lib/validate.mjs';
+import { validateRepo, validateStructure } from '../lib/validate.mjs';
 import kleur from 'kleur';
 
 const program = new Command();
@@ -381,8 +381,11 @@ program
 program
   .command('validate')
   .description('Validate skills.json manifests, SKILL.md files, and overlays')
-  .action(async () => {
-    const { errors, warnings } = await validateRepo();
+  .option('--structure-only', 'Run structure validation only (no git blend checks)')
+  .action(async (options) => {
+    const { errors, warnings } = options.structureOnly
+      ? await validateStructure()
+      : await validateRepo();
 
     for (const warn of warnings) {
       const prefix = warn.type ? kleur.dim(`[${warn.type}]`) : '';

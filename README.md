@@ -102,6 +102,9 @@ npm run import -- --repo owner/repo --category my-category --all
 # Validate skills.json manifests, SKILL.md files, and overlays
 npm run validate
 
+# Structure-only validation (no git blend checks — suitable for CI)
+npm run validate -- --structure-only
+
 # Sync foreign skills (overwrites skills/ from upstream)
 npm run sync
 
@@ -140,6 +143,15 @@ npm run install
 ```
 
 Requires Node.js ≥ 18.
+
+### Validation layers
+
+`npm run validate` runs two layers:
+
+- **Structure validation** — manifests, SKILL.md frontmatter, overlay YAML shape, static file refs, generator outputs, marketplace sync. No git audit.
+- **Blend validation** — overlay audit routes, `blended_ref` presence, pending apply warnings for source skills.
+
+Use `npm run validate -- --structure-only` when CI only needs structure checks without git history.
 
 ## Skill overlays
 
