@@ -4,91 +4,133 @@
     "path": "skills/productivity/grill-me",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:25.037Z",
-    "overlay_applied_at": "2026-08-06T15:34:25.037Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.155Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "writing-for-agents": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/writing-for-agents",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:33.177Z",
-    "overlay_applied_at": "2026-08-06T15:34:33.177Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.171Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "to-questionnaire": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/to-questionnaire",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:29.689Z",
-    "overlay_applied_at": "2026-08-06T15:34:29.689Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.167Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "wait-what": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/wait-what",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:30.893Z",
-    "overlay_applied_at": "2026-08-06T15:34:30.893Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.169Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "grilling": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/grilling",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:26.151Z",
-    "overlay_applied_at": "2026-08-06T15:34:26.151Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.158Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "handoff": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/handoff",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:27.326Z",
-    "overlay_applied_at": "2026-08-06T15:34:27.326Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.160Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "teach": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/teach",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:28.527Z",
-    "overlay_applied_at": "2026-08-06T15:34:28.527Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.166Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "improve": {
     "repo": "shadcn/improve",
     "path": "skills/improve",
     "sha": "03369ee6d7cafbfcecc4346539b05b3dc0a603bb",
     "synced_at": "2026-08-06T09:51:13.182Z",
-    "overlay_applied_at": "2026-08-06T15:12:00.000Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.162Z",
+    "applied_upstream_sha": "03369ee6d7cafbfcecc4346539b05b3dc0a603bb",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b",
+    "overlay_hash": "13f002b1fbff0274f3710207fb2f8ce0dcd503e240e9e1d9a1b49795d71ff6f6"
   },
   "diagnosing-bugs": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/diagnosing-bugs",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:14.101Z",
-    "overlay_applied_at": "2026-08-06T15:34:14.101Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.141Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "improve-codebase-architecture": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/improve-codebase-architecture",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:21.513Z",
-    "overlay_applied_at": "2026-08-06T15:39:22.000Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.164Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b",
+    "overlay_hash": "a641b9b99aa3244c33626263f53c18454b2879d102359174e7aeed2bf30512c9"
   },
   "codebase-design": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/codebase-design",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:12.959Z",
-    "overlay_applied_at": "2026-08-06T15:34:12.959Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.139Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "domain-modeling": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/domain-modeling",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:15.250Z",
-    "overlay_applied_at": "2026-08-06T15:39:22.000Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.154Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b",
+    "overlay_hash": "79a8802bd4f553ebb793f72f0c7d0c938bcc1d4b36970704272b0d1243f4d7d2"
   },
   "c4-diagram": {
     "repo": "aleksnikolaev/c4-diagram-skill",
     "path": "skills/c4-diagram",
     "sha": "4d208688c3bd75829e49ac68df2b78d4ecfe9995",
     "synced_at": "2026-08-06T09:51:25.743Z",
-    "overlay_applied_at": "2026-08-06T09:51:25.743Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.130Z",
+    "applied_upstream_sha": "4d208688c3bd75829e49ac68df2b78d4ecfe9995",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "changelog-generator": {
     "repo": "ComposioHQ/awesome-claude-skills",
@@ -109,14 +151,29 @@
     "path": "skills/code-simplification",
     "sha": "f03b4a84b08b76608bbab3133e56e49e361f230b",
     "synced_at": "2026-08-06T09:51:39.827Z",
-    "overlay_applied_at": "2026-08-06T09:51:39.827Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.137Z",
+    "applied_upstream_sha": "f03b4a84b08b76608bbab3133e56e49e361f230b",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   },
   "grill-with-docs": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/grill-with-docs",
     "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
     "synced_at": "2026-08-06T15:34:19.274Z",
-    "overlay_applied_at": "2026-08-06T15:34:19.274Z"
+    "overlay_applied_at": "2026-08-06T16:25:47.157Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
+  },
+  "wayfinder": {
+    "repo": "mattpocock/skills",
+    "path": "skills/engineering/wayfinder",
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T16:10:39.302Z",
+    "overlay_applied_at": "2026-08-06T16:25:47.170Z",
+    "applied_upstream_sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
   }
 }
-
