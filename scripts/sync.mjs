@@ -9,6 +9,8 @@ import {
   prepareAllGeneratorManifests,
   extractOverlay,
   extractAllOverlays,
+  auditAllSkills,
+  restoreAllSkills,
 } from '../lib/overlays.mjs';
 import { runUpdate } from '../lib/update.mjs';
 import { runClean } from '../lib/clean.mjs';
@@ -117,6 +119,91 @@ overlay
   });
 
 overlay
+  .command('audit')
+  .description('Audit overlay routing (restore vs remerge) per skill')
+  .option('--skill <name>', 'Audit a single skill')
+  .option('--json', 'Emit JSON only')
+  .action(async (options) => {
+    try {
+      const results = await auditAllSkills({ skillName: options.skill || null });
+
+      if (options.json) {
+        console.log(JSON.stringify(results, null, 2));
+        return;
+      }
+
+      if (results.length === 0) {
+        console.log(kleur.yellow('No overlaid or generator skills to audit.'));
+        return;
+      }
+
+      console.log(kleur.bold('\nOverlay audit:'));
+      for (const r of results) {
+        const color =
+          r.route === 'restore'
+            ? kleur.green
+            : r.route === 'remerge' || r.route === 'fresh'
+              ? kleur.yellow
+              : kleur.dim;
+        console.log(color(`  ${r.skill}: ${r.route} — ${r.reason}`));
+        if (r.upstream_changed || r.overlay_changed) {
+          console.log(
+            kleur.dim(
+              `    upstream_changed=${r.upstream_changed} overlay_changed=${r.overlay_changed}`
+            )
+          );
+        }
+      }
+    } catch (err) {
+      console.error(kleur.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+overlay
+  .command('restore')
+  .description('Restore blended skills from git when upstream and overlay are unchanged')
+  .option('--skill <name>', 'Restore a single skill')
+  .option('--dry-run', 'Report restore candidates without checking out files')
+  .action(async (options) => {
+    try {
+      const results = await restoreAllSkills({
+        skillName: options.skill || null,
+        dryRun: options.dryRun || false,
+      });
+
+      const restored = results.filter((r) => r.status === 'restored' || r.status === 'dry_run');
+      const skipped = results.filter((r) => r.status === 'skipped');
+      const errors = results.filter((r) => r.status === 'error');
+
+      if (restored.length > 0) {
+        console.log(kleur.bold(`\n${options.dryRun ? 'Would restore' : 'Restored'}:`));
+        for (const r of restored) {
+          console.log(kleur.green(`  ${r.skill} ← ${r.blended_ref}`));
+        }
+      }
+
+      if (skipped.length > 0) {
+        console.log(kleur.dim('\nSkipped:'));
+        for (const r of skipped) {
+          console.log(kleur.dim(`  ${r.skill}: ${r.reason}`));
+        }
+      }
+
+      for (const r of errors) {
+        console.log(kleur.red(`  ${r.skill}: ${r.reason}`));
+      }
+
+      if (results.length === 0) {
+        console.log(kleur.yellow('No skills to restore.'));
+      }
+    } catch (err) {
+      console.error(kleur.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+overlay
   .command('prepare')
   .description('Run static ops and write agent apply manifests')
   .option('--skill <name>', 'Prepare for a single skill')
@@ -143,7 +230,7 @@ overlay
         );
       }
 
-      console.log(kleur.dim('\nIn Cursor: "Apply overlay for <skill-name>"'));
+      console.log(kleur.dim('\nIn Cursor: "skill-overlay apply <skill-name>"'));
     } catch (err) {
       console.error(kleur.red(`Error: ${err.message}`));
       process.exit(1);
@@ -178,7 +265,7 @@ overlay
         console.log(kleur.dim(`    ${r.generatorCount ?? 0} generator(s)`));
       }
 
-      console.log(kleur.dim('\nIn Cursor: "Apply overlay for <skill-name>"'));
+      console.log(kleur.dim('\nIn Cursor: "skill-overlay apply <skill-name>"'));
     } catch (err) {
       console.error(kleur.red(`Error: ${err.message}`));
       process.exit(1);
@@ -187,7 +274,7 @@ overlay
 
 program
   .command('update')
-  .description('Sync upstream, apply static overlays, prepare semantic apply')
+  .description('Sync upstream, apply static overlays, audit, auto-restore, prepare remerge manifests')
   .option('--dry-run', 'Report changes without writing files')
   .option('--skill <name>', 'Update a single skill')
   .option('--skip-sync', 'Skip upstream sync (overlay static and prepare only)')

@@ -6,6 +6,28 @@ All notable changes to this skills collection are documented here.
 
 ### ✨ New Features
 
+- **skill-overlay** — Full lifecycle for skill overlays: audit routing (restore vs remerge), deterministic git restore when upstream and overlay are unchanged, and agent modes for apply, extract, and reconcile. Replaces **apply-skill-overlay**.
+
+- **`npm run overlay -- audit` / `restore`** — Fingerprint upstream SHA and overlay hashes in `.locks/upstream.json`; auto-restore blended skills during `npm run update` when inputs are identical.
+
+### 🔧 Improvements
+
+- **Overlay lock schema** — Extended `.locks/upstream.json` with `applied_upstream_sha`, `overlay_hash`, `universal_overlay_hash`, and `blended_ref` for deterministic restore vs remerge routing.
+
+- **`npm run update`** — Now runs sync → static → audit → auto-restore → prepare remerge manifests (agent apply only when upstream or overlay changed).
+
+- **extract-overlay drafts** — `draftInstructions()` emits intent-only hints instead of embedding local file blobs that encouraged literal restore.
+
+### 🗑️ Removed
+
+- **apply-skill-overlay** — Renamed to **skill-overlay** with mode-based structure (audit, restore, apply, extract, reconcile).
+
+---
+
+## 2026-08-06 (earlier)
+
+### ✨ New Features
+
 - **Skills collection** — Curated agent skills for engineering (architecture decision records, C4 diagrams, code review, codebase design, find-docs, gherkin authoring, improve, openspec-init, zoom-out, and more) and productivity (caveman, grilling, handoff, teach, writing-great-skills, and more), installable via `npx skills add`.
 
 - **deploy-mate** — End-to-end deployment readiness for one environment at a time: architecture discovery, env-var cataloging, secret harvesting, CI/runtime injection, and deploy verification through a phased command workflow.
@@ -53,3 +75,4 @@ All notable changes to this skills collection are documented here.
 - **openspec-git-discipline** — Replaced by git-commit for session-scoped conventional commits.
 
 - **diagnose skill** — Removed; diagnosing-bugs covers structured bug diagnosis.
+

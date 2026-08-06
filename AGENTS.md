@@ -34,7 +34,7 @@ Each category directory owns a manifest at `skills/<category>/skills.json`:
 
 Local-only skills omit `source`. Category is implied by the manifest path (`skills/<category>/skills.json`), not repeated on each entry.
 
-Skills with an overlay in `overlays/<name>/OVERLAY.yaml` are customized after sync using the **apply-skill-overlay** skill.
+Skills with an overlay in `overlays/<name>/OVERLAY.yaml` are customized after sync using the **skill-overlay** skill.
 
 ## Commands
 
@@ -51,7 +51,7 @@ npm run validate
 # Sync foreign skills (overwrites skills/ from upstream)
 npm run sync
 
-# Full update: sync + static overlays + prepare semantic apply
+# Full update: sync + static overlays + audit + auto-restore + prepare remerge manifests
 npm run update
 
 # Apply static overlay file ops (add/remove/replace)
@@ -79,31 +79,32 @@ npm run install
 
 ## Overlay workflow
 
-Apply order: **sync → static changes → semantic changes → generators (agent)**
+Apply order: **sync → static → audit → restore (unchanged) → remerge manifests → apply/reconcile (agent)**
 
-Sync, import, and extract commands remove their clone caches automatically when they finish. Overlay apply manifests in `.tmp/overlay-apply/` are removed after apply via `npm run clean -- --skill <name>` (see apply-skill-overlay skill). Use `npm run clean` to prune stale clone caches; `--manifests` removes manifests for overlays that are no longer pending.
+Sync, import, and extract commands remove their clone caches automatically when they finish. Overlay apply manifests in `.tmp/overlay-apply/` are removed after apply via `npm run clean -- --skill <name>` (see skill-overlay skill). Use `npm run clean` to prune stale clone caches; `--manifests` removes manifests for overlays that are no longer pending.
 
 See [README.md](README.md#skill-overlays) for the full `OVERLAY.yaml` reference.
 
 After upstream changes:
 
 ```bash
-npm run update                  # sync + static overlays + prepare
+npm run update                  # sync + static + audit + restore + prepare remerge
 # Or step-by-step:
-npm run sync                    # overwrite skills/ from upstream
-npm run overlay -- static       # deterministic file ops
-npm run overlay -- prepare      # write .tmp/overlay-apply/<skill>.md
-# In Cursor — invoke apply-skill-overlay skill:
-#   "Apply overlay for git-commit"
-#   "Reconcile pending skill overlays"
+npm run sync
+npm run overlay -- static
+npm run overlay -- audit
+npm run overlay -- restore      # unchanged inputs only
+npm run overlay -- prepare      # remerge manifests
+# In Cursor — invoke skill-overlay skill:
+#   "skill-overlay apply git-commit"
 npm run validate
 git diff
-git commit
+git commit                      # blended_ref must reference this commit
 ```
 
 ### Generated files (`agents/openai.yaml`)
 
-Declared in universal [`overlays/OVERLAY.yaml`](overlays/OVERLAY.yaml) as an agent generator (`{ id, instructions, file? }`). Applied by **apply-skill-overlay** after semantic merge. Typical output derived from each skill's `SKILL.md` frontmatter:
+Declared in universal [`overlays/OVERLAY.yaml`](overlays/OVERLAY.yaml) as an agent generator (`{ id, instructions, file? }`). Applied by **skill-overlay** after semantic merge. Typical output derived from each skill's `SKILL.md` frontmatter:
 
 - `interface.display_name` — title-cased skill name
 - `interface.short_description` — first sentence of the description
@@ -113,7 +114,7 @@ Per-skill overlays may add more generators in `generators.add` or opt out via `g
 
 Overlay static `add/replace` for a custom manifest pins that file — skip generator apply for that path unless instructions require regeneration.
 
-The **apply-skill-overlay** skill performs intelligent semantic merging. It activates when sync flags a pending overlay, the user references `.tmp/overlay-apply/<skill>.md`, or asks to apply/customize/reconcile a skill overlay.
+The **skill-overlay** skill performs intelligent semantic merging. It activates when sync flags a pending overlay, the user references `.tmp/overlay-apply/<skill>.md`, or asks to apply/customize/reconcile a skill overlay.
 
 ### Layout
 
@@ -128,7 +129,7 @@ The **apply-skill-overlay** skill performs intelligent semantic merging. It acti
 - Skill `name` must be unique across the whole repo.
 - Categories are free-form strings used only for filesystem layout.
 - `npm run sync` updates the working tree directly; review before committing.
-- Skills with overlays need semantic apply after sync — see apply-skill-overlay skill.
+- Skills with overlays need semantic apply after sync — see skill-overlay skill.
 - Run `npm run validate` before committing.
 
 <!-- Source: superpowers-bridge/templates/adopters/AGENTS.md.fragment.md -->
