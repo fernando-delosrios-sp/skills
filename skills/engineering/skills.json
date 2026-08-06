@@ -42,11 +42,7 @@
       }
     },
     {
-      "name": "gherkin-authoring",
-      "source": {
-        "repo": "melodic-software/claude-code-plugins",
-        "path": "plugins/spec-driven-development/skills/gherkin-authoring"
-      }
+      "name": "gherkin-authoring"
     },
     {
       "name": "git-commit"
@@ -76,12 +72,14 @@
       "name": "openspec-init"
     },
     {
-      "name": "zoom-out",
+      "name": "wayfinder",
       "source": {
         "repo": "mattpocock/skills",
-        "path": "skills/engineering/zoom-out"
+        "path": "skills/engineering/wayfinder"
       }
+    },
+    {
+      "name": "zoom-out"
     }
   ]
 }
-

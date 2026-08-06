@@ -1,11 +1,7 @@
 {
   "skills": [
     {
-      "name": "caveman",
-      "source": {
-        "repo": "mattpocock/skills",
-        "path": "skills/productivity/caveman"
-      }
+      "name": "caveman"
     },
     {
       "name": "grill-me",
@@ -53,13 +49,6 @@
       "source": {
         "repo": "mattpocock/skills",
         "path": "skills/productivity/wait-what"
-      }
-    },
-    {
-      "name": "wayfinder",
-      "source": {
-        "repo": "mattpocock/skills",
-        "path": "skills/productivity/wayfinder"
       }
     },
     {
