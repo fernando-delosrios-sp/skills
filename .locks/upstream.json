@@ -2,51 +2,51 @@
   "grill-me": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/grill-me",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:01.589Z",
-    "overlay_applied_at": "2026-08-06T09:51:01.589Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:25.037Z",
+    "overlay_applied_at": "2026-08-06T15:34:25.037Z"
   },
   "writing-for-agents": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/writing-for-agents",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:02.722Z",
-    "overlay_applied_at": "2026-08-06T09:51:02.722Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:33.177Z",
+    "overlay_applied_at": "2026-08-06T15:34:33.177Z"
   },
   "to-questionnaire": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/to-questionnaire",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:03.887Z",
-    "overlay_applied_at": "2026-08-06T09:51:03.887Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:29.689Z",
+    "overlay_applied_at": "2026-08-06T15:34:29.689Z"
   },
   "wait-what": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/wait-what",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:05.128Z",
-    "overlay_applied_at": "2026-08-06T09:51:05.128Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:30.893Z",
+    "overlay_applied_at": "2026-08-06T15:34:30.893Z"
   },
   "grilling": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/grilling",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:09.878Z",
-    "overlay_applied_at": "2026-08-06T09:51:09.878Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:26.151Z",
+    "overlay_applied_at": "2026-08-06T15:34:26.151Z"
   },
   "handoff": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/handoff",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:11.042Z",
-    "overlay_applied_at": "2026-08-06T09:51:11.042Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:27.326Z",
+    "overlay_applied_at": "2026-08-06T15:34:27.326Z"
   },
   "teach": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/teach",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:12.160Z",
-    "overlay_applied_at": "2026-08-06T09:51:12.160Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:28.527Z",
+    "overlay_applied_at": "2026-08-06T15:34:28.527Z"
   },
   "improve": {
     "repo": "shadcn/improve",
@@ -58,30 +58,30 @@
   "diagnosing-bugs": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/diagnosing-bugs",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:16.475Z",
-    "overlay_applied_at": "2026-08-06T09:51:16.475Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:14.101Z",
+    "overlay_applied_at": "2026-08-06T15:34:14.101Z"
   },
   "improve-codebase-architecture": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/improve-codebase-architecture",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:17.608Z",
-    "overlay_applied_at": "2026-08-06T14:42:00.000Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:21.513Z",
+    "overlay_applied_at": "2026-08-06T15:39:22.000Z"
   },
   "codebase-design": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/codebase-design",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:21.165Z",
-    "overlay_applied_at": "2026-08-06T09:51:21.165Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:12.959Z",
+    "overlay_applied_at": "2026-08-06T15:34:12.959Z"
   },
   "domain-modeling": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/domain-modeling",
-    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
-    "synced_at": "2026-08-06T09:51:22.286Z",
-    "overlay_applied_at": "2026-08-06T14:11:52.000Z"
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:15.250Z",
+    "overlay_applied_at": "2026-08-06T15:39:22.000Z"
   },
   "c4-diagram": {
     "repo": "aleksnikolaev/c4-diagram-skill",
@@ -110,5 +110,13 @@
     "sha": "f03b4a84b08b76608bbab3133e56e49e361f230b",
     "synced_at": "2026-08-06T09:51:39.827Z",
     "overlay_applied_at": "2026-08-06T09:51:39.827Z"
+  },
+  "grill-with-docs": {
+    "repo": "mattpocock/skills",
+    "path": "skills/engineering/grill-with-docs",
+    "sha": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+    "synced_at": "2026-08-06T15:34:19.274Z",
+    "overlay_applied_at": "2026-08-06T15:34:19.274Z"
   }
 }
+
