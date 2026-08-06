@@ -2,52 +2,25 @@
 
 import { Command } from 'commander';
 import { importSkill, importAllSkills } from '../lib/import.mjs';
-import { syncAllSkills, applyLocalChanges } from '../lib/sync.mjs';
+import { syncAllSkills, printSyncSummary } from '../lib/sync.mjs';
+import {
+  applyStaticOverlays,
+  prepareOverlays,
+  prepareAllGeneratorManifests,
+  extractOverlay,
+  extractAllOverlays,
+} from '../lib/overlays.mjs';
+import { runUpdate } from '../lib/update.mjs';
+import { runClean } from '../lib/clean.mjs';
 import { validateRepo } from '../lib/validate.mjs';
-import { loadSkills } from '../lib/index.mjs';
-import { commitFiles, openPR, addLabels, createBranch, getOctokit, parseRepoRef, enableAutoMerge, getDefaultBranch } from '../lib/github.mjs';
-import { mkdir, writeFile, access } from 'node:fs/promises';
-import { resolve } from 'node:path';
 import kleur from 'kleur';
-
-const ROOT = process.cwd();
-
-async function generatePRBody(results) {
-  const lines = ['## Sync results\n'];
-
-  for (const r of results) {
-    switch (r.status) {
-      case 'unchanged':
-        lines.push(`- **${r.skill}**: no changes`);
-        break;
-      case 'changed': {
-        const label = r.custom ? '[custom: true — manual review]' : '[auto-merge]';
-        lines.push(`- **${r.skill}** ${label}`);
-        for (const change of r.changes) {
-          lines.push(`  - ${change.action}: \`${change.path}\``);
-        }
-        break;
-      }
-      case 'alert':
-        lines.push(`- **${r.skill}**: ${kleur.yellow('⚠')} ${r.reason}`);
-        break;
-      case 'error':
-        lines.push(`- **${r.skill}**: ${kleur.red('✗')} ${r.reason}`);
-        break;
-      case 'skipped':
-        break;
-    }
-  }
-
-  return lines.join('\n');
-}
 
 const program = new Command();
 
 program
   .name('skills-tool')
   .description('Manage the agent skills collection')
-  .version('0.1.0');
+  .version('0.2.0');
 
 program
   .command('import')
@@ -82,164 +55,253 @@ program
 
 program
   .command('sync')
-  .description('Sync all foreign skills with upstream (local mode by default; CI mode in GitHub Actions)')
-  .option('--dry-run', 'Check for changes without committing or opening a PR')
+  .description('Sync all foreign skills with upstream (local-only; overwrites skill dirs)')
+  .option('--dry-run', 'Check for upstream changes without writing files')
   .action(async (options) => {
     console.log(kleur.bold('Syncing skills...\n'));
 
-    const results = await syncAllSkills();
-    const changed = results.filter((r) => r.status === 'changed');
-    const autoMerge = changed.filter((r) => !r.custom);
-    const manualReview = changed.filter((r) => r.custom);
-
-    // Print summary
-    console.log();
-    console.log(kleur.bold('Summary:'));
-    console.log(kleur.dim(`  Total skills checked: ${results.length}`));
-    console.log(kleur.green(`  Unchanged: ${results.filter((r) => r.status === 'unchanged').length}`));
-    console.log(kleur.yellow(`  Changed (auto-merge): ${autoMerge.length}`));
-    console.log(kleur.yellow(`  Changed (manual review): ${manualReview.length}`));
-    console.log(kleur.red(`  Alerts: ${results.filter((r) => r.status === 'alert').length}`));
-    console.log(kleur.red(`  Errors: ${results.filter((r) => r.status === 'error').length}`));
-
-    const alerts = results.filter((r) => r.status === 'alert');
-    for (const alert of alerts) {
-      console.log(kleur.yellow(`  ⚠ ${alert.skill}: ${alert.reason}`));
-    }
-
-    const errors = results.filter((r) => r.status === 'error');
-    for (const error of errors) {
-      console.log(kleur.red(`  ✗ ${error.skill}: ${error.reason}`));
-    }
-
-    if (changed.length === 0) {
-      console.log(kleur.green('\nNo changes to sync.'));
-      return;
-    }
+    const results = await syncAllSkills({ dryRun: options.dryRun });
+    printSyncSummary(results);
 
     if (options.dryRun) {
       console.log(kleur.yellow('\nDry run — no changes applied.'));
-      for (const r of changed) {
-        console.log(kleur.dim(`\n  ${r.skill}:`));
-        for (const change of r.changes) {
-          console.log(kleur.dim(`    ${change.action}: ${change.path}`));
+    } else {
+      const updated = results.filter((r) => r.status === 'updated' || r.status === 'updated_clean');
+      if (updated.length > 0) {
+        console.log(kleur.dim('\nRun git diff to review upstream changes before committing.'));
+      }
+    }
+  });
+
+const overlay = program
+  .command('overlay')
+  .description('Apply or prepare skill overlays');
+
+overlay
+  .command('static')
+  .description('Apply static overlay file ops (add/remove/replace)')
+  .option('--skill <name>', 'Apply for a single skill')
+  .option('--dry-run', 'Report ops without writing files')
+  .action(async (options) => {
+    try {
+      const results = await applyStaticOverlays({
+        skillName: options.skill || null,
+        dryRun: options.dryRun,
+      });
+
+      if (results.length === 0) {
+        console.log(kleur.yellow('No overlays found.'));
+      } else {
+        for (const r of results) {
+          console.log(kleur.bold(`\n${r.skill}:`));
+          if (r.applied.length === 0) {
+            console.log(kleur.dim('  No static ops'));
+          } else {
+            for (const op of r.applied) {
+              console.log(kleur.green(`  ${op.action}: ${op.file}`));
+            }
+          }
+          if (r.hasSemantic) {
+            console.log(kleur.yellow(`  ${r.semanticCount} semantic change(s) still pending`));
+          }
         }
       }
-      return;
-    }
 
-    const isCI = process.env.GITHUB_ACTIONS === 'true';
-
-    if (!isCI) {
-      console.log(kleur.dim('\nApplying changes locally...'));
-      await applyLocalChanges(results);
-      console.log(kleur.green(`\nApplied changes to ${changed.length} skill(s) locally.`));
-
-      const customChanged = changed.filter((r) => r.custom);
-      if (customChanged.length > 0) {
-        console.log(kleur.yellow('\nThe following customized skills were updated locally; review before committing:'));
-        for (const r of customChanged) {
-          console.log(kleur.yellow(`  - ${r.skill}`));
-        }
+      if (!options.dryRun) {
+        console.log(kleur.dim('\nNext: npm run overlay prepare'));
       }
-
-      console.log(kleur.dim('Run git diff to review the changes before committing.'));
-      return;
-    }
-
-    // GitHub Actions mode
-    if (!process.env.GITHUB_TOKEN) {
-      console.error(kleur.red('\nGITHUB_TOKEN not set. Cannot sync in GitHub Actions mode.'));
+    } catch (err) {
+      console.error(kleur.red(`Error: ${err.message}`));
       process.exit(1);
     }
+  });
 
-    const octokit = getOctokit();
-    const { owner, repo } = parseRepoRef(process.env.GITHUB_REPOSITORY || 'fernando-delosrios-sp/skills');
+overlay
+  .command('prepare')
+  .description('Run static ops and write agent apply manifests')
+  .option('--skill <name>', 'Prepare for a single skill')
+  .option('--no-static', 'Skip static ops (assume already applied)')
+  .action(async (options) => {
+    try {
+      const results = await prepareOverlays({
+        skillName: options.skill || null,
+        runStatic: options.static !== false,
+      });
 
-    // Get the event ref (branch or PR head)
-    const ref = process.env.GITHUB_REF || 'refs/heads/main';
-    const baseBranch = ref.replace('refs/heads/', '');
-
-    const today = new Date().toISOString().slice(0, 10);
-    const branchName = `sync/${today}`;
-
-    // Apply file changes locally for each changed skill
-    for (const r of changed) {
-      for (const upFile of r.upstreamFiles) {
-        const relPath = upFile.path.replace(upFile.upstreamRoot + '/', '');
-        const localPath = resolve(r.localSkillDir, relPath);
-        await mkdir(resolve(localPath, '..'), { recursive: true });
-        await writeFile(localPath, upFile.content, 'utf8');
+      if (results.length === 0) {
+        console.log(kleur.yellow('No overlays to prepare.'));
+        return;
       }
+
+      console.log(kleur.bold('\nManifests written:'));
+      for (const r of results) {
+        console.log(kleur.green(`  ${r.skill}: ${r.manifestPath}`));
+        console.log(
+          kleur.dim(
+            `    ${r.semanticCount} semantic, ${r.staticCount} static, ${r.generatorCount ?? 0} generators`
+          )
+        );
+      }
+
+      console.log(kleur.dim('\nIn Cursor: "Apply overlay for <skill-name>"'));
+    } catch (err) {
+      console.error(kleur.red(`Error: ${err.message}`));
+      process.exit(1);
     }
+  });
 
-    // Read all changed files to prepare the commit
-    const filesToCommit = [];
-    for (const r of changed) {
-      for (const upFile of r.upstreamFiles) {
-        const relPath = upFile.path.replace(upFile.upstreamRoot + '/', '');
-        const repoRelPath = `skills/${r.skill}/${relPath}`;
-        filesToCommit.push({ path: repoRelPath, content: upFile.content });
+overlay
+  .command('prepare-generators')
+  .description('Write generator apply manifests for skills (all skills or one)')
+  .option('--skill <name>', 'Prepare for a single skill')
+  .option('--all', 'Prepare manifests for every skill with configured generators')
+  .action(async (options) => {
+    try {
+      let results;
+      if (options.all) {
+        results = await prepareAllGeneratorManifests();
+      } else if (options.skill) {
+        results = await prepareOverlays({ skillName: options.skill, runStatic: false });
+      } else {
+        console.error(kleur.red('Error: pass --skill <name> or --all'));
+        process.exit(1);
       }
+
+      if (results.length === 0) {
+        console.log(kleur.yellow('No generator manifests to write.'));
+        return;
+      }
+
+      console.log(kleur.bold('\nManifests written:'));
+      for (const r of results) {
+        console.log(kleur.green(`  ${r.skill}: ${r.manifestPath}`));
+        console.log(kleur.dim(`    ${r.generatorCount ?? 0} generator(s)`));
+      }
+
+      console.log(kleur.dim('\nIn Cursor: "Apply overlay for <skill-name>"'));
+    } catch (err) {
+      console.error(kleur.red(`Error: ${err.message}`));
+      process.exit(1);
     }
+  });
 
-    console.log(kleur.dim(`\nCreating branch ${branchName}...`));
-    await createBranch(octokit, { owner, repo }, branchName, baseBranch);
-
-    console.log(kleur.dim(`Committing ${filesToCommit.length} files...`));
-    const skillNames = changed.map((r) => r.skill).join(', ');
-    await commitFiles(
-      octokit,
-      { owner, repo },
-      branchName,
-      filesToCommit,
-      `sync: update ${skillNames}`
-    );
-
-    // Build PR body
-    const body = await generatePRBody(results);
-
-    // Determine PR title
-    const title = autoMerge.length > 0
-      ? `sync: update ${changed.map((r) => r.skill).join(', ')}`
-      : `sync: review customized skills (${changed.map((r) => r.skill).join(', ')})`;
-
-    console.log(kleur.dim('Opening PR...'));
-    const pr = await openPR(octokit, { owner, repo }, branchName, baseBranch, title, body);
-    console.log(kleur.green(`\nPR opened: ${pr.html_url}`));
-
-    // Add labels
-    const labels = ['sync'];
-    if (manualReview.length > 0) labels.push('customized');
-    if (autoMerge.length > 0) labels.push('auto-merge');
-    await addLabels(octokit, { owner, repo }, pr.number, labels);
-
-    // Enable auto-merge for the PR (GitHub will auto-merge after CI passes)
-    if (autoMerge.length > 0 && manualReview.length === 0) {
-      try {
-        await enableAutoMerge(octokit, { owner, repo }, pr.number);
-        console.log(kleur.dim('Auto-merge enabled'));
-      } catch (err) {
-        console.log(kleur.yellow(`Could not enable auto-merge: ${err.message}`));
-      }
+program
+  .command('update')
+  .description('Sync upstream, apply static overlays, prepare semantic apply')
+  .option('--dry-run', 'Report changes without writing files')
+  .option('--skill <name>', 'Update a single skill')
+  .option('--skip-sync', 'Skip upstream sync (overlay static and prepare only)')
+  .option('--no-prepare', 'Skip writing overlay apply manifests')
+  .action(async (options) => {
+    try {
+      await runUpdate({
+        dryRun: options.dryRun || false,
+        skillName: options.skill || null,
+        skipSync: options.skipSync || false,
+        skipPrepare: options.noPrepare || false,
+      });
+    } catch (err) {
+      console.error(kleur.red(`Error: ${err.message}`));
+      process.exit(1);
     }
+  });
 
-    if (manualReview.length > 0) {
-      console.log(kleur.yellow('\nThe following skills have custom: true and need manual review:'));
-      for (const r of manualReview) {
-        console.log(kleur.yellow(`  - ${r.skill}`));
+program
+  .command('extract-overlay')
+  .description('Draft overlay(s) from local customizations vs upstream')
+  .option('--skill <name>', 'Extract for a single skill (default: all sourced skills)')
+  .option('--from-agents', 'Compare against .agents/skills/ instead of skills/')
+  .option('--from-commit <ref>', 'Compare against a git ref (default: working tree; use HEAD for last commit)')
+  .option('--force', 'Overwrite existing OVERLAY.yaml')
+  .action(async (options) => {
+    try {
+      const fromCommit = options.fromCommit || null;
+
+      if (options.skill) {
+        const result = await extractOverlay(options.skill, {
+          fromAgents: options.fromAgents,
+          fromCommit,
+          force: options.force || false,
+        });
+
+        if (result.status === 'skipped') {
+          console.log(kleur.yellow(`\n${result.skill}: ${result.reason}`));
+          return;
+        }
+
+        console.log(kleur.green(`\nDraft overlay written to overlays/${result.skill}/`));
+        console.log(kleur.dim(`  ${result.changeCount} change(s) detected`));
+      } else {
+        console.log(kleur.bold('Extracting overlays...\n'));
+        const results = await extractAllOverlays({
+          fromCommit,
+          fromAgents: options.fromAgents,
+          force: options.force || false,
+        });
+
+        const created = results.filter((r) => r.status === 'created');
+        const skipped = results.filter((r) => r.status === 'skipped');
+        const errors = results.filter((r) => r.status === 'error');
+
+        for (const result of created) {
+          console.log(kleur.green(`  ${result.skill}: ${result.changeCount} change(s)`));
+        }
+        for (const result of skipped) {
+          console.log(kleur.dim(`  ${result.skill}: ${result.reason}`));
+        }
+        for (const result of errors) {
+          console.log(kleur.red(`  ${result.skill}: ${result.reason}`));
+        }
+
+        console.log(kleur.dim(`\n${created.length} created, ${skipped.length} skipped, ${errors.length} error(s)`));
       }
+
+      console.log(kleur.yellow('\nReview and refine OVERLAY.yaml files before relying on them.'));
+    } catch (err) {
+      console.error(kleur.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+program
+  .command('clean')
+  .description('Remove .tmp clone caches and optional overlay apply manifests')
+  .option('--manifests', 'Also remove overlay apply manifests (applied overlays only by default)')
+  .option('--pending-manifests', 'Remove manifests even when overlay apply is still pending')
+  .option('--skill <name>', 'Remove overlay manifest for one skill (implies --manifests)')
+  .option('--all', 'Remove entire .tmp directory')
+  .option('--no-clones', 'Skip clone cache cleanup')
+  .action(async (options) => {
+    try {
+      await runClean({
+        clones: options.clones !== false && !options.all,
+        manifests: options.manifests || Boolean(options.skill),
+        appliedManifestsOnly: !options.pendingManifests,
+        skill: options.skill || null,
+        all: options.all || false,
+      });
+    } catch (err) {
+      console.error(kleur.red(`Error: ${err.message}`));
+      process.exit(1);
     }
   });
 
 program
   .command('validate')
-  .description('Validate skills.yaml and all SKILL.md files')
+  .description('Validate skills.json manifests, SKILL.md files, and overlays')
   .action(async () => {
-    const errors = await validateRepo();
+    const { errors, warnings } = await validateRepo();
+
+    for (const warn of warnings) {
+      const prefix = warn.type ? kleur.dim(`[${warn.type}]`) : '';
+      console.log(kleur.yellow(`  ${prefix} ${warn.message}`));
+    }
 
     if (errors.length === 0) {
       console.log(kleur.green('✓ All validations passed'));
+      if (warnings.length > 0) {
+        console.log(kleur.yellow(`  (${warnings.length} warning(s))`));
+      }
       return;
     }
 

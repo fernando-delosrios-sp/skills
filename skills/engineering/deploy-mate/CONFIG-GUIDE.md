@@ -230,11 +230,12 @@ Each var's **Deploy mapping** in `configuration.md` must name both paths when va
 
 ## Delegation
 
-- `find-docs` — vendor obtain steps when no MCP covers the source service
+- `search` — vendor obtain steps when no MCP covers the source service
 - `find-skills` — discover MCP/skill when Arm map is empty for a service
 - Platform MCPs — install and call per [TOOLING.md](TOOLING.md)
 - **Local CLIs** — install, auth, run per [TOOLING.md](TOOLING.md); primary path for many services
 - `env-secrets-manager` — vault sync when user prefers over local `.env`
+
 
 
 

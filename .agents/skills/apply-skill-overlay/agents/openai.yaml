@@ -1,0 +1,3 @@
+interface:
+  display_name: Apply Skill Overlay
+  short_description: Apply semantic skill overlays on top of upstream-canonical skill trees

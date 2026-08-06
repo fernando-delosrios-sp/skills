@@ -1,12 +1,26 @@
 #!/usr/bin/env node
 
 import { loadSkills } from '../lib/index.mjs';
+import { discoverOverlays } from '../lib/overlays.mjs';
+import { categoryCheckbox } from '../lib/category-checkbox-prompt.mjs';
 import kleur from 'kleur';
-import { checkbox } from '@inquirer/prompts';
 import { execSync } from 'node:child_process';
+
+function buildSkillChoice(skill, overlayNames) {
+  const tags = [];
+  if (!skill.source) tags.push('local');
+  if (overlayNames.has(skill.name)) tags.push('overlay');
+  const suffix = tags.length ? kleur.yellow(` (${tags.join(', ')})`) : '';
+  return {
+    name: `${skill.name}${suffix}`,
+    value: skill.name,
+    description: tags.join(', ') || undefined,
+  };
+}
 
 async function main() {
   const skills = await loadSkills();
+  const overlayNames = new Set(await discoverOverlays());
 
   const byCategory = {};
   for (const skill of skills) {
@@ -16,37 +30,28 @@ async function main() {
     byCategory[skill.category].push(skill);
   }
 
-  const categories = Object.keys(byCategory).sort();
-
-  console.log(kleur.bold('\nSelect skills to install:\n'));
-
-  const selectedSkills = [];
-
-  for (const category of categories) {
-    const categorySkills = byCategory[category].sort((a, b) => a.name.localeCompare(b.name));
-
-    const choices = categorySkills.map((skill) => ({
-      name: `${skill.name}${skill.custom ? kleur.yellow(' *') : ''}`,
-      value: skill.name,
-      description: skill.description || (skill.custom ? 'custom' : ''),
+  const categories = Object.keys(byCategory)
+    .sort()
+    .map((category) => ({
+      name: category,
+      choices: byCategory[category]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((skill) => buildSkillChoice(skill, overlayNames)),
     }));
 
-    try {
-      const response = await checkbox({
-        message: kleur.cyan(category),
-        choices,
-        required: false
-      });
+  let selectedSkills = [];
 
-      if (response && response.length > 0) {
-        selectedSkills.push(...response);
-      }
-    } catch (err) {
-      if (err.name === 'ExitPromptError') {
-        process.exit(0);
-      }
-      throw err;
+  try {
+    selectedSkills = await categoryCheckbox({
+      message: 'Select skills to install',
+      categories,
+      required: false,
+    });
+  } catch (err) {
+    if (err.name === 'ExitPromptError') {
+      process.exit(0);
     }
+    throw err;
   }
 
   if (selectedSkills.length === 0) {

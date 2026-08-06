@@ -130,7 +130,7 @@ Every `architecture.md` **must** include a `## Diagram` section — text-only ar
 
 Diagram labels must match component names in the tables below.
 
-**Legwork first** for evidence gaps. Invoke `find-docs`, `find-skills` (niche stack) only when:
+**Legwork first** for evidence gaps. Invoke `search`, `find-skills` (niche stack) only when:
 
 - Any production component is `inferred` with no strong evidence
 - Stack or platform is ambiguous after file scan
@@ -167,7 +167,7 @@ Map **two** tool layers in `configuration.md` — see [TOOLING.md](TOOLING.md):
 1. **Deploy tooling** — MCPs/skills for each deploy target (Fly, Vercel, Terraform, …)
 2. **Collection tooling** — MCP, skill, **local CLI**, and fallback method per **source service** from Catalog
 
-Every var must have at least one automated path (`mcp`, `skill`, or `cli`) before `manual`. Use `find-docs` for CLI install/auth commands; `find-skills` when no tool exists.
+Every var must have at least one automated path (`mcp`, `skill`, or `cli`) before `manual`. Use `search` for CLI install/auth commands; `find-skills` when no tool exists.
 
 **Done when:** deploy targets and source services each have tooling rows with MCP, CLI, install path, primary method, and intended collection chain.
 
@@ -228,7 +228,7 @@ For **every** var from Catalog, write a full per-variable block in `configuratio
 
 Each block **must** include: purpose, class, required/default, consumed-by evidence; **How to obtain** (numbered steps); **Format & validation**; **Deploy mapping**.
 
-Reference scaffolded resources by name/ID from the Scaffold registry. Use `find-docs` when vendor obtain steps are unclear. Reject placeholder or one-line obtain instructions.
+Reference scaffolded resources by name/ID from the Scaffold registry. Use `search` when vendor obtain steps are unclear. Reject placeholder or one-line obtain instructions.
 
 **Done when:** every var has a CONFIG-GUIDE block with no rejected obtain patterns; `<env>/progress.md` marks Document complete.
 
@@ -317,7 +317,7 @@ Requires Harvest finished and every **deploy-critical** Required: yes var Collec
 | P1 (HIGH) | `configuration.md` → per-var **Deploy mapping** (CI path) | Which vars → which secret names / environments |
 | P2 (MED) | `deployment.md` → Env injection, CI/CD flow | Orchestrator choice, environment names |
 | P2 (MED) | `configuration.md` → Deploy tooling | `gh`, GitLab CLI, etc. — must be `ready` |
-| P3 (LOW) | `find-docs` | Vendor CLI syntax when unsure |
+| P3 (LOW) | `search` | Vendor CLI syntax when unsure |
 
 ### Protocol
 
@@ -345,7 +345,7 @@ Requires Harvest finished and every **deploy-critical** Required: yes var Collec
 | P1 (HIGH) | `configuration.md` → per-var **Deploy mapping** (runtime path) | Platform secret names, regions |
 | P2 (MED) | `deployment.md`, generated platform config (`fly.toml`, …) | App name, region, env scope |
 | P2 (MED) | `configuration.md` → Deploy tooling | `flyctl`, Vercel CLI, `aws` — must be `ready` |
-| P3 (LOW) | `find-docs`, [TOOLING.md](TOOLING.md) § Inject verify | CLI syntax, post-inject verify |
+| P3 (LOW) | `search`, [TOOLING.md](TOOLING.md) § Inject verify | CLI syntax, post-inject verify |
 
 ### Protocol
 
@@ -378,7 +378,7 @@ Requires Harvest finished and every **deploy-critical** Required: yes var Collec
 | P1 (HIGH) | `deployment.md` → Steps, Generated files | Deploy command, workflow, rollback |
 | P1 (HIGH) | `<env>/progress.md` | Inject + gate state |
 | P2 (MED) | `configuration.md` → Deploy tooling | CLI/MCP for deploy execution |
-| P3 (LOW) | `find-docs` | Platform-specific deploy flags |
+| P3 (LOW) | `search` | Platform-specific deploy flags |
 
 ### Protocol
 
@@ -405,3 +405,4 @@ Requires Harvest finished and every **deploy-critical** Required: yes var Collec
 4. On failure: report findings; point to Rollback section in `deployment.md`; do not auto-rollback without user approval.
 
 **Done when:** verify steps executed; outcome recorded in progress.md.
+

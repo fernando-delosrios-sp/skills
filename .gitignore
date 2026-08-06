@@ -1,29 +1,3 @@
-node_modules/
 .tmp/
-
-# Never commit git metadata from imported skills
-.gitmodules
-.gitattributes
-
-skills-lock.json
-tools.yaml
-
-# AI Coding Assistants / Agents
-.agent/
-.agent
-.agents/
-.agents
-.claude/
-.claude
-.cursor/
-.cursorrules
-.cursorignore
-.cline/
-.cline
-.aider/
-.aider*
-.continue/
-.copilot/
-.sweep/
-.cody/
-.gemini/
+node_modules/
+local/

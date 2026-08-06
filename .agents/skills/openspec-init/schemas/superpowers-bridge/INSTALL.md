@@ -1,0 +1,5 @@
+- Identify the AI agent tools the user intends to use (e.g., Claude, Cursor, Windsurf, Antigravity) based on the `openspec init` selections or by asking the user.
+- For each selected tool, check if its corresponding configuration file exists at the project root (e.g., `CLAUDE.md`, `.cursorrules`, `.windsurfrules`, `AGENTS.md`).
+- Ask the user if they want to insert the workflow-routing fragment from `openspec/schemas/superpowers-bridge/templates/adopters/CLAUDE.md.fragment.<locale>.md` into the applicable tool configuration files (auto-detect locale from the existing file content; default `zh-TW` for Traditional Chinese, no suffix for English). Note: adapt the content of the fragment to match the specific tool's configuration format if necessary, though appending it as a markdown section usually works for most tools.
+- If the user agrees, append the fragment as a new section to all applicable configuration files. Skip any files that do not exist.
+- Install `obra/superpowers` skills.

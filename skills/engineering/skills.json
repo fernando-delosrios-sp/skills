@@ -1,0 +1,87 @@
+{
+  "skills": [
+    {
+      "name": "c4-diagram",
+      "source": {
+        "repo": "aleksnikolaev/c4-diagram-skill",
+        "path": "skills/c4-diagram"
+      }
+    },
+    {
+      "name": "changelog-generator"
+    },
+    {
+      "name": "code-simplification",
+      "source": {
+        "repo": "addyosmani/agent-skills",
+        "path": "skills/code-simplification"
+      }
+    },
+    {
+      "name": "codebase-design",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/codebase-design"
+      }
+    },
+    {
+      "name": "deploy-mate"
+    },
+    {
+      "name": "diagnosing-bugs",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/diagnosing-bugs"
+      }
+    },
+    {
+      "name": "domain-modeling",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/domain-modeling"
+      }
+    },
+    {
+      "name": "gherkin-authoring",
+      "source": {
+        "repo": "melodic-software/claude-code-plugins",
+        "path": "plugins/spec-driven-development/skills/gherkin-authoring"
+      }
+    },
+    {
+      "name": "git-commit"
+    },
+    {
+      "name": "grill-with-docs",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/grill-with-docs"
+      }
+    },
+    {
+      "name": "improve",
+      "source": {
+        "repo": "shadcn/improve",
+        "path": "skills/improve"
+      }
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/improve-codebase-architecture"
+      }
+    },
+    {
+      "name": "openspec-init"
+    },
+    {
+      "name": "zoom-out",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/zoom-out"
+      }
+    }
+  ]
+}
+

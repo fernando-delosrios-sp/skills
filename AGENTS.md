@@ -2,30 +2,39 @@
 
 This is a skills repo for `npx skills add fernando-delosrios-sp/skills`.
 
-Every skill lives under `skills/<category>/<name>/SKILL.md` and is listed in `skills.yaml`.
+Every skill lives under `skills/<category>/<name>/SKILL.md` and is listed in `skills/<category>/skills.json`.
 
-## skills.yaml
+## skills.json
 
-```yaml
-skills:
-  - name: my-skill
-    category: engineering
-    custom: true          # your own skill
+Each category directory owns a manifest at `skills/<category>/skills.json`:
 
-  - name: foreign-skill
-    category: productivity
-    source:
-      repo: owner/repo
-      path: skills/foreign-skill
-    custom: false         # upstream is canonical, auto-updates
+```json
+{
+  "skills": [
+    { "name": "my-skill" },
 
-  - name: customized-foreign
-    category: engineering
-    source:
-      repo: owner/repo
-      path: skills/foo
-    custom: true          # forked; sync opens a review PR
+    {
+      "name": "foreign-skill",
+      "source": {
+        "repo": "owner/repo",
+        "path": "skills/foreign-skill"
+      }
+    },
+
+    {
+      "name": "customized-foreign",
+      "source": {
+        "repo": "owner/repo",
+        "path": "skills/foo"
+      }
+    }
+  ]
+}
 ```
+
+Local-only skills omit `source`. Category is implied by the manifest path (`skills/<category>/skills.json`), not repeated on each entry.
+
+Skills with an overlay in `overlays/<name>/OVERLAY.yaml` are customized after sync using the **apply-skill-overlay** skill.
 
 ## Commands
 
@@ -36,23 +45,90 @@ npm run import -- --repo owner/repo --path skills/name --category my-category
 # Import all discoverable skills from a repo
 npm run import -- --repo owner/repo --category my-category --all
 
-# Validate skills.yaml and all SKILL.md files
+# Validate skills.json manifests, SKILL.md files, and overlays
 npm run validate
 
-# Sync foreign skills (applies updates locally; opens PRs when run in GitHub Actions)
+# Sync foreign skills (overwrites skills/ from upstream)
 npm run sync
 
+# Full update: sync + static overlays + prepare semantic apply
+npm run update
+
+# Apply static overlay file ops (add/remove/replace)
+npm run overlay -- static
+
+# Prepare overlay or generator apply manifests
+npm run overlay -- prepare
+
+# Prepare generator manifests for all skills or one skill
+npm run overlay -- prepare-generators --all
+npm run overlay -- prepare-generators --skill <name>
+
+# Draft an overlay from local customizations vs upstream
+npm run extract-overlay -- --skill git-commit --from-agents
+npm run extract-overlay -- --from-commit HEAD   # infer all overlays from last commit
+
+# Remove .tmp clone caches and optional overlay manifests
+npm run clean
+npm run clean -- --manifests
+npm run clean -- --skill <name>
+
 # Install this repo's skills into your local agents
-npm run install-self
+npm run install
 ```
+
+## Overlay workflow
+
+Apply order: **sync → static changes → semantic changes → generators (agent)**
+
+Sync, import, and extract commands remove their clone caches automatically when they finish. Overlay apply manifests in `.tmp/overlay-apply/` are removed after apply via `npm run clean -- --skill <name>` (see apply-skill-overlay skill). Use `npm run clean` to prune stale clone caches; `--manifests` removes manifests for overlays that are no longer pending.
+
+See [README.md](README.md#skill-overlays) for the full `OVERLAY.yaml` reference.
+
+After upstream changes:
+
+```bash
+npm run update                  # sync + static overlays + prepare
+# Or step-by-step:
+npm run sync                    # overwrite skills/ from upstream
+npm run overlay -- static       # deterministic file ops
+npm run overlay -- prepare      # write .tmp/overlay-apply/<skill>.md
+# In Cursor — invoke apply-skill-overlay skill:
+#   "Apply overlay for git-commit"
+#   "Reconcile pending skill overlays"
+npm run validate
+git diff
+git commit
+```
+
+### Generated files (`agents/openai.yaml`)
+
+Declared in universal [`overlays/OVERLAY.yaml`](overlays/OVERLAY.yaml) as an agent generator (`{ id, instructions, file? }`). Applied by **apply-skill-overlay** after semantic merge. Typical output derived from each skill's `SKILL.md` frontmatter:
+
+- `interface.display_name` — title-cased skill name
+- `interface.short_description` — first sentence of the description
+- `policy.allow_implicit_invocation: false` — when `disable-model-invocation: true`
+
+Per-skill overlays may add more generators in `generators.add` or opt out via `generators.disable`.
+
+Overlay static `add/replace` for a custom manifest pins that file — skip generator apply for that path unless instructions require regeneration.
+
+The **apply-skill-overlay** skill performs intelligent semantic merging. It activates when sync flags a pending overlay, the user references `.tmp/overlay-apply/<skill>.md`, or asks to apply/customize/reconcile a skill overlay.
+
+### Layout
+
+- `skills/` — upstream-canonical skill trees (overwritten on sync when `source` is set)
+- `overlays/OVERLAY.yaml` — universal generator defaults for all skills
+- `overlays/<name>/OVERLAY.yaml` — per-skill customization intent (semantic + static ops + generator overrides)
+- `overlays/<name>/files/` — static file payloads for add/replace ops
+- `.locks/upstream.json` — last-synced upstream SHAs and overlay apply timestamps
 
 ## Rules
 
 - Skill `name` must be unique across the whole repo.
 - Categories are free-form strings used only for filesystem layout.
-- `npm run sync` updates the working tree directly when run locally; review the changes before committing.
-- In GitHub Actions, sync never overwrites `custom: true` skills automatically; it opens a PR for manual review.
-- In GitHub Actions, sync auto-merges updates for `custom: false` skills if CI validation passes.
+- `npm run sync` updates the working tree directly; review before committing.
+- Skills with overlays need semantic apply after sync — see apply-skill-overlay skill.
 - Run `npm run validate` before committing.
 
 <!-- Source: superpowers-bridge/templates/adopters/AGENTS.md.fragment.md -->

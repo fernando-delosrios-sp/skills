@@ -1,0 +1,114 @@
+{
+  "grill-me": {
+    "repo": "mattpocock/skills",
+    "path": "skills/productivity/grill-me",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:01.589Z",
+    "overlay_applied_at": "2026-08-06T09:51:01.589Z"
+  },
+  "writing-for-agents": {
+    "repo": "mattpocock/skills",
+    "path": "skills/productivity/writing-for-agents",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:02.722Z",
+    "overlay_applied_at": "2026-08-06T09:51:02.722Z"
+  },
+  "to-questionnaire": {
+    "repo": "mattpocock/skills",
+    "path": "skills/productivity/to-questionnaire",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:03.887Z",
+    "overlay_applied_at": "2026-08-06T09:51:03.887Z"
+  },
+  "wait-what": {
+    "repo": "mattpocock/skills",
+    "path": "skills/productivity/wait-what",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:05.128Z",
+    "overlay_applied_at": "2026-08-06T09:51:05.128Z"
+  },
+  "grilling": {
+    "repo": "mattpocock/skills",
+    "path": "skills/productivity/grilling",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:09.878Z",
+    "overlay_applied_at": "2026-08-06T09:51:09.878Z"
+  },
+  "handoff": {
+    "repo": "mattpocock/skills",
+    "path": "skills/productivity/handoff",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:11.042Z",
+    "overlay_applied_at": "2026-08-06T09:51:11.042Z"
+  },
+  "teach": {
+    "repo": "mattpocock/skills",
+    "path": "skills/productivity/teach",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:12.160Z",
+    "overlay_applied_at": "2026-08-06T09:51:12.160Z"
+  },
+  "improve": {
+    "repo": "shadcn/improve",
+    "path": "skills/improve",
+    "sha": "03369ee6d7cafbfcecc4346539b05b3dc0a603bb",
+    "synced_at": "2026-08-06T09:51:13.182Z",
+    "overlay_applied_at": "2026-08-06T15:12:00.000Z"
+  },
+  "diagnosing-bugs": {
+    "repo": "mattpocock/skills",
+    "path": "skills/engineering/diagnosing-bugs",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:16.475Z",
+    "overlay_applied_at": "2026-08-06T09:51:16.475Z"
+  },
+  "improve-codebase-architecture": {
+    "repo": "mattpocock/skills",
+    "path": "skills/engineering/improve-codebase-architecture",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:17.608Z",
+    "overlay_applied_at": "2026-08-06T14:42:00.000Z"
+  },
+  "codebase-design": {
+    "repo": "mattpocock/skills",
+    "path": "skills/engineering/codebase-design",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:21.165Z",
+    "overlay_applied_at": "2026-08-06T09:51:21.165Z"
+  },
+  "domain-modeling": {
+    "repo": "mattpocock/skills",
+    "path": "skills/engineering/domain-modeling",
+    "sha": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+    "synced_at": "2026-08-06T09:51:22.286Z",
+    "overlay_applied_at": "2026-08-06T14:11:52.000Z"
+  },
+  "c4-diagram": {
+    "repo": "aleksnikolaev/c4-diagram-skill",
+    "path": "skills/c4-diagram",
+    "sha": "4d208688c3bd75829e49ac68df2b78d4ecfe9995",
+    "synced_at": "2026-08-06T09:51:25.743Z",
+    "overlay_applied_at": "2026-08-06T09:51:25.743Z"
+  },
+  "changelog-generator": {
+    "repo": "ComposioHQ/awesome-claude-skills",
+    "path": "changelog-generator",
+    "sha": "be2a406907dbc61b73e6827ded415c96139d13a2",
+    "synced_at": "2026-08-06T09:51:32.900Z",
+    "overlay_applied_at": "2026-08-06T09:51:32.900Z"
+  },
+  "git-commit": {
+    "repo": "github/awesome-copilot",
+    "path": "skills/git-commit",
+    "sha": "6c7fe1b15f1be7e29d3aaf04fb3423ee5a226353",
+    "synced_at": "2026-08-06T09:51:38.627Z",
+    "overlay_applied_at": null
+  },
+  "code-simplification": {
+    "repo": "addyosmani/agent-skills",
+    "path": "skills/code-simplification",
+    "sha": "f03b4a84b08b76608bbab3133e56e49e361f230b",
+    "synced_at": "2026-08-06T09:51:39.827Z",
+    "overlay_applied_at": "2026-08-06T09:51:39.827Z"
+  }
+}

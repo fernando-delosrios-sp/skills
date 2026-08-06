@@ -1,0 +1,73 @@
+{
+  "skills": [
+    {
+      "name": "caveman",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/productivity/caveman"
+      }
+    },
+    {
+      "name": "grill-me",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/productivity/grill-me"
+      }
+    },
+    {
+      "name": "grilling",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/productivity/grilling"
+      }
+    },
+    {
+      "name": "handoff",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/productivity/handoff"
+      }
+    },
+    {
+      "name": "risen-prompt"
+    },
+    {
+      "name": "search"
+    },
+    {
+      "name": "teach",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/productivity/teach"
+      }
+    },
+    {
+      "name": "to-questionnaire",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/productivity/to-questionnaire"
+      }
+    },
+    {
+      "name": "wait-what",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/productivity/wait-what"
+      }
+    },
+    {
+      "name": "wayfinder",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/productivity/wayfinder"
+      }
+    },
+    {
+      "name": "writing-for-agents",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/productivity/writing-for-agents"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+description: Repo-wide generator defaults applied to all skills
+
+generators:
+  - id: openai-manifest
+    file: agents/openai.yaml
+    description: OpenAI agent interface manifest derived from SKILL.md frontmatter
+    instructions: |
+      Build agents/openai.yaml from this skill's SKILL.md frontmatter:
+      - interface.display_name: hyphenated skill name → Title Case words (e.g. git-commit → Git Commit)
+      - interface.short_description: first sentence of the description field, trimmed to ~72 characters
+      - When disable-model-invocation is true in frontmatter, set policy.allow_implicit_invocation: false
+      - Omit policy when disable-model-invocation is absent or false
+      - Output valid YAML only; no markdown fences

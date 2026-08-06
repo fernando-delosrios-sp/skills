@@ -1,12 +1,16 @@
 {
   "name": "skills",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Curated agent skills collection compatible with npx skills",
   "type": "module",
   "scripts": {
     "sync": "node scripts/sync.mjs sync",
+    "update": "node scripts/sync.mjs update",
     "import": "node scripts/sync.mjs import",
+    "overlay": "node scripts/sync.mjs overlay",
+    "extract-overlay": "node scripts/sync.mjs extract-overlay",
+    "clean": "node scripts/sync.mjs clean",
     "install": "node scripts/install.mjs",
     "validate": "node scripts/sync.mjs validate"
   },

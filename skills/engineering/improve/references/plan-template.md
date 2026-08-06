@@ -57,10 +57,22 @@ The facts the executor needs, inlined — never "as discussed" or "see audit":
   "Error handling follows the Result pattern — see `src/lib/result.ts` and its
   use in `src/users/api.ts:40-60`. Match it."
 - Any documented vocabulary or design constraints the plan must honor, inlined
-  from the intent/design docs found in recon: the relevant `CONTEXT.md` terms
-  the executor should use in names and comments, the `DESIGN.md` tokens/components
-  to reuse, or the ADR whose decision this work must stay consistent with. Quote
-  the specific lines — the executor has not read those docs.
+  from the intent/design docs found in recon: in OpenSpec mode — relevant
+  ubiquitous-language terms and capability spec requirements (slug + requirement
+  name), including product/design constraints encoded in specs; in legacy mode —
+  the relevant `CONTEXT.md` terms, the ADR whose decision this work must stay
+  consistent with, and `DESIGN.md` tokens/components to reuse.
+  Quote the specific lines — the executor has not read those docs.
+
+## OpenSpec prerequisite (direction/spike plans only)
+
+Include when the target repo uses OpenSpec and this plan introduces new product
+or design intent that is not yet in a capability spec:
+
+- **Change proposal**: open or land an OpenSpec change via `/opsx:propose` or
+  `/domain-modeling` before implementation steps — delta at
+  `openspec/changes/<name>/specs/<capability>/spec.md`.
+- Do **not** add steps that create PRDs, `PRODUCT.md`, or `DESIGN.md`.
 
 ## Commands you will need
 
@@ -195,3 +207,4 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 - Would a reviewer reading only "Why this matters" + "Done criteria" understand what they're approving?
 - No secret values anywhere in the file — locations and credential types only.
 - "Planned at" SHA is filled in and the in-scope paths in the drift check match the Scope section.
+

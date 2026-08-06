@@ -16,7 +16,7 @@ For **each source service** from Catalog, add a row to `configuration.md` → **
 
 Also map **deploy tooling** per deploy target. Every var must trace to at least one automated path (`mcp`, `skill`, or `cli`) before `manual`.
 
-Use `find-docs` for current CLI install/auth commands when unsure. Use `find-skills` when no MCP/skill exists.
+Use `search` for current CLI install/auth commands when unsure. Use `find-skills` when no MCP/skill exists.
 
 ## Arm-ready — install & configure (required before Scaffold and Harvest)
 
@@ -49,7 +49,7 @@ Process **every row** in Collection tooling and Deploy tooling tables, in order:
 5. **Update row** — set Status + Verify evidence pointer in `configuration.md` tooling table
 6. **Update setup notes** — record path, version, auth profile, verify command + result summary (redact secrets)
 
-If no MCP/CLI exists for a row and primary chain is `manual`, set Status → `manual-only` after confirming with `find-skills` / `find-docs`.
+If no MCP/CLI exists for a row and primary chain is `manual`, set Status → `manual-only` after confirming with `find-skills` / `search`.
 
 If user opts out, set Status → `opt-out` with reason in setup notes; downgrade affected var blocks.
 
@@ -83,7 +83,7 @@ For each mapped CLI:
    | `kubectl` | `brew install kubectl` | `kubectl version --client` |
    | `docker` | Docker Desktop / `brew install docker` | `docker --version` |
 
-   Prefer official install docs via `find-docs` when the table doesn't cover the platform (Linux, Windows).
+   Prefer official install docs via `search` when the table doesn't cover the platform (Linux, Windows).
 
 3. **Authenticate** — run or guide login; **user completes interactive flows**:
 
@@ -185,7 +185,7 @@ For each deploy-critical var, attempt methods in order until value retrieved. **
 | Priority | Method | Action |
 |----------|--------|--------|
 | 1 | `mcp` | Call mapped MCP tool. `GetMcpTools` first if schema unknown. |
-| 2 | `skill` | Invoke mapped skill (`find-docs`, `env-secrets-manager`, …). |
+| 2 | `skill` | Invoke mapped skill (`search`, `env-secrets-manager`, …). |
 | 3 | `cli` | Run mapped CLI commands — prefer structured output (`--json`, `-o json`). |
 | 4 | `manual` | Document steps from CONFIG-GUIDE; user pastes value. |
 
@@ -235,7 +235,7 @@ After retrieval:
 ## Skills install reference
 
 ```bash
-npx skills add fernando-delosrios-sp/skills --skill find-docs
+npx skills add fernando-delosrios-sp/skills --skill search
 npx skills search <keyword>
 ```
 
@@ -271,6 +271,7 @@ After **inject ci** or **inject runtime**, confirm secrets landed without readin
 | AWS SSM | `aws ssm describe-parameters --parameter-filters "Key=Name,Values=/<env>/…"` | Parameter names exist |
 
 Redact any accidental value leakage in setup notes. Inject verify is metadata-only — never decrypt or print secret values.
+
 
 
 
