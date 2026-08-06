@@ -12,7 +12,8 @@
     "extract-overlay": "node scripts/sync.mjs extract-overlay",
     "clean": "node scripts/sync.mjs clean",
     "install": "node scripts/install.mjs",
-    "validate": "node scripts/sync.mjs validate"
+    "validate": "node scripts/sync.mjs validate",
+    "test": "node --test test/**/*.test.mjs"
   },
   "dependencies": {
     "@clack/prompts": "^1.7.0",

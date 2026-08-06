@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { loadSkills } from '../lib/index.mjs';
-import { discoverOverlays } from '../lib/overlays.mjs';
+import { discoverOverlays } from '../lib/overlay-pipeline.mjs';
 import { categoryCheckbox } from '../lib/category-checkbox-prompt.mjs';
 import kleur from 'kleur';
 import { execSync } from 'node:child_process';

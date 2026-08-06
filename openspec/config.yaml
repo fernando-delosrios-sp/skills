@@ -1,0 +1,50 @@
+schema: spec-driven
+
+context: |
+  Project: Personal agent skills collection and maintenance repository.
+  Goal: Collect, build, and maintain custom skills, external skills, and modified
+  external skills — adapting them to personal needs while staying compatible with
+  `npx skills`.
+
+  Tech stack: Node.js (>=18), ESM modules, npm scripts.
+  Package manager: npm.
+
+  Repository layout:
+  - skills/<category>/<name>/SKILL.md — upstream-canonical skill trees
+  - skills/<category>/skills.json — category manifests listing skills
+  - overlays/<name>/OVERLAY.yaml — per-skill customization intent
+  - overlays/OVERLAY.yaml — universal generator defaults (e.g. agents/openai.yaml)
+  - lib/ + scripts/ — sync, import, overlay, validate, install tooling
+  - .agents/skills/ — working copies during development (not install source of truth)
+  - .locks/upstream.json — last-synced upstream SHAs and overlay apply timestamps
+
+  Key workflows:
+  - npm run sync / update — pull upstream skills, apply overlays
+  - npm run import — add foreign skills from other repos
+  - npm run validate — validate manifests, SKILL.md files, overlays
+  - npm run install — install selected skills into local agent environment
+
+  Conventions:
+  - Skill names must be unique across the whole repo
+  - Categories are free-form filesystem groupings (engineering, productivity, internal)
+  - Overlays customize foreign skills after sync via skill-overlay skill
+  - Use conventional commits; maintain CHANGELOG.md via changelog-generator skill
+
+rules:
+  global:
+    - "Always use the `changelog-generator` skill to maintain and enforce a changelog for all changes."
+    - "Follow the `git-commit` skill when making commits."
+    - "New domain terms introduced in any change MUST be reflected in openspec/specs/ubiquitous-language/spec.md before archive."
+  proposal:
+    - "Identify affected domains from openspec/specs/ — do not invent new domain folders without user agreement."
+    - "Call out overlay vs upstream-only vs local-only skill impact explicitly."
+  specs:
+    - "Use domain-based spec categories (openspec/specs/<domain>/), not per-skill folders."
+    - "Each requirement MUST have at least one #### Scenario with WHEN/THEN format."
+    - "Use SHALL/MUST for normative requirements."
+  design:
+    - "Reference lib/ module boundaries and npm script entry points when describing implementation."
+    - "Document overlay apply order: sync → static → audit → restore → remerge → apply."
+  tasks:
+    - "Include tasks to update README.md and CHANGELOG.md when user-facing behavior changes."
+    - "Include npm run validate before marking implementation complete."

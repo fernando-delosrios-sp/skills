@@ -12,7 +12,7 @@ import {
   auditAllSkills,
   restoreAllSkills,
   printOverlayApplyPrompt,
-} from '../lib/overlays.mjs';
+} from '../lib/overlay-pipeline.mjs';
 import { runUpdate } from '../lib/update.mjs';
 import { runClean } from '../lib/clean.mjs';
 import { validateRepo } from '../lib/validate.mjs';
