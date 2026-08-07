@@ -27,7 +27,7 @@ Category definitions and emoji assignments live in [`SKILL.md` § Change Categor
 ## Format Example
 
 ```markdown
-## 2026-07-24
+## 2026-07-24 · v2.5.0
 
 ### ✨ New Features
 
@@ -44,7 +44,7 @@ Category definitions and emoji assignments live in [`SKILL.md` § Change Categor
 ---
 ```
 
-Optional semver in heading: `## 2026-07-24 · v2.5.0`
+Prefer semver in the heading when known: `## YYYY-MM-DD · vX.Y.Z`. Date-only (`## YYYY-MM-DD`) only when no version resolves.
 
 Scope labels for multi-surface products: `[API]`, `[UI]`, `[CLI]`.
 
@@ -75,8 +75,9 @@ Every ⚠️ entry must state who is affected and include migration guidance whe
 
 ## Style Constraints
 
-- Release headings: `## YYYY-MM-DD` or `## YYYY-MM-DD · vX.Y.Z`
+- Release headings: prefer `## YYYY-MM-DD · vX.Y.Z` when version known; `## YYYY-MM-DD` only as fallback
 - Category headings: see **Category Headings** above
 - Entry format: `- **Title** — Description.` (em dash, not hyphen)
 - Separators: `---` between release sections only
 - Omit empty category sections entirely
+
