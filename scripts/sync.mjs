@@ -16,6 +16,7 @@ import {
 import { runUpdate } from '../lib/update.mjs';
 import { runClean } from '../lib/clean.mjs';
 import { validateRepo, validateStructure } from '../lib/validate.mjs';
+import { cleanupSyncBranches, getOctokit, parseRepoRef } from '../lib/github.mjs';
 import kleur from 'kleur';
 
 const program = new Command();
@@ -60,7 +61,57 @@ program
   .command('sync')
   .description('Sync all foreign skills with upstream (local-only; overwrites skill dirs)')
   .option('--dry-run', 'Check for upstream changes without writing files')
+  .option(
+    '--cleanup-branches',
+    'Delete merged remote sync/* branches (requires GITHUB_TOKEN and GITHUB_REPOSITORY)'
+  )
   .action(async (options) => {
+    if (options.cleanupBranches) {
+      if (!process.env.GITHUB_REPOSITORY) {
+        console.error(
+          kleur.red('Error: GITHUB_REPOSITORY is required for --cleanup-branches')
+        );
+        process.exit(1);
+      }
+
+      try {
+        const octokit = getOctokit();
+        parseRepoRef(process.env.GITHUB_REPOSITORY);
+        const { deleted, skipped, errors } = await cleanupSyncBranches(
+          octokit,
+          process.env.GITHUB_REPOSITORY,
+          { dryRun: options.dryRun || false }
+        );
+
+        console.log(kleur.bold('\nSync branch cleanup:'));
+        if (deleted.length > 0) {
+          const label = options.dryRun ? 'Would delete' : 'Deleted';
+          console.log(kleur.green(`  ${label}: ${deleted.map((entry) => entry.branch).join(', ')}`));
+        } else {
+          console.log(kleur.dim('  No merged sync/* branches to delete'));
+        }
+
+        if (skipped.length > 0) {
+          console.log(kleur.dim('\n  Skipped:'));
+          for (const entry of skipped) {
+            console.log(kleur.dim(`    ${entry.branch}: ${entry.reason}`));
+          }
+        }
+
+        for (const entry of errors) {
+          console.log(kleur.red(`  ${entry.branch}: ${entry.error}`));
+        }
+
+        if (errors.length > 0) {
+          process.exit(1);
+        }
+      } catch (err) {
+        console.error(kleur.red(`Error: ${err.message}`));
+        process.exit(1);
+      }
+      return;
+    }
+
     console.log(kleur.bold('Syncing skills...\n'));
 
     const results = await syncAllSkills({ dryRun: options.dryRun });

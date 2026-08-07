@@ -6,6 +6,8 @@ All notable changes to this skills collection are documented here.
 
 ### 🔧 Improvements
 
+- **Sync branch cleanup** — The sync GitHub Actions workflow now deletes merged remote `sync/*` branches when the job finishes. Maintainers can dry-run locally with `npm run sync -- --cleanup-branches --dry-run` when `GITHUB_TOKEN` and `GITHUB_REPOSITORY` are set.
+
 - **git-commit changelog gate** — When a repository has `CHANGELOG.md` and it is not staged, the skill now requires a changelog update via **changelog-generator** before generating a commit message or committing.
 
 ---
@@ -101,6 +103,7 @@ All notable changes to this skills collection are documented here.
 - **openspec-git-discipline** — Replaced by git-commit for session-scoped conventional commits.
 
 - **diagnose skill** — Removed; diagnosing-bugs covers structured bug diagnosis.
+
 
 
 

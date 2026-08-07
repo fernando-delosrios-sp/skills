@@ -10,7 +10,7 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -26,3 +26,10 @@ jobs:
 
       - name: Validate
         run: npm run validate
+
+      - name: Cleanup sync branches
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: npm run sync -- --cleanup-branches

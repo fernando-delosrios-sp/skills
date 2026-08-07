@@ -51,6 +51,10 @@ npm run validate
 # Sync foreign skills (overwrites skills/ from upstream)
 npm run sync
 
+# Delete merged remote sync/* branches (CI cleanup; requires GITHUB_TOKEN)
+npm run sync -- --cleanup-branches
+npm run sync -- --cleanup-branches --dry-run
+
 # Full update: sync + static overlays + audit + auto-restore + prepare remerge manifests
 npm run update
 
