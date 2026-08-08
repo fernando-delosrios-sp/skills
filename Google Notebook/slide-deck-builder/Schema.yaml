@@ -1,0 +1,124 @@
+type: object
+required:
+  - title
+  - goal
+  - slides
+properties:
+  title:
+    type: string
+    description: Human-readable deck title.
+  goal:
+    type: string
+    description: One or two sentences describing what the deck should achieve.
+  options:
+    type: object
+    properties:
+      language:
+        type: string
+        description: e.g. 'en', 'es', 'pt'.
+      audience:
+        type: string
+        description: who this is for.
+      tone:
+        type: string
+        description: short description, e.g. 'confident, concise'.
+      length:
+        type: string
+        enum:
+          - short
+          - default
+          - long
+        description: |
+          one of:
+          - 'short' - ~5-7 slides
+          - 'default' - ~8-14 slides
+          - 'long' - 15+ slides
+  slides:
+    type: array
+    items:
+      type: object
+      required:
+        - slide_number
+        - layout
+        - role
+        - title
+        - content
+      properties:
+        slide_number:
+          type: integer
+          description: A unique, sequential index for this slide starting at 1. Acts as a strict boundary guardrail between slides.
+        layout:
+          type: string
+          description: |
+            Must match 'Layout Name' in 'Layouts'. Examples:
+            - 'Title Slide'
+            - 'Title and Content'
+            - 'Section Header'
+            - 'Two Content'
+            - 'Comparison'
+            - 'Title Only'
+            - 'Blank'
+            - 'Content with Caption'
+            - 'Picture with Caption'
+        role:
+          type: string
+          description: Free-form semantic tag, e.g. 'cover', 'problem', 'solution', 'metrics', 'roadmap', 'summary'.
+        title:
+          type: string
+          description: Slide heading.
+        subtitle:
+          type: string
+          description: Short supporting line for title (where layout supports it).
+        content:
+          type: object
+          properties:
+            bullets:
+              type: array
+              items:
+                type: string
+              description: bullet list for single-column layouts.
+            body:
+              type: string
+              description: paragraph text.
+            regions:
+              type: array
+              description: used for multi-column layouts
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: e.g. 'left', 'right'.
+                  kind:
+                    type: string
+                    enum:
+                      - text
+                      - media
+                  bullets:
+                    type: array
+                    items:
+                      type: string
+                    description: For 'text' regions.
+                  media_ref:
+                    type: string
+                    description: name of a media item, for 'media' regions.
+            media:
+              type: array
+              items:
+                type: object
+                required:
+                  - name
+                  - source
+                properties:
+                  name:
+                    type: string
+                    description: identifier used in 'media_ref'.
+                  source:
+                    type: string
+                    description: URL or Drive ID.
+                  alt:
+                    type: string
+                    description: alt text.
+        notes:
+          type: string
+          description: Presenter notes or implementation hints.

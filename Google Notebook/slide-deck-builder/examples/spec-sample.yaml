@@ -1,0 +1,124 @@
+title: "Slide Deck Builder"
+goal: "Introduce the Slide Deck Builder project to SailPoint colleagues, detailing the journey from redundant paid tools to harnessing NotebookLM with proper guardrails."
+options:
+  language: "en"
+  audience: "SailPoint colleagues"
+  tone: "Engaging and professional"
+  length: "default"
+slides:
+  - slide_number: 1
+    layout: "Title Slide"
+    role: "cover"
+    title: "Slide Deck Builder"
+    subtitle: "Taking the Reins of AI Presentation Generation"
+    content:
+      body: "Harnessing NotebookLM with structured guardrails"
+
+  - slide_number: 2
+    layout: "Title and Content"
+    role: "hook"
+    title: "What Fernando Hates Most..."
+    content:
+      bullets:
+        - "Responding to RFPs"
+        - "Building slide decks"
+        - "Paying for monthly subscriptions that do the same as others I have"
+
+  - slide_number: 3
+    layout: "Title and Content"
+    role: "market_overview"
+    title: "The Paid Landscape"
+    subtitle: "Very capable options"
+    content:
+      bullets:
+        - "Dokie"
+        - "Gamma"
+        - "Beautiful.ai"
+
+  - slide_number: 4
+    layout: "Two Content"
+    role: "alternatives"
+    title: "Versatile & Free Alternatives"
+    content:
+      regions:
+        - id: "left"
+          kind: "text"
+          bullets:
+            - "Personal Gemini subscriptions"
+        - id: "right"
+          kind: "text"
+          bullets:
+            - "SailPoint's own Neptune"
+
+  - slide_number: 5
+    layout: "Title and Content"
+    role: "solution_intro"
+    title: "Enter NotebookLM"
+    subtitle: "A powerhouse for topic dissection and content creation"
+    content:
+      bullets:
+        - "Built-in slide creation capabilities"
+        - "Per-slide review process to tweak each slide separately"
+        - "Next-level slide editor: AI-powered Google Slides"
+
+  - slide_number: 6
+    layout: "Content with Caption"
+    role: "problem_statement"
+    title: "The Precision Challenge"
+    content:
+      body: "AI without guardrails produces wild results. Many times it's good, but it feels like rolling a dice. Precision is the main hurdle."
+
+  - slide_number: 7
+    layout: "Title and Content"
+    role: "inspiration"
+    title: "Taking the Reins"
+    content:
+      bullets:
+        - "Digging into how to control NotebookLM's strengths and weaknesses"
+        - "Taking inspiration from UI UX Pro Max"
+        - "Systematically describing UI aspects for themes using a database"
+
+  - slide_number: 8
+    layout: "Title and Content"
+    role: "framework"
+    title: "The Core Project Structure"
+    content:
+      bullets:
+        - "A theme for the deck"
+        - "A layout for each slide"
+        - "A deck spec file"
+
+  - slide_number: 9
+    layout: "Title and Content"
+    role: "deck_spec"
+    title: "The Deck Spec File"
+    content:
+      bullets:
+        - "Puts together theme, layouts, and contents"
+        - "Consistently and clearly defines the desired result"
+        - "Sets boundaries so it doesn't turn into a wish list"
+        - "Functions as a well-defined descriptive document"
+
+  - slide_number: 10
+    layout: "Title and Content"
+    role: "ai_generation"
+    title: "AI Heavy Lifting"
+    content:
+      bullets:
+        - "Use NotebookLM to build BOTH the spec and the resulting slide deck"
+        - "Instructions clearly state to either build the spec or process one"
+        - "Provide the notebook with all theme, layout, and schema information"
+
+  - slide_number: 11
+    layout: "Section Header"
+    role: "demo_intro"
+    title: "Time to see it in action"
+    content:
+      body: "Demo"
+
+  - slide_number: 12
+    layout: "Section Header"
+    role: "closing"
+    title: "That's all folks!"
+    content:
+      body: "Thank you!"

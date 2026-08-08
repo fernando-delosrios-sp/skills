@@ -2,6 +2,16 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-08-08 · v0.4.0
+
+### ✨ New Features
+
+- **Language teacher prompt** — Added `prompts/language-teacher.md`, a bilingual teaching prompt that keeps lessons in the target language and follow-ups in the learner's native language, with mission-grounded workspace files.
+
+- **NotebookLM slide-deck builder** — Added `Google Notebook/slide-deck-builder/` with schema, layouts, design themes, system prompts, examples, and templates for generating structured slide decks via NotebookLM.
+
+---
+
 ## 2026-08-07
 
 ### 🔧 Improvements
@@ -105,6 +115,7 @@ All notable changes to this skills collection are documented here.
 - **openspec-git-discipline** — Replaced by git-commit for session-scoped conventional commits.
 
 - **diagnose skill** — Removed; diagnosing-bugs covers structured bug diagnosis.
+
 
 
 
