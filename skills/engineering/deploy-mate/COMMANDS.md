@@ -10,22 +10,22 @@ Load this file for the invoked command only. Shared lexicon, artifacts, and gate
 
 Present concisely in chat:
 
-1. **Purpose** — deployment readiness for one environment: architecture, env vars, CI/CD artifacts, secret injection, deploy.
-2. **Phase order** — Recon → Survey → Catalog → Arm → Arm-ready → Scaffold → Document → Harvest → Forge → Inject → Deploy → Verify.
+1. **Purpose** — deployment readiness for one environment: architecture, env vars, CI/CD artifacts, runtime visibility, secret injection, deploy.
+2. **Phase order** — Recon → Survey → Catalog → Arm → Arm-ready → Scaffold → Document → Harvest → Forge proposal → **arm visibility** → Forge artifacts → Inject → Deploy → Verify.
 3. **Command table** — copy from [SKILL.md § Invocation](SKILL.md).
 4. **Recipes:**
 
 | Goal | Commands |
 |------|----------|
 | Guided end-to-end | `/deploy-mate` or `/deploy-mate run` — chain until a gate; re-invoke after unblocking |
-| First time (manual) | `recon` → `survey` → `catalog` → `arm` → `arm-ready` → `scaffold` → `document` → `harvest` (repeat) → `harvest finish` |
+| First time (manual) | `recon` → `survey` → `catalog` → `arm` → `arm-ready` → `scaffold` → `document` → `harvest` (repeat) → `harvest finish` → `forge proposal` → `arm visibility` → `forge artifacts` → `inject ci` → `inject runtime` → `deploy` → `verify` |
 | Fix tools only | `arm` → `arm-ready` |
 | Collect secrets | `harvest` (repeat rounds) → `harvest finish` |
-| Ship it | `inject ci` → `forge artifacts` → `inject runtime` → `deploy` → `verify` |
+| Ship it | `forge proposal` → `arm visibility` → `forge artifacts` → `inject ci` → `inject runtime` → `deploy` → `verify` |
 | One step only | `continue` |
 
 5. **Gates** — compact table from [SKILL.md § Gates](SKILL.md).
-6. **Subcommands** — `run` (default, chains phases); `continue` (one phase); `harvest finish`; `forge proposal` / `forge artifacts`; `inject ci` vs `inject runtime`.
+6. **Subcommands** — `run` (default, chains phases); `continue` (one phase); `harvest finish`; `forge proposal` / `forge artifacts`; `arm visibility`; `inject ci` vs `inject runtime`.
 
 **Invalid command** — if the user typed an unknown command, suggest the closest match and `/deploy-mate help`.
 
@@ -50,7 +50,7 @@ Do **not** paste the full protocol — point to the matching section in this fil
 
 1. Resolve `<env>` from the argument or ask if ambiguous and multiple env folders exist.
 2. Read `.deploy-mate/<env>/progress.md` and skim sibling artifacts.
-3. Report: current phase checklist, open gates, Harvest round count, tooling rows still `pending`, deploy-critical vars not Collected/Validated, Forge sign-off state, Inject CI/runtime status, Deploy/Verify state.
+3. Report: current phase checklist, open gates, Harvest round count, tooling rows still `pending`, deploy-critical vars not Collected/Validated, Forge sign-off state, **runtime visibility plan and tooling readiness**, Inject CI/runtime status, Deploy/Verify state.
 4. Read `deployment.md` → Env injection / CI/CD flow to determine which **inject** targets apply (CI-only, runtime-only, or both).
 5. Suggest the next command (usually `run` or the specific phase blocking progress).
 
@@ -62,7 +62,7 @@ Do **not** paste the full protocol — point to the matching section in this fil
 
 1. Run **status** (inline — stop only if `<env>` is ambiguous).
 2. **Loop** — while a next incomplete phase exists:
-   1. Execute that phase's protocol from this file (Recon → Survey → Catalog → Arm → Arm-ready → Scaffold → Document → Harvest → Forge → Inject → Deploy → Verify).
+   1. Execute that phase's protocol from this file (Recon → Survey → Catalog → Arm → Arm-ready → Scaffold → Document → Harvest → Forge proposal → **arm visibility** → Forge artifacts → Inject → Deploy → Verify).
    2. **Stop the loop** when any applies:
       - **Gate needs user** — Survey sign-off, Arm-ready audit ack, Scaffold ack, Forge proposal sign-off, inject CHECKPOINT, deploy CHECKPOINT
       - **Harvest** — always stop after **one round** (report table; prompt continue or `harvest finish`)
@@ -81,7 +81,7 @@ Do **not** paste the full protocol — point to the matching section in this fil
 **Use when:** advancing **one phase** only — explicit step-by-step control.
 
 1. Run **status** (inline — do not stop for user unless `<env>` is ambiguous).
-2. Execute the **single next incomplete phase** in order: Recon → Survey → Catalog → Arm → Arm-ready → Scaffold → Document → Harvest (**one round only**) → Forge → Inject (if next) → Deploy → Verify.
+2. Execute the **single next incomplete phase** in order: Recon → Survey → Catalog → Arm → Arm-ready → Scaffold → Document → Harvest (**one round only**) → Forge proposal → **arm visibility** → Forge artifacts → Inject (if next) → Deploy → Verify.
 3. **Stop at every gate** — Survey sign-off, Arm-ready audit ack, Scaffold ack, Harvest round end, Forge proposal sign-off, inject checkpoint, deploy confirmation. Do not auto-skip holds.
 4. After a Harvest round or any gate, **end the turn** and wait for the user.
 
@@ -94,8 +94,9 @@ Do **not** paste the full protocol — point to the matching section in this fil
 1. Run **Recon** for `<env>`.
 2. Diff existing artifacts against current repo state.
 3. In `<env>/progress.md`, mark each section: `unchanged | updated | new | removed`.
-4. Never overwrite `.env` values or generated deployment files without confirmation.
-5. Recommend which phase commands to re-run based on deltas.
+4. Diff `architecture.md` → Components Visibility column and `deployment.md` → Runtime visibility when present.
+5. Never overwrite `.env` values or generated deployment files without confirmation.
+6. Recommend which phase commands to re-run based on deltas — when visibility plan changed, recommend **`arm visibility`** and **`forge artifacts`** refresh.
 
 **Done when:** re-run delta recorded and user knows what to refresh.
 
@@ -200,6 +201,34 @@ User may **opt out** per service — record `opt-out` and downgrade affected var
 
 **Done when:** every Collection tooling **and** Deploy tooling row has terminal status; each `ready` row has verify evidence in setup notes; tooling audit table presented; user confirms tooling is usable; `<env>/progress.md` cites `N/N tooling rows terminal`.
 
+## arm visibility
+
+**Arm subcommand.** Runs after **Forge proposal sign-off**, before **`forge artifacts`**. Maps **Runtime visibility tooling** — the third tooling table in `configuration.md`. Does **not** re-run full Arm-ready for Deploy or Collection rows.
+
+**Prerequisites:** Forge strategy sign-off recorded; runtime visibility plan in `deployment.md` → Runtime visibility and `architecture.md` → Components Visibility column.
+
+### INPUT (load in order)
+
+| Priority | Source | Use for |
+|----------|--------|---------|
+| P1 (HIGH) | `deployment.md` → Runtime visibility | Per-component tier-1/tier-2, read chain, deferrals |
+| P1 (HIGH) | `architecture.md` → Components Visibility | Component names and summary |
+| P2 (MED) | `configuration.md` → Deploy tooling | Platform CLIs already mapped for deploy |
+| P3 (LOW) | [TOOLING.md](TOOLING.md) § Runtime visibility tooling | Verify command patterns |
+
+### Protocol
+
+1. Read runtime visibility plan — every deploy-critical component must have tier-1 defined.
+2. Add or update **Runtime visibility tooling** rows in `configuration.md` — one row per component × tier (tier-2 rows optional when deferred).
+3. For each row: detect CLI/MCP → authenticate if needed → **platform-access verify only** (read-only list/status/auth — NOT live app logs or health HTTP before deploy). See [TOOLING.md](TOOLING.md) § Runtime visibility tooling.
+4. Set terminal status per row: `ready | opt-out | manual-only`. **`pending` forbidden** when marking complete.
+5. Present audit table; mark `progress.md` → **Runtime visibility tooling — ready** with date when all tier-1 rows are terminal.
+6. Tier-2 rows: verify when not deferred; deferred tier-2 rows need not be `ready` for Deploy.
+
+**Forbidden:** re-running full Arm-ready; verifying live health URLs or log output before deploy; skipping tier-1 rows for deploy-critical components.
+
+**Done when:** all tier-1 Runtime visibility tooling rows terminal; audit evidence in setup notes; `progress.md` marks tooling ready.
+
 ## scaffold
 
 **Phase 3c.** Requires Arm-ready complete and audit ack. Run before first Harvest pass; re-enter during Harvest when blockers require new resources.
@@ -265,28 +294,30 @@ User explicitly closes Harvest. Verify every **deploy-critical** Required: yes v
 Without a subcommand, pick by state:
 
 - No strategy sign-off → run **forge proposal**
-- Sign-off recorded, artifacts not generated → run **forge artifacts**
+- Sign-off recorded, runtime visibility tooling not ready → run **`arm visibility`**
+- Tooling ready, artifacts not generated → run **forge artifacts**
 
 ### forge proposal
 
-1. **Draft** — invoke `deployment-pipeline-design`. Write `.deploy-mate/<env>/deployment.md` **strategy sections only** (see [ARTIFACTS.md](ARTIFACTS.md)).
-2. **Present** — summarize trade-offs and open questions.
-3. **Dialog** — revise until user approves or accepts deferrals.
-4. **Sign-off** — record in `deployment.md` → Sign-off and `<env>/progress.md`. **Hold** until recorded.
+1. **Draft** — invoke `deployment-pipeline-design`. Write `.deploy-mate/<env>/deployment.md` **strategy sections only** (see [ARTIFACTS.md](ARTIFACTS.md)). Include required **Runtime visibility** section — per-component tier-1/tier-2, read chain (**runtime first, CI second**), boot time overrides, tier-2 deferrals with ack.
+2. Update `architecture.md` → Components **Visibility** column to match the plan.
+3. **Present** — summarize trade-offs and open questions.
+4. **Dialog** — revise until user approves or accepts deferrals (tier-2 deferrals require explicit ack).
+5. **Sign-off** — record in `deployment.md` → Sign-off and `<env>/progress.md` → Forge strategy sign-off **and** Runtime visibility — planned (Forge sign-off). **Hold** until recorded.
 
-**Forbidden:** generating repo deploy files before sign-off.
+**Forbidden:** generating repo deploy files before sign-off; Forge sign-off without tier-1 for every deploy-critical component.
 
-**Done when:** strategy sign-off recorded.
+**Done when:** strategy sign-off recorded; runtime visibility plan written; progress rows updated.
 
 ### forge artifacts
 
-Requires Forge strategy sign-off.
+Requires Forge strategy sign-off **and** **`arm visibility` complete** (tier-1 tooling ready).
 
 Generate repo files per approved strategy:
 
 | Output | Location |
 |--------|----------|
-| Process doc | `.deploy-mate/<env>/deployment.md` (complete Steps + Generated files) |
+| Process doc | `.deploy-mate/<env>/deployment.md` (complete Steps including tier-1/tier-2 verify commands + Generated files) |
 | CI workflow | `.github/workflows/*.yml` when applicable |
 | Container config | `Dockerfile`, `docker-compose.yml` |
 | Platform config | `fly.toml`, `vercel.json`, `infra/*.tf`, etc. |
@@ -303,11 +334,13 @@ Without subcommand, run **inject ci** then **inject runtime** — **CHECKPOINT**
 
 Requires Harvest finished and every **deploy-critical** Required: yes var Collected + Validated in `.env`.
 
+Runtime visibility tooling is **not** required for Inject — it gates **Deploy** only.
+
 ## inject ci
 
 **Phase 5a.** Push vars to the **CI/CD orchestrator** — GitHub Actions secrets/environments, GitLab CI variables, etc.
 
-**Prerequisites:** Harvest finished; `.env` deploy-critical complete; Document Deploy mapping lists CI targets.
+**Prerequisites:** Harvest finished; `.env` deploy-critical complete; Document Deploy mapping lists CI targets. Runtime visibility prep **not** required.
 
 ### INPUT (load in order)
 
@@ -335,7 +368,7 @@ Requires Harvest finished and every **deploy-critical** Required: yes var Collec
 
 **Phase 5b.** Push vars to the **runtime platform** — Fly secrets, Vercel env, AWS SSM/Parameter Store, K8s secrets, etc.
 
-**Prerequisites:** Harvest finished; `.env` deploy-critical complete; Forge artifacts generated (injection mapping may reference platform config); Document Deploy mapping lists runtime targets.
+**Prerequisites:** Harvest finished; `.env` deploy-critical complete; Forge artifacts generated (injection mapping may reference platform config); Document Deploy mapping lists runtime targets. Runtime visibility prep **not** required.
 
 ### INPUT (load in order)
 
@@ -368,21 +401,25 @@ Requires Harvest finished and every **deploy-critical** Required: yes var Collec
 - Harvest finished
 - Forge artifacts generated
 - Forge strategy sign-off recorded
+- **`arm visibility` complete** — tier-1 Runtime visibility tooling rows terminal
 - Every **deploy-critical** Required: yes var Collected + Validated in `.env`
+- **Tier-1 verify commands** documented in `deployment.md` → Steps (requires Forge artifacts)
 - **Inject complete** per `deployment.md` strategy — CI deploy path requires Inject CI; direct-to-platform requires Inject runtime; both when strategy uses CI → platform
 
 ### INPUT (load in order)
 
 | Priority | Source | Use for |
 |----------|--------|---------|
-| P1 (HIGH) | `deployment.md` → Steps, Generated files | Deploy command, workflow, rollback |
-| P1 (HIGH) | `<env>/progress.md` | Inject + gate state |
-| P2 (MED) | `configuration.md` → Deploy tooling | CLI/MCP for deploy execution |
+| P1 (HIGH) | `deployment.md` → Steps, Runtime visibility, Generated files | Deploy command, verify commands, rollback |
+| P1 (HIGH) | `<env>/progress.md` | Inject, visibility tooling, gate state |
+| P2 (MED) | `configuration.md` → Deploy tooling, Runtime visibility tooling | CLI/MCP for deploy execution |
 | P3 (LOW) | `search` | Platform-specific deploy flags |
 
 ### Protocol
 
-1. Run **status** gate checks; stop and name blockers if any fail.
+1. Run **status** gate checks; stop and name blockers if any fail — including visibility:
+   - Tier-1 commands missing from `deployment.md` → Steps → unlock with **`forge artifacts`**
+   - Tier-1 Runtime visibility tooling rows not terminal → unlock with **`arm visibility`**
 2. Read `deployment.md` → Steps; summarize deploy plan (names only for secrets).
 3. **CHECKPOINT:** confirm environment, target, rollback path. **Wait for explicit approval.**
 4. Execute via Deploy tooling (CLI/MCP/workflow dispatch). Pause for interactive auth when needed.
@@ -395,14 +432,22 @@ Requires Harvest finished and every **deploy-critical** Required: yes var Collec
 
 ## verify
 
-**Phase 7.** Post-deploy smoke/health checks from `deployment.md` → Steps.
+**Phase 7.** Post-deploy **runtime visibility** checks from `deployment.md` → Steps and Runtime visibility plan.
 
 **Prerequisites:** Deploy recorded in `<env>/progress.md`.
 
-1. Read `deployment.md` → Steps for verify/health commands (HTTP checks, `fly status`, workflow conclusion, …).
-2. Run verify commands via Deploy tooling or generic CLI. Agent executes — do not only print.
-3. Record in `<env>/progress.md` → Verify: `passed | failed <date>` + summary (URLs, status codes — no secrets).
-4. On failure: report findings; point to Rollback section in `deployment.md`; do not auto-rollback without user approval.
+1. Read `deployment.md` → Runtime visibility and Steps for per-component read paths.
+2. **Tier-1** (hard) — per deploy-critical component, **runtime first**:
+   - Run health URL and/or platform status CLI (`curl /health`, `fly status`, `kubectl get pods`, …)
+   - Default **3 attempts with 10s backoff** before tier-1 failure; override wait when Forge records expected boot time
+   - Non-HTTP components: platform process/container status minimum
+3. **Tier-2** (soft) — after tier-1 passes for a component:
+   - Log tail/stream (`fly logs`, …)
+   - CI confirmation when applicable (`gh run watch`) — **CI second** after runtime signals
+   - Skip components with tier-2 `deferred` in `deployment.md`; report `deferred` in summary
+4. Agent executes all commands — do not only print.
+5. Record in `<env>/progress.md` → Verify: `passed | failed <date>` + **per-component tier summary** (URLs, status codes, deferred — no secrets).
+6. Tier-1 failure → overall `failed`; point to Rollback section — do not auto-rollback without user approval. Tier-2 deferrals do not fail the run.
 
-**Done when:** verify steps executed; outcome recorded in progress.md.
+**Done when:** tier-1 and applicable tier-2 steps executed; outcome and per-component tier summary recorded in progress.md.
 

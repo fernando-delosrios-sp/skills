@@ -2,6 +2,14 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-08-13
+
+### ✨ New Features
+
+- **deploy-mate runtime visibility** — Forge proposal now requires a per-component runtime visibility plan (tier-1 health/status, tier-2 logs/CI). New `arm visibility` subcommand maps Runtime visibility tooling after Forge sign-off. Verify runs tier-1 (with retry) then tier-2; tier-1 blocks Deploy but not Inject.
+
+---
+
 ## 2026-08-08 · v0.4.0
 
 ### ✨ New Features

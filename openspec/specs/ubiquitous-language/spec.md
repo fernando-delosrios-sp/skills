@@ -124,6 +124,17 @@ The glossary SHALL define **Blend validation** as checks that overlay lock routi
 - **AND** MUST note the bounded context is tooling / validate blend layer
 - **AND** MUST reference `validateBlendState()` as the implementation entry point
 
+### Requirement: Runtime visibility domain terms
+
+The glossary SHALL define **Runtime visibility**, **Tier-1 visibility**, **Tier-2 visibility**, **Read chain**, and **Runtime visibility tooling** for the deploy-mate bounded context.
+
+#### Scenario: Glossary includes runtime visibility terms
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up deploy-mate visibility terms
+- **THEN** all five term entries MUST appear under Term entries
+- **AND** each entry MUST follow the Term entry format (Context, Definition, Aliases, Notes)
+
 ## Term entries
 
 ### Term: Skill
@@ -228,5 +239,33 @@ The glossary SHALL define **Blend validation** as checks that overlay lock routi
 **Aliases**: blend-state validate
 **Notes**: Implemented by `validateBlendState()`; uses `auditSkill` and `isOverlayRoutePending`; opt-in warnings for maintainers, not CI structure gates.
 
+### Term: Runtime visibility
+**Context**: deploy-mate
+**Definition**: Prepared read paths from deployed components back to the agent or user — health, platform status, logs, and error signals — so post-deploy state can be verified and debugged.
+**Aliases**: feedback loop, observability readiness
+**Notes**: Distinct from Verify (execution) and from full metrics/APM stacks.
 
+### Term: Tier-1 visibility
+**Context**: deploy-mate
+**Definition**: Hard-gate visibility signal for a component: HTTP health check and/or platform status CLI, evaluated runtime-first before deploy is allowed and as the first Verify checks after deploy.
+**Aliases**: tier-1, hard visibility
+**Notes**: Non-HTTP components use platform process/container status as minimum tier-1.
+
+### Term: Tier-2 visibility
+**Context**: deploy-mate
+**Definition**: Soft-gate visibility signal for a component: structured log access and CI workflow conclusion, run after tier-1 during Verify; may be deferred with explicit user acknowledgment.
+**Aliases**: tier-2, soft visibility
+**Notes**: CI confirmation is tier-2 and runs after runtime signals when CI deploys the app.
+
+### Term: Read chain
+**Context**: deploy-mate
+**Definition**: The ordered sequence of visibility checks after deploy: runtime signals first, then CI confirmation when applicable.
+**Aliases**: visibility chain, check order
+**Notes**: Default order is runtime first, CI second.
+
+### Term: Runtime visibility tooling
+**Context**: deploy-mate
+**Definition**: The third tooling table in `configuration.md` mapping CLIs and MCPs used to execute tier-1 and tier-2 read paths, verified for platform access during `arm visibility`.
+**Aliases**: feedback tooling, visibility tooling
+**Notes**: Distinct from Deploy tooling and Collection tooling.
 

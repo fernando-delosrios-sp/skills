@@ -272,6 +272,35 @@ After **inject ci** or **inject runtime**, confirm secrets landed without readin
 
 Redact any accidental value leakage in setup notes. Inject verify is metadata-only — never decrypt or print secret values.
 
+## Runtime visibility tooling (arm visibility)
+
+Mapped during **`arm visibility`** — after Forge proposal sign-off, before `forge artifacts`. Separate from Arm-ready (Deploy + Collection tooling).
+
+**Scope:** platform-access verify only before deploy — prove CLI/MCP auth and read-only commands work. Do **not** expect live app logs or health HTTP 200 until **Verify** after Deploy.
+
+### Per-row protocol
+
+For each row in `configuration.md` → **Runtime visibility tooling**:
+
+1. **Detect** — reuse CLI from Deploy tooling when same platform; add row if missing
+2. **Authenticate** — same login flows as Arm-ready when status is not `ready`
+3. **Verify** — read-only platform command (not app-specific output):
+
+   | Platform | Tier | Verify command (pre-deploy) | Post-deploy (Verify phase) |
+   |----------|------|----------------------------|----------------------------|
+   | Fly | tier-1 | `fly auth whoami`, `fly apps list` | `fly status -a <app>`, `curl <health-url>` |
+   | Fly | tier-2 | `fly logs --help` (syntax check) | `fly logs -a <app> --no-tail -n 50` |
+   | GitHub Actions | tier-2 | `gh auth status` | `gh run watch`, `gh run view --log-failed` |
+   | Kubernetes | tier-1 | `kubectl config current-context` | `kubectl get pods -n <ns>` |
+   | Vercel | tier-1 | `vercel whoami` | `curl <deployment-url>/health` |
+
+4. **Update row** — Status + verify evidence in setup notes (redact secrets)
+5. **Tier-2 deferred** — row may stay `opt-out` or `manual-only` when user ack'd deferral at Forge sign-off
+
+### Completion check
+
+All **tier-1** rows for deploy-critical components must be terminal (`ready`, `opt-out`, or `manual-only`) before `progress.md` → Runtime visibility tooling — ready. Tier-2 rows required only when not deferred.
+
 
 
 

@@ -220,6 +220,19 @@ Each var's **Deploy mapping** in `configuration.md` must name both paths when va
 | Skipping inject when strategy requires it | Run `inject ci` and/or `inject runtime` per deployment.md |
 | Using deploy to push secrets | Use `inject`; `deploy` ships the app |
 
+## Runtime visibility
+
+Per-component read paths prepared before Deploy so agents and users can verify status and debug errors after ship. See [ARTIFACTS.md](ARTIFACTS.md) and [COMMANDS.md](COMMANDS.md) § arm visibility / verify.
+
+| Tier | Gate | Contents |
+|------|------|----------|
+| **Tier-1** | Hard — blocks **Deploy** | Health URL and/or platform status CLI; **runtime first** |
+| **Tier-2** | Soft — deferrable with Forge ack | Log tail/stream; CI workflow conclusion (**CI second**) |
+
+- **Inject is not blocked** by runtime visibility prep
+- **Deploy requires** tier-1 commands in `deployment.md` → Steps **and** tier-1 Runtime visibility tooling rows terminal (`arm visibility`)
+- **Non-HTTP components** — tier-1 uses platform process status minimum; no silent waivers for deploy-critical components
+
 ## Grouping order
 
 1. Infrastructure the app depends on (DB, cache, object storage)

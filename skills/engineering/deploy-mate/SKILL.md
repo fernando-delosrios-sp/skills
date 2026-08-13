@@ -1,8 +1,8 @@
 ---
 name: deploy-mate
-description: End-to-end deployment readiness for one environment — architecture, env vars, CI/CD artifacts, secret injection, deploy. Invoke with `/deploy-mate [command] [env]`.
+description: End-to-end deployment readiness for one environment — architecture, env vars, CI/CD artifacts, runtime visibility, secret injection, deploy. Invoke with `/deploy-mate [command] [env]`.
 disable-model-invocation: true
-argument-hint: "[command] [env] — help | run | status | continue | recon | survey | catalog | arm | arm-ready | scaffold | document | harvest | forge | inject | deploy | verify"
+argument-hint: "[command] [env] — help | run | status | continue | recon | survey | catalog | arm | arm-ready | arm visibility | scaffold | document | harvest | forge | inject | deploy | verify"
 ---
 
 # deploy-mate
@@ -20,7 +20,7 @@ Each **leading word** names one phase. Use it in chat, artifacts, and `progress.
 | **Recon** | 0 | `recon [env]` |
 | **Survey** | 1 | `survey` |
 | **Catalog** | 2 | `catalog` |
-| **Arm** | 3 | `arm` |
+| **Arm** | 3 | `arm` · `arm visibility` |
 | **Arm-ready** | 3b | `arm-ready` |
 | **Scaffold** | 3c | `scaffold` |
 | **Document** | 4a | `document` |
@@ -30,7 +30,9 @@ Each **leading word** names one phase. Use it in chat, artifacts, and `progress.
 | **Deploy** | 6 | `deploy` |
 | **Verify** | 7 | `verify` |
 
-**Catalog ≠ Harvest.** Catalog names vars; Harvest collects values. **Arm-ready ≠ Harvest.** Arm-ready makes tools work; Harvest uses them. **Scaffold ≠ Forge.** Scaffold stages empty platform shells; Forge generates repo deploy files. **Inject ≠ Harvest** — Inject pushes local `.env` to CI orchestrator and runtime platform. **Deploy ≠ Harvest/Scaffold** — Deploy ships the app; never deploy to obtain config.
+**Catalog ≠ Harvest.** Catalog names vars; Harvest collects values. **Arm-ready ≠ Harvest.** Arm-ready makes tools work; Harvest uses them. **Arm visibility ≠ Arm-ready.** Arm visibility maps runtime read paths after Forge sign-off; Arm-ready covers Deploy + Collection tooling only. **Scaffold ≠ Forge.** Scaffold stages empty platform shells; Forge generates repo deploy files. **Inject ≠ Harvest** — Inject pushes local `.env` to CI orchestrator and runtime platform. **Deploy ≠ Harvest/Scaffold** — Deploy ships the app; never deploy to obtain config.
+
+**Runtime visibility** — per-component tier-1 (health/status, runtime first) and tier-2 (logs, CI second) read paths. Planned at Forge proposal sign-off; tooling mapped via **`arm visibility`** (after sign-off, before `forge artifacts`); executed at Verify. Tier-1 blocks Deploy; Inject is not blocked. See `configuration.md` → **Runtime visibility tooling** (third tooling table).
 
 **Deploy scope** — every Catalog var is tagged `deploy-critical`, `local-dev`, or `runtime-derived`. Harvest collects **deploy-critical** only.
 
@@ -61,7 +63,8 @@ Templates: [ARTIFACTS.md](ARTIFACTS.md). Obtain playbook: [CONFIG-GUIDE.md](CONF
 | `survey` | Architecture discovery + diagram + sign-off |
 | `catalog` | Inventory var names, scope, source services |
 | `arm` | Map deploy + collection tooling |
-| `arm-ready` | Install, auth, verify every mapped tool |
+| `arm visibility` | After Forge sign-off — map runtime visibility tooling + platform-access verify |
+| `arm-ready` | Install, auth, verify every Deploy + Collection tooling row |
 | `scaffold` | Create placeholder platform resources + user ack |
 | `document` | Write per-var obtain playbooks |
 | `harvest` | One collection round — then hold |
@@ -73,7 +76,7 @@ Templates: [ARTIFACTS.md](ARTIFACTS.md). Obtain playbook: [CONFIG-GUIDE.md](CONF
 | `inject runtime [env]` | Push `.env` vars to runtime platform (Fly, Vercel, AWS SSM, …) |
 | `inject [env]` | Both inject targets — checkpoint between CI and runtime |
 | `deploy [env]` | Execute deploy after inject + prerequisites |
-| `verify [env]` | Post-deploy smoke/health checks |
+| `verify [env]` | Post-deploy runtime visibility — tier-1 then tier-2 |
 
 **Composition rules:**
 
@@ -95,11 +98,14 @@ Templates: [ARTIFACTS.md](ARTIFACTS.md). Obtain playbook: [CONFIG-GUIDE.md](CONF
 | Harvest round end | Next round, Forge — **hold until user replies** |
 | Harvest finished (user declared) | Forge, Inject |
 | Document complete | Forge |
-| Forge strategy sign-off | Repo deploy files |
+| Forge strategy sign-off (includes runtime visibility plan) | `arm visibility`, `forge artifacts` |
+| Runtime visibility tooling ready | `deploy` |
 | `.env` deploy-critical complete | `inject`, `deploy` |
-| Forge artifacts generated | `inject runtime` (when mapping depends on generated config) |
+| Forge artifacts generated (tier-1 Steps documented) | `inject runtime` (when mapping depends on generated config); **`deploy`** |
 | Inject CI complete | `deploy` (when CI runs deploy) |
 | Inject runtime complete | `deploy` (when direct-to-platform) |
 | Deploy recorded | `verify` |
+
+Inject is **not** blocked by runtime visibility preparation.
 
 `status` reads `deployment.md` to determine which inject targets apply for `<env>`.

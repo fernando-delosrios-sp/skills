@@ -1,5 +1,5 @@
 interface:
   display_name: Deploy Mate
-  short_description: End-to-end deployment readiness for one environment — architecture, e...
+  short_description: End-to-end deployment readiness — architecture, env vars, runtime visibility, CI/CD, deploy.
 policy:
   allow_implicit_invocation: false

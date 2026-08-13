@@ -22,6 +22,8 @@ Status: in-progress | complete
 - [ ] Document — obtain playbooks (hard gate)
 - [ ] Harvest — .env collection — in-progress | finished <date>
 - [ ] Forge — strategy sign-off: pending | approved <date>
+- [ ] Runtime visibility — planned (Forge sign-off) <date>
+- [ ] Runtime visibility tooling — ready <date>
 - [ ] Forge — deployment artifacts generated
 - [ ] Inject CI — pending | done <date>
 - [ ] Inject runtime — pending | done <date>
@@ -78,9 +80,10 @@ flowchart TB
 
 ## Components
 
-| Component | Role | Confidence | Evidence |
-|-----------|------|------------|----------|
-| <name> | <runtime role> | confirmed \| inferred \| unknown | <file:line or config path> |
+| Component | Role | Confidence | Evidence | Visibility |
+|-----------|------|------------|----------|------------|
+| <name> | <runtime role> | confirmed \| inferred \| unknown | <file:line or config path> | T1: GET /health, `fly status`; T2: `fly logs`; chain: runtime → CI |
+| worker | queue consumer | confirmed | … | T1: `fly machine list`; T2: deferred — no log drain yet |
 
 ## Deploy targets
 | Target | Platform | Notes |
@@ -112,6 +115,15 @@ flowchart TB
 | Source service | Vars | MCP / skill | Local CLI | Primary chain | Status | Verify evidence |
 |----------------|------|-------------|-----------|---------------|--------|-----------------|
 | | | | `flyctl` | cli → manual | pending \| ready \| opt-out \| manual-only | setup notes § |
+
+### Runtime visibility tooling
+
+<!-- Mapped during arm visibility — after Forge proposal sign-off. Platform-access verify only before deploy. -->
+
+| Component | Tier | MCP / skill | Local CLI | Read path | Status | Verify evidence |
+|-----------|------|-------------|-----------|-----------|--------|-----------------|
+| api | tier-1 | — | `flyctl` | `fly status`, GET /health | pending \| ready \| opt-out \| manual-only | setup notes § |
+| api | tier-2 | — | `flyctl`, `gh` | `fly logs`, `gh run watch` | pending \| ready \| opt-out \| manual-only | setup notes § |
 
 ## Scaffold registry
 
@@ -183,8 +195,22 @@ Write **strategy sections first** (Forge proposal). Repo files only after Sign-o
 ### Rollback
 <how to revert a bad deploy>
 
+### Runtime visibility
+
+<!-- Required — every deploy-critical component needs tier-1; tier-2 may defer with ack -->
+
+Per component (mirror `architecture.md` → Components Visibility column):
+
+| Component | Tier-1 (hard) | Tier-2 (soft) | Read chain | Boot time | Tier-2 deferral |
+|-----------|---------------|---------------|------------|-----------|-----------------|
+| api | GET /health, `fly status` | `fly logs`, `gh run watch` | runtime → CI | 30s optional | — |
+| worker | `fly machine list` | `fly logs` | runtime only | — | deferred <date> — no log drain yet |
+
+- **Tier-1** — health URL and/or platform status CLI (**runtime first**); blocks Deploy until documented in Steps and tooling ready
+- **Tier-2** — log tail/stream; CI workflow conclusion when CI deploys (**CI second**); deferrable with user ack at Forge sign-off
+- **Non-HTTP components** — tier-1 uses platform process/container status minimum (`fly machine list`, `kubectl get pods`)
+
 ### Optional scope
-- Observability: … | deferred
 - DNS: … | deferred
 - Migrations: … | deferred
 

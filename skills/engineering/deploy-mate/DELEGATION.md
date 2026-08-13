@@ -8,12 +8,14 @@ Command entry points: [COMMANDS.md](COMMANDS.md). Fallbacks when mapped MCPs/ski
 | ----- | --------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | 1     | Survey          | Agent file analysis; Mermaid deploy topology; `c4-diagram` when 3+ containers          | `search`, `find-skills` (niche stack), `design-doc-mermaid`                |
 | 3     | Arm             | Collection + deploy tooling map; `find-skills` for unmapped services                   | MCP catalog search                                                         |
-| 3b    | Arm-ready       | Install, verify **each tooling row**; update Status in configuration.md; tooling audit | User opt-out → row Status `opt-out`                                        |
+| 3     | Arm visibility  | Runtime visibility tooling map; platform-access CLI verify                             | `search` for platform status/log commands                                  |
+| 3b    | Arm-ready       | Install, verify **each Deploy + Collection tooling row**; tooling audit                | User opt-out → row Status `opt-out`                                        |
 | 3c    | Scaffold        | Create placeholder resources via ready CLIs                                            | User creates manually; record in registry                                  |
 | 4a    | Document        | Per-var obtain playbooks; `search` for vendor steps                                    | —                                                                          |
 | 4b    | Harvest         | Tool-first loop for **deploy-critical** vars only: MCP → skill → **CLI** → manual      | `search` for manual fallback steps                                         |
-| 5     | Forge proposal  | `deployment-pipeline-design` — strategy dialog before files                            | `cicd-pipeline-generator`, stack-specific deployment skills (options only) |
-| 5     | Forge artifacts | After strategy sign-off — generate repo files                                          | `cicd-pipeline-generator`, stack-specific deployment skills                |
+| 5     | Forge proposal  | `deployment-pipeline-design` — strategy dialog; required Runtime visibility section      | `cicd-pipeline-generator`, stack-specific deployment skills (options only) |
+| 5     | Arm visibility  | Map Runtime visibility tooling; platform-access verify per [TOOLING.md](TOOLING.md)      | `search` for niche platform CLIs                                           |
+| 5     | Forge artifacts | After arm visibility — generate repo files + verify Steps                              | `cicd-pipeline-generator`, stack-specific deployment skills                |
 | 5a    | Inject CI       | `gh secret set`, GitHub API, GitLab CLI per Deploy mapping                             | `env-secrets-manager`, `search` for vendor syntax                          |
 | 5b    | Inject runtime  | `fly secrets set`, `vercel env add`, `aws ssm put-parameter`, …                        | `search`, platform MCPs when mapped                                        |
 | 6     | Deploy          | Deploy tooling CLI/MCP/workflow dispatch                                               | Stack-specific deployment skills                                           |
@@ -79,4 +81,8 @@ When user prefers vault over direct push: `env-secrets-manager`. When CLI syntax
 
 ## Verify delegation
 
-Run health/smoke commands from `deployment.md` → Steps. Use Deploy tooling CLIs (`fly status`, workflow watch via `gh run watch`, curl health URLs). On failure, point user to Rollback section — do not auto-rollback.
+Run runtime visibility checks from `deployment.md` → Steps and Runtime visibility plan. **Tier-1 first** (runtime health/status, 3×10s retry), then **tier-2** (logs, `gh run watch` when CI deploys). Use Deploy tooling and Runtime visibility tooling CLIs. On tier-1 failure, point user to Rollback section — do not auto-rollback.
+
+## Arm visibility delegation
+
+After Forge proposal sign-off, map rows in `configuration.md` → Runtime visibility tooling. Reuse ready CLIs from Deploy tooling when same platform. Platform-access verify only — see [TOOLING.md](TOOLING.md) § Runtime visibility tooling. Do **not** re-run full Arm-ready.
