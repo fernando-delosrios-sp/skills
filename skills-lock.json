@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "apply-code-changes": {
+      "source": ".",
+      "sourceType": "local",
+      "computedHash": "e0004f76255065a6aae824bfba94736e6fa7eb1f1013286a9926ce4c5f9e3fa1"
+    },
     "architecture-decision-records": {
       "source": ".",
       "sourceType": "local",
@@ -101,7 +106,7 @@
     "openspec-init": {
       "source": ".",
       "sourceType": "local",
-      "computedHash": "14789a63d8b28e7fc4c7deb16918596f61d8ef0feb578c49b16b5662c380e7f2"
+      "computedHash": "b08d17fd30ca223af52ad5c540653ff30907ab018fd6ac1eb690ab4a754160b9"
     },
     "risen-prompt": {
       "source": ".",
