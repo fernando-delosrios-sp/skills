@@ -52,67 +52,9 @@ claude plugin install superpowers@claude-plugins-official  # if not already
 
 ## Upgrading an existing install
 
-If your project already has `openspec/schemas/superpowers-bridge/` and you want to pull the latest version, use one of the upgrade methods below. The upgrade overwrites the entire `superpowers-bridge/` directory and offers a CLAUDE.md fragment update — see "What the upgrade overwrites" below.
+**Via openspec-init (recommended):** Invoke the **openspec-init** skill when `openspec/config.yaml` exists — it runs the update path (schema diff, config refresh, agent fragments, skills, verify). See [UPDATE.md](./UPDATE.md).
 
-### Upgrade Method 1: Claude Code one-shot prompt (recommended)
-
-In your project root, paste this into Claude Code:
-
-```
-Upgrade the superpowers-bridge schema in this project:
-
-1. Verify `openspec/schemas/superpowers-bridge/` already exists (upgrade, not fresh install). If missing, abort and tell me to use the install instructions instead.
-2. Clone https://github.com/JiangWay/openspec-schemas to a temp dir.
-3. Show me the diff between the local `openspec/schemas/superpowers-bridge/` and the cloned `superpowers-bridge/` (use `diff -ruN`). Wait for my ack before overwriting.
-4. After my ack, overwrite the local schema dir with the cloned one.
-5. Run `openspec schema validate superpowers-bridge` to verify.
-6. Check whether this project has `CLAUDE.md` at the repo root.
-   - If yes: scan it for an existing workflow-routing section referencing superpowers-bridge.
-     - If found: show me the diff between that section and `superpowers-bridge/templates/adopters/CLAUDE.md.fragment.<locale>.md`. Wait for my ack before replacing.
-     - If not found: ask whether to insert the new fragment from `templates/adopters/CLAUDE.md.fragment.<locale>.md`.
-   - If no CLAUDE.md exists: skip.
-7. Clean up the temp directory.
-8. Show me the final state.
-```
-
-> `<locale>` defaults to `zh-TW` if your CLAUDE.md is in Traditional Chinese, or no suffix (English). Claude detects from existing CLAUDE.md content.
-
-### Upgrade Method 2: Manual bash
-
-```bash
-# 1. Get the latest bundle
-git clone https://github.com/JiangWay/openspec-schemas /tmp/oss-upgrade
-
-# 2. Review the diff first (don't overwrite blindly)
-diff -ruN ~/your-project/openspec/schemas/superpowers-bridge /tmp/oss-upgrade/superpowers-bridge
-
-# 3. After reviewing, overwrite
-rm -rf ~/your-project/openspec/schemas/superpowers-bridge
-cp -R /tmp/oss-upgrade/superpowers-bridge ~/your-project/openspec/schemas/superpowers-bridge
-
-# 4. Validate
-cd ~/your-project && openspec schema validate superpowers-bridge
-
-# 5. CLAUDE.md fragment (manual)
-# View /tmp/oss-upgrade/superpowers-bridge/templates/adopters/CLAUDE.md.fragment.md
-# Compare against your CLAUDE.md and insert/update the corresponding section as needed
-
-# 6. Clean up
-rm -rf /tmp/oss-upgrade
-```
-
-### What the upgrade overwrites
-
-| Path | Action | Manual step? |
-|---|---|---|
-| `openspec/schemas/superpowers-bridge/` | Auto-overwritten — entire directory replaced from upstream (`rm -rf` + `cp -R` in Method 2; equivalent in Method 1) | None |
-| `CLAUDE.md` (project root) | The schema dir ships `templates/adopters/CLAUDE.md.fragment.<locale>.md`; the upgrade procedure diffs your existing CLAUDE.md against this fragment and waits for your ack before inserting / replacing | Yes — review diff, choose insert / replace / keep |
-
-> The bridge directory is monolithic — you take the whole new version or stay on the old one. There is no per-file opt-in. CLAUDE.md is the only project-root file the upgrade ever touches, and never without your ack.
-
-> In-flight changes (any phase: brainstorm / design / specs / ...) remain valid because the schema graph (`requires:` edges, PRECHECKs, artifact dependencies) hasn't changed in v1.x. Existing `verify.md` / `retrospective.md` from before the upgrade are still readable; if you re-run `/opsx:verify` or `/opsx:continue → retrospective` on them, the new template structure applies on overwrite.
-
-> If a future upgrade modifies the schema graph structurally (artifact add/remove, `requires:` edge changes, PRECHECK changes), the README will gain a version field and a migration guide. v1 → v1.x prose-only changes are safe and do not need migration.
+**Standalone / upstream pull:** Clone [JiangWay/openspec-schemas](https://github.com/JiangWay/openspec-schemas), diff and replace `openspec/schemas/superpowers-bridge/`, then follow agent fragment and verify steps in [UPDATE.md](./UPDATE.md). Do not duplicate upgrade prose here — [UPDATE.md](./UPDATE.md) is the single source of truth.
 
 ---
 

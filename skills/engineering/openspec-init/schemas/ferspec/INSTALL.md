@@ -2,7 +2,11 @@
 
 Setup for the **ferspec** OpenSpec schema in a target project.
 
-> **openspec-init routing:** Step 3 runs **Post-copy setup** only. Step 6 runs **Skills**, then **Verify** (after step 5). Do not re-copy the schema or run `openspec init` during those steps — openspec-init steps 1–2 handle CLI setup and schema copy.
+> **openspec-init routing:** Step 3 runs **Post-copy setup** only. Step 6 runs **Skills**, then **Verify** (after step 5). Do not re-copy the schema or run `openspec init` during those steps — openspec-init steps 1–2 handle CLI setup and schema copy. For existing projects, use openspec-init **update path** — see [UPDATE.md](./UPDATE.md).
+
+## Upgrading (openspec-init update path)
+
+When `openspec/config.yaml` already exists with `schema: ferspec`, do **not** re-run standalone manual install. Invoke **openspec-init** (update path) or follow [UPDATE.md](./UPDATE.md).
 
 ## Standalone manual install
 
@@ -52,6 +56,7 @@ npx skills add fernando-delosrios-sp/skills --skill tdd
 npx skills add fernando-delosrios-sp/skills --skill codebase-design
 npx skills add fernando-delosrios-sp/skills --skill code-review
 npx skills add fernando-delosrios-sp/skills --skill apply-code-changes
+npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills
 ```
 
 | Skill | Phase | Invoked by |
@@ -69,8 +74,13 @@ npx skills add fernando-delosrios-sp/skills --skill apply-code-changes
 | codebase-design | apply | tdd (seam / interface vocabulary) |
 | code-review | apply | tdd (post-implementation review) |
 | apply-code-changes | apply | schema.yaml |
+| setup-matt-pocock-skills | setup | user; once after skill install |
 
 If the user skips skills from this list, note which phases lose skill-backed behavior and which fallbacks apply.
+
+**Post-install setup** — run once after all skills above are installed:
+
+Invoke `/setup-matt-pocock-skills` to scaffold issue tracker, domain docs, and triage label config under `docs/agents/`. Required for `code-review`, `tdd`, and optional `wayfinder`.
 
 **Optional — pre-change planning** (not part of the ferspec change lifecycle; install when multi-session planning happens before `/opsx:new`):
 
@@ -92,4 +102,4 @@ Run after ubiquitous-language and domain specs exist (openspec-init step 5):
 2. Installed skills appear in the agent's available skills list
 3. Confirm `openspec/specs/ubiquitous-language/spec.md` exists — terms marked `promote` in discovery become ubiquitous-language delta during specs phase; canonical merge at archive
 4. Smoke-test change: `/opsx:new test-ferspec --schema ferspec`
-5. Confirm `openspec/changes/test-ferspec/` exists with ferspec artifacts (proposal, discovery, design, specs, tasks, tracking). **Delete the smoke-test change** — `rm -rf openspec/changes/test-ferspec`. Do not archive; it has no spec deltas to merge.
+5. Confirm `openspec/changes/test-ferspec/` exists with ferspec planning artifacts (proposal, discovery, design, specs, tasks). `tracking.md` is **not** created by `/opsx:new` — autonomous apply only. **Delete the smoke-test change** — `rm -rf openspec/changes/test-ferspec`. Do not archive; it has no spec deltas to merge.

@@ -2,7 +2,11 @@
 
 Post-copy setup for the `superpowers-bridge` schema.
 
-> **openspec-init routing:** Step 3 runs **Post-copy setup** only. Step 6 runs **Skills**, then **Verify** (after step 5). Do not re-copy the schema — openspec-init step 2 handles that. For standalone install (clone + copy), see [README.md](./README.md).
+> **openspec-init routing:** Step 3 runs **Post-copy setup** only. Step 6 runs **Skills**, then **Verify** (after step 5). Do not re-copy the schema — openspec-init step 2 handles that. For standalone install (clone + copy), see [README.md](./README.md). For existing projects, use openspec-init **update path** — see [UPDATE.md](./UPDATE.md).
+
+## Upgrading (openspec-init update path)
+
+When `openspec/config.yaml` already exists with `schema: superpowers-bridge`, invoke **openspec-init** (update path) or follow [UPDATE.md](./UPDATE.md). Standalone upstream clone upgrade procedures in README are for non-openspec-init workflows only.
 
 ## Post-copy setup (openspec-init step 3)
 
@@ -35,7 +39,7 @@ Install **all** skills below. Do not stop after the Superpowers package — the 
 
 ### Superpowers execution skills (required)
 
-Provides brainstorming, planning, worktree isolation, subagent execution, and branch completion:
+Provides brainstorming, planning, subagent execution, and branch completion:
 
 ```bash
 npx skills add obra/superpowers
@@ -47,13 +51,18 @@ Confirm these skills are available after install:
 |---|---|
 | `brainstorming` | brainstorm artifact |
 | `writing-plans` | plan artifact |
-| `using-git-worktrees` | apply step 1 (isolated workspace) |
 | `subagent-driven-development` | apply step 2 (executor) |
 | `test-driven-development` | transitive via subagent-driven-development |
 | `requesting-code-review` | transitive via subagent-driven-development |
 | `finishing-a-development-branch` | apply step 6 (PR last) |
 
-If any required skill is missing, STOP and inform the user — the schema does not silently fall back.
+If any required skill above is missing, STOP and inform the user — the schema does not silently fall back.
+
+**Optional — worktree path only** (required when the user chooses Worktree at apply step 1; PRECHECK in schema stops with Local/install offer if absent):
+
+| Skill | Used in |
+|---|---|
+| `using-git-worktrees` | apply step 2 (isolated workspace — user chooses at step 1) |
 
 ### Companion skills from fernando-delosrios-sp/skills (required)
 

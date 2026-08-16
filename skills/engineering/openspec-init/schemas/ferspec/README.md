@@ -10,6 +10,8 @@ Lean OpenSpec workflow for work that needs speccing. **Schema = what; skills = h
 
 **Via openspec-init:** The skill copies this schema (step 2), then runs [INSTALL.md](./INSTALL.md) post-copy setup (step 3), config and specs (steps 4–5), and skills + verify (step 6).
 
+**Update existing:** Invoke openspec-init (update path) — see [UPDATE.md](./UPDATE.md).
+
 **Standalone:** See [INSTALL.md § Standalone manual install](./INSTALL.md#standalone-manual-install), then complete the remaining INSTALL.md sections.
 
 Use `--schema ferspec` on new changes: `/opsx:new my-feature --schema ferspec`
@@ -77,14 +79,14 @@ Invoke **apply-code-changes** when installed; schema carries a minimal fallback.
 1. All tasks.md checkboxes `[x]`
 2. Canonical test command exit 0
 3. Every Gherkin scenario in delta specs → named automated test
-4. `openspec validate --all --json` all valid
+4. `openspec validate --all --json` (from `planningHome.root`, with `--store` when set) — all valid
 5. Design decisions reflected in specs (material drift = FAIL)
 6. Changelog task complete (during apply, not archive)
 
 ### Interactive
 
 ```text
-dialog (workspace × parallelism) → execute → gate → changelog → STOP
+dialog (workspace × parallelism) → execute (incl. Changelog) → gate → STOP
 ```
 
 Commits on branch; no PR unless the user asks.
@@ -92,7 +94,7 @@ Commits on branch; no PR unless the user asks.
 ### Autonomous
 
 ```text
-tracking.md → execute → gate → changelog → PR + issue link → STOP
+tracking.md → execute (incl. Changelog) → gate → PR + issue link → STOP
 ```
 
 PR is the handoff mechanism. Archive is **never** part of apply.
@@ -133,7 +135,7 @@ User runs `/opsx:archive` themselves.
 | Continue planning | `/opsx:continue <name>` |
 | Implement | `/opsx:apply <name>` |
 | Archive (manual) | `/opsx:archive <name>` |
-| Validate | `openspec validate --all --json` |
+| Validate | `openspec validate --all --json` (cwd `planningHome.root`; append `--store` when set) |
 
 ---
 

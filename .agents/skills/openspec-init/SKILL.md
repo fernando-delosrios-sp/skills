@@ -1,11 +1,11 @@
 ---
 name: openspec-init
-description: Use when the user asks to initialize an OpenSpec project.
+description: Use when the user asks to initialize or update an OpenSpec project — schema refresh, config/rules sync, agent routing fragments, and companion skills. Triggers include "update openspec", "upgrade schema", and "refresh ferspec".
 ---
 
 # openspec-init
 
-## Decision gates (before skill install)
+## Decision gates
 
 Steps that say "stop and wait" are **_gates_**. At each gate:
 
@@ -17,13 +17,89 @@ Steps that say "stop and wait" are **_gates_**. At each gate:
 
 Record the chosen option by `id` (schema dir name, domain slug, yes/no/skip).
 
-## 1. Setup & Initialization
+## 0. Front door
+
+- **Detect**: If `openspec/config.yaml` exists in the target project, this is an **existing** OpenSpec project.
+- **_Gate_** — when existing:
+  - **Update existing** (recommended) — run [Update path](#update-path) below.
+  - **Re-init from scratch** — wipe `openspec/schemas/<schema>/` and refresh `openspec/config.yaml`; **preserve** `openspec/specs/` and `openspec/changes/` unless the user gives separate explicit confirmation to delete those. Single gate with clear wording before any destructive action.
+- **Fresh init**: When `openspec/config.yaml` is absent, run [Init path](#init-path) (steps 1–6).
+
+On update, read active schema from `openspec/config.yaml` → `schema:` key. If `openspec/schemas/<schema>/` is missing, stop and offer to copy the schema (init step 2) before continuing update.
+
+**Never auto-touch on update:** existing `openspec/specs/**` content (except optional missing-only ubiquitous-language backfill) and `openspec/changes/**`.
+
+Per-schema overwrite scope, migration notes, and verify details live in `schemas/<name>/UPDATE.md`. Generic steps below; follow the active schema's `UPDATE.md` where it adds or overrides.
+
+---
+
+## Update path
+
+Run in order. Each diff step requires user ack before write.
+
+### U1. Preflight
+
+- Confirm `openspec` CLI is available (`openspec --version`).
+- Read local `openspec/schemas/<schema>/VERSION` and `schema.yaml` → `version:` (graph contract).
+- Read bundled copies from this skill's `schemas/<schema>/` for the same fields.
+- If the schema README documents a **Compatibility** table (min OpenSpec CLI), block update when CLI is below minimum; otherwise warn.
+- **Hard-stop** when bundled graph `version` > local — read migration notes in `schemas/<schema>/UPDATE.md`; require ack before continuing.
+- **Warn-only** when bundle `VERSION` major bumps but graph version is unchanged (prose/template changes; in-flight changes usually safe).
+- Show both version numbers in the pre-overwrite summary.
+
+### U2. Schema refresh
+
+- `diff -ruN` local `openspec/schemas/<schema>/` vs this skill's bundled `schemas/<schema>/`.
+- **_Gate_** — wait for ack.
+- Full replace: copy bundled directory to `openspec/schemas/<schema>/` (overwrites entire schema dir).
+- Run `openspec schema validate <schema>`.
+
+### U3. Config refresh
+
+- Build a refreshed `openspec/config.yaml` following `references/config.md`:
+  - **Preserve** existing `context:` verbatim.
+  - **Preserve** user-added rule lines not present in the template.
+  - **Add** missing artifact keys from the schema's `schema.yaml`.
+  - **Refresh** template-owned default rules where the schema artifact set changed.
+- Show diff vs current file. **_Gate_** — wait for ack before write.
+
+### U4. Agent routing refresh
+
+Follow `schemas/<schema>/UPDATE.md` for fragment paths. Default behavior:
+
+- Detect existing agent config (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules/`, etc.) per schema `INSTALL.md` / `UPDATE.md`.
+- If an adopters fragment section exists → diff against `templates/adopters/*.fragment.md` → **_Gate_** — replace section on ack.
+- If no section exists → **_Gate_** — offer to append fragment on ack.
+- Never replace entire agent files — section-level only.
+
+### U5. Companion skills
+
+- **_Gate_** — "Refresh companion skills?" (recommended: yes).
+- Run the full authoritative list from the schema's `INSTALL.md` **Skills** section (idempotent `npx skills add …`).
+- Report any skills still missing after install if the user skipped.
+
+### U6. Optional ubiquitous-language backfill
+
+- If `openspec/specs/ubiquitous-language/spec.md` is **missing** only → **_Gate_** — offer one-time seed from `references/ubiquitous-language-spec.md`.
+- If it exists → do not modify.
+
+### U7. Verify
+
+Follow `schemas/<schema>/UPDATE.md` **Verify** section (default: `openspec schema validate` + required skills present; smoke test only when `UPDATE.md` specifies).
+
+**Completion criterion:** Schema validates, config and agent routing refreshed (or explicitly skipped with ack), skills refreshed (or skipped with missing list noted), verify checks pass.
+
+---
+
+## Init path
+
+### 1. Setup & Initialization
 
 - **Check Requirements**: Install the `openspec` CLI if it is not available (`npm install -D openspec` or `-g`).
 - **Initialize**: Run `openspec init`. **_Gate_** — present inferred or default AI tool options; stop and wait for their response before proceeding.
 - **Completion Criterion**: `openspec` CLI is available and `openspec init` has completed.
 
-## 2. Schema Selection & Installation
+### 2. Schema Selection & Installation
 
 - **List Schemas**: Read subdirectories under this skill's `schemas/` (skip non-schema entries like `README.md`).
 - **Select Schema**: **_Gate_** — one option per schema (`id` = directory name; `detail` from schema README when available). Stop and wait for their choice.
@@ -31,25 +107,25 @@ Record the chosen option by `id` (schema dir name, domain slug, yes/no/skip).
 - **Validate**: Run `openspec schema validate <schema-name>`. Attempt to fix errors or ask the user for guidance.
 - **Completion Criterion**: The chosen schema directory exists in `openspec/schemas/` and validation passes.
 
-## 3. Schema Instructions
+### 3. Schema Instructions
 
 - **Check Instructions**: Look for `INSTALL.md` in the copied schema directory.
-- **Execute**: If it exists, follow the **Post-copy setup** section only. Skip **Standalone manual install**, **Skills**, and **Verify** — those belong to README (standalone use), step 6, or step 6 after step 5 respectively.
+- **Execute**: If it exists, follow the **Post-copy setup** section only. Skip **Standalone manual install**, **Skills**, **Verify**, and **Upgrading** — those belong to README/UPDATE.md (standalone use), step 6, step 6 after step 5, or the [Update path](#update-path) respectively.
 - **Completion Criterion**: Post-copy setup in `INSTALL.md` is complete, or no `INSTALL.md` exists.
 
-## 4. Configuration
+### 4. Configuration
 
 - **Build Config**: Build `openspec/config.yaml` by following `references/config.md`.
 - **Completion Criterion**: `openspec/config.yaml` exists and contains `schema`, `context`, and `rules` sections.
 
-## 5. Initial Spec Generation
+### 5. Initial Spec Generation
 
 - **Mandatory ubiquitous language**: Always create `openspec/specs/ubiquitous-language/spec.md` using `references/ubiquitous-language-spec.md` as the starting template. This spec is required for every project — do not skip it or fold it into another domain.
 - **Discover Domains**: Analyze the project structure to infer logical domains. **_Gate_** — multi-select over inferred domains; stop and wait for their response.
 - **Pre-populate**: Create the confirmed domain subdirectories in `openspec/specs/` and generate an initial `spec.md` for each. Stick to the domain categories found; do not create specs for more particular sub-groupings (e.g., do not create a spec for each individual service within a structural grouping).
 - **Completion Criterion**: `openspec/specs/ubiquitous-language/spec.md` exists and `openspec/specs/` contains at least one additional domain subdirectory with an initial `spec.md` file (or only ubiquitous-language if the project is too early to infer domains — ask the user).
 
-## 6. Recommended Skills Installation
+### 6. Recommended Skills Installation
 
 - **Install Skills**: **_Gate_** — confirm before installing.
 - **Skill list**: If the chosen schema's `INSTALL.md` has a **Skills** section, follow that list (authoritative). Otherwise install the default bundle below.
