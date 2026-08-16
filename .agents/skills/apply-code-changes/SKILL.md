@@ -50,13 +50,13 @@ Autonomous signals: existing `tracking.md` with Issue filled, explicit user requ
 
 **Autonomous** — no dialog:
 
-1. Create `tracking.md` from the ferspec template when missing; fill Issue and Branch from issue metadata; fill **Change** with adapter `CHANGE_ROOT` (full path — OpenSpec `changeRoot` from step 0, or Direct user path); fill Presets from issue metadata when present.
-2. Persist adapter outputs: Presets → `store` when OpenSpec adapter set `STORE`.
-3. Apply Presets (`workspace`, `parallelism`, `base-branch`, `store`) without user prompts. When Presets include `workspace: worktree`, **PRECHECK** a worktree skill or documented project workflow — if absent, downgrade to `local`, write corrected Presets to `tracking.md`, and note the assumption (issue comment when Issue is set; else session log). Do not STOP — autonomous runs must continue on `local`.
+1. Prepare `tracking.md` content from the ferspec template when missing; fill Issue and Branch from issue metadata; fill **Change** with adapter `CHANGE_ROOT` (full path — OpenSpec `changeRoot` from step 0, or Direct user path); fill Presets from issue metadata when present. **Do not write to disk yet** — persist at `ACTIVE_CHANGE_ROOT` once bound (step 2.5).
+2. Persist adapter outputs in prepared content: Presets → `store` when OpenSpec adapter set `STORE`.
+3. Apply Presets (`workspace`, `parallelism`, `base-branch`, `store`) without user prompts. When Presets include `workspace: worktree`, **PRECHECK** a worktree skill or documented project workflow — if absent, downgrade to `local`, update prepared Presets, and note the assumption (issue comment when Issue is set; else session log). Do not STOP — autonomous runs must continue on `local`.
 
 ### 2. Branch resolution
 
-After setup — autonomous first runs now have `tracking.md` with Branch filled. Resolve `ORIGINAL_BRANCH` **before** creating or skipping the feature branch — current checkout is not the PR base when you are already on `FEATURE_BRANCH`.
+After setup — autonomous first runs have prepared `tracking.md` with Branch filled (persisted when `ACTIVE_CHANGE_ROOT` binds). Resolve `ORIGINAL_BRANCH` **before** creating or skipping the feature branch — current checkout is not the PR base when you are already on `FEATURE_BRANCH`.
 
 1. Resolve `FEATURE_BRANCH`: `tracking.md` → Branch, else adapter default (`openspec/<name>` or `feature/<name>` — see [change-adapters.md](references/change-adapters.md)).
 2. Resolve `ORIGINAL_BRANCH` (integration branch — PR target and review base). It must not equal `FEATURE_BRANCH`. First match:
@@ -67,7 +67,11 @@ After setup — autonomous first runs now have `tracking.md` with Branch filled.
    - **`local` workspace:** create and checkout `FEATURE_BRANCH` when not already on it; otherwise stay on the existing feature branch.
    - **`worktree` + `single`:** create `FEATURE_BRANCH` from `ORIGINAL_BRANCH` when missing; one worktree on `FEATURE_BRANCH` holds it. Keep **main repo checkout** on `ORIGINAL_BRANCH` — never checkout `FEATURE_BRANCH` in main while that worktree exists.
    - **`worktree` + `subagent-per-group`:** create `FEATURE_BRANCH` from `ORIGINAL_BRANCH` when missing as the integration branch for sequential merges. Keep **main repo checkout** on `ORIGINAL_BRANCH`. Group worktrees use `<FEATURE_BRANCH>-<group-slug>`, not `FEATURE_BRANCH`. Main may checkout `FEATURE_BRANCH` for merges and `tasks.md` updates — no worktree holds that branch.
-4. When `tracking.md` exists and Presets `base-branch` is empty, write `ORIGINAL_BRANCH` there so later resumes read the preset instead of re-deriving from checkout.
+4. When prepared or existing `tracking.md` has Presets `base-branch` empty, set `ORIGINAL_BRANCH` there so later resumes read the preset instead of re-deriving from checkout.
+5. **Bind `ACTIVE_CHANGE_ROOT`** — all change-artifact reads/writes (`tasks.md`, `tracking.md`, specs, etc.) use this path, never the pre-bind main-checkout path when work runs elsewhere:
+   - **`local`:** after checkout on `FEATURE_BRANCH`, `ACTIVE_CHANGE_ROOT` = adapter `CHANGE_ROOT` (same repo-relative path on that branch). Persist prepared `tracking.md` here when first bound.
+   - **`worktree` + `single`:** defer bind until worktree creation in step 3; re-resolve inside the worktree; persist prepared `tracking.md` on first bind.
+   - **`worktree` + `subagent-per-group`:** orchestrator binds on `FEATURE_BRANCH` in main (checkout when needed); group subagents bind inside their worktree. Persist prepared `tracking.md` when orchestrator first binds on `FEATURE_BRANCH`.
 
 ### 3. Execute tasks
 
@@ -87,15 +91,14 @@ Changelog group: invoke **changelog-generator**; mark tasks complete when entry 
 
 **Workspace `worktree`:** capability is validated at setup (autonomous downgrades invalid presets; interactive workspace gate omits `worktree` when absent). **Interactive edge case only:** if `worktree` was chosen but capability is missing at execute time, STOP with structured-choices `local` offer.
 
-- **`single` parallelism:** one isolated worktree `apply-<name>` on `FEATURE_BRANCH`. Run steps 3–4 entirely inside the worktree. After worktree creation, re-resolve `CHANGE_ROOT` to the same repo-relative path inside the worktree (`git rev-parse --show-toplevel` there + relative path from adapter) — never read or edit artifacts via the pre-worktree absolute path into main. Commits land on `FEATURE_BRANCH`. Before handoff: push `FEATURE_BRANCH` from the worktree (`git push -u origin HEAD` there), remove the worktree per the worktree skill. **Interactive only:** after the worktree is gone, checkout `FEATURE_BRANCH` in the main repo if the user should land on the branch. **Autonomous:** main checkout stays on `ORIGINAL_BRANCH`.
+- **`single` parallelism:** one isolated worktree `apply-<name>` on `FEATURE_BRANCH`. Run steps 3–4 entirely inside the worktree. After worktree creation, bind `ACTIVE_CHANGE_ROOT` to the same repo-relative path inside the worktree (`git rev-parse --show-toplevel` there + relative path from adapter) — never read or edit artifacts via the pre-worktree absolute path into main. Persist prepared `tracking.md` on first bind. Commits land on `FEATURE_BRANCH`. Before handoff: push `FEATURE_BRANCH` from the worktree (`git push -u origin HEAD` there), remove the worktree per the worktree skill. **Interactive only:** after the worktree is gone, checkout `FEATURE_BRANCH` in the main repo if the user should land on the branch. **Autonomous:** main checkout stays on `ORIGINAL_BRANCH`.
 - **`subagent-per-group` parallelism:** see below — one worktree per numbered group.
 
 **Parallelism `subagent-per-group`:** never run concurrent subagents against the same checkout or branch.
 
 - **Eligible groups:** numbered implementation `##` groups only — not Verification, Documentation, or Changelog (orchestrator runs those).
-- **`local` workspace:** dispatch groups **sequentially** — wait for each subagent to return before starting the next. Subagents implement and report; they must **not** run git commands or edit `tasks.md`. Orchestrator runs tests, marks checkboxes, and invokes **git-commit** after each group.
-- **`worktree` workspace:** one isolated worktree per group (`apply-<name>-<group-slug>`) on branch `<FEATURE_BRANCH>-<group-slug>`. Subagents may commit on their group branch. Orchestrator **merges sequentially** into `FEATURE_BRANCH` after each group returns — never merge in parallel. Mark `tasks.md` on `FEATURE_BRANCH` (checkout in main when needed — no worktree holds that branch).
-- Subagent brief: read group tasks + related specs/design from worktree-resolved `CHANGE_ROOT` (same repo-relative path inside the group worktree); follow implement + test steps; return evidence. Pass worktree-resolved `CHANGE_ROOT`; pass `PLANNING_HOME` and `--store` when the OpenSpec adapter set them.
+- **`local` workspace:** dispatch groups **sequentially** — wait for each subagent to return before starting the next. Subagents implement and report; they must **not** run git commands or edit `tasks.md`. Orchestrator runs tests, marks checkboxes, and invokes **git-commit** after each group. Subagent brief: read group tasks + related specs/design from `ACTIVE_CHANGE_ROOT` on `FEATURE_BRANCH`; follow implement + test steps; return evidence. Pass `ACTIVE_CHANGE_ROOT`; pass `PLANNING_HOME` and `--store` when the OpenSpec adapter set them.
+- **`worktree` workspace:** one isolated worktree per group (`apply-<name>-<group-slug>`) on branch `<FEATURE_BRANCH>-<group-slug>`. Subagents may commit on their group branch. Orchestrator **merges sequentially** into `FEATURE_BRANCH` after each group returns — never merge in parallel. Mark `tasks.md` and update `tracking.md` at orchestrator `ACTIVE_CHANGE_ROOT` on `FEATURE_BRANCH` (checkout in main when needed — no worktree holds that branch). Subagent brief: bind `ACTIVE_CHANGE_ROOT` inside the group worktree (same repo-relative path); read group tasks + related specs/design from there; follow implement + test steps; return evidence. Pass group worktree `ACTIVE_CHANGE_ROOT`; pass `PLANNING_HOME` and `--store` when the OpenSpec adapter set them.
 
 ### 4. Completion gate (blocking)
 
@@ -118,7 +121,7 @@ On FAIL: fix immediately; do not hand off.
 
 1. Push `FEATURE_BRANCH`: `git push -u origin FEATURE_BRANCH` — explicit branch name, not `HEAD`, so push succeeds when the main checkout stayed on `ORIGINAL_BRANCH` after worktree teardown. Skip when a worktree session already pushed and `origin/FEATURE_BRANCH` is up to date.
 2. Open PR from `FEATURE_BRANCH` to `ORIGINAL_BRANCH` via `gh pr create` — title/body reference change name and linked issue.
-3. Update `tracking.md` → PR with URL.
+3. Update `tracking.md` → PR at `ACTIVE_CHANGE_ROOT` on `FEATURE_BRANCH`; commit and push so PR metadata rides on the feature branch. **`worktree` + `single`:** do this inside the worktree before teardown (commit + push there). **`local` or `worktree` + `subagent-per-group`:** commit on `FEATURE_BRANCH` in main when needed, then push.
 4. Link PR on the issue — follow `docs/agents/issue-tracker.md` when present; otherwise `gh issue comment` / equivalent from tracking Issue field.
 
 **Done when:** gate passes and mode handoff completes (interactive: clean branch; autonomous: PR open + issue linked).
@@ -143,4 +146,5 @@ On FAIL: fix immediately; do not hand off.
 - No skipping Changelog — gate item 6 is blocking.
 - No hardcoded `openspec/changes/<name>/` — OpenSpec adapter resolves `changeRoot` from CLI every session; Direct adapter uses the user-supplied path only.
 - No concurrent subagents on shared git state — sequential dispatch or worktree isolation with sequential merge.
+- No persisting `tracking.md` via the main-checkout path when work runs in a worktree or on `FEATURE_BRANCH` elsewhere — bind `ACTIVE_CHANGE_ROOT` first.
 - No mixing superpowers-bridge apply orchestration with this skill on the same change.

@@ -19,7 +19,7 @@ Every adapter sets:
 
 | Variable | Meaning |
 |---|---|
-| `CHANGE_ROOT` | Directory containing `tasks.md` — all artifact reads/edits happen here. In **worktree** workspace, re-resolve to the same repo-relative path inside the active worktree after creation — never the pre-worktree path into main |
+| `CHANGE_ROOT` | Directory containing `tasks.md` — adapter output at pre-flight. At apply time, bind **`ACTIVE_CHANGE_ROOT`** to the same repo-relative path on the checkout where work runs (skill step 2.5). All artifact reads/edits — including `tracking.md` — use `ACTIVE_CHANGE_ROOT`, never the pre-bind main-checkout path when work runs elsewhere |
 | `NAME` | Basename of the change (for branches, PR titles, worktree names) |
 
 Optional when present under `CHANGE_ROOT`:
