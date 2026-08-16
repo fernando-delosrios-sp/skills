@@ -135,6 +135,11 @@ apply:
     5. design.md decisions reflected in specs — material drift = FAIL
     6. Changelog task complete (generated during apply, not archive)
 
+    **Branch resolution** (both modes): when FEATURE_BRANCH exists only on origin (not locally —
+    e.g. CI resume or fresh clone), check it out as a local tracking branch; never recreate it from
+    ORIGINAL_BRANCH, which would discard remote commits. Only create fresh from ORIGINAL_BRANCH when
+    the branch exists nowhere.
+
     **Interactive**: dialog (workspace: local | worktree × parallelism: single | subagent per
     task group) — record both in TRACKING Presets and current-run preset overrides before bind;
     preserve those choices through the feature-branch field-level merge → execute (incl. Changelog group) → gate → STOP.

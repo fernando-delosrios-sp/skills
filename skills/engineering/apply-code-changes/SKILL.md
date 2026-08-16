@@ -98,12 +98,15 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 
 5. **`FEATURE_BRANCH`:** `TRACKING` → Branch, else adapter default.
 6. **`ORIGINAL_BRANCH`:** must ≠ `FEATURE_BRANCH`. First match: `TRACKING` Presets → `base-branch`; else current branch when ≠ `FEATURE_BRANCH`; else repo default (`main` / `origin/HEAD`). Note assumption in autonomous mode when not preset.
-7. **Create `FEATURE_BRANCH`** from `ORIGINAL_BRANCH` when missing.
+7. **Resolve `FEATURE_BRANCH` existence** (reuse the local/origin check from pre-bind merge step 2 — do not re-query):
+   - Exists locally: leave it as-is.
+   - Exists on `origin` only: create a local tracking branch from it (`git checkout -b FEATURE_BRANCH origin/FEATURE_BRANCH` or `git branch --track`) — **never** recreate from `ORIGINAL_BRANCH`, which would discard remote commits (CI resume, fresh clone).
+   - Exists nowhere: **create** `FEATURE_BRANCH` from `ORIGINAL_BRANCH`.
 8. When `TRACKING` Presets `base-branch` is empty, set `ORIGINAL_BRANCH` in `TRACKING`.
 
 **Bind** — requires merged `TRACKING` Presets → `workspace` and `parallelism` (interactive: after setup steps 2–3; autonomous: baseline from setup step 1). Set `WORK_CHECKOUT`, checkout main or create worktree, then `ACTIVE_CHANGE_ROOT = WORK_CHECKOUT + "/" + CHANGE_ROOT_REL`:
 
-9. Per **workspace matrix** row for those Presets:
+9. Per **workspace matrix** row for those Presets — `FEATURE_BRANCH` already exists per step 7 (local, tracking `origin/FEATURE_BRANCH`, or freshly created); bind only checks it out, it never recreates it:
    - **`local`:** checkout `FEATURE_BRANCH` on main → `WORK_CHECKOUT` = main repo.
    - **`worktree` + `single`:** keep main on `ORIGINAL_BRANCH`; create worktree `apply-<name>` on `FEATURE_BRANCH` → `WORK_CHECKOUT` = worktree path. Keep worktree through autonomous handoff step 4.
    - **`worktree` + `subagent-per-group`:** checkout `FEATURE_BRANCH` on main → `WORK_CHECKOUT` = main repo.
@@ -182,6 +185,7 @@ On FAIL: fix immediately; do not hand off.
 - No marking tasks `[x]` before tests pass.
 - No PR before gate passes (autonomous).
 - No using `FEATURE_BRANCH` as `ORIGINAL_BRANCH`.
+- No recreating `FEATURE_BRANCH` from `ORIGINAL_BRANCH` when it already exists on `origin` — track it instead or CI resume/fresh clones lose remote commits.
 - No skipping Changelog.
 - No hardcoded `openspec/changes/<name>/`.
 - No concurrent subagents on shared git state.

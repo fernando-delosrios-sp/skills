@@ -4,7 +4,7 @@
     "apply-code-changes": {
       "source": ".",
       "sourceType": "local",
-      "computedHash": "e0004f76255065a6aae824bfba94736e6fa7eb1f1013286a9926ce4c5f9e3fa1"
+      "computedHash": "85ad3f611ef2c264a1ff04df204786b1564df242fce9619fc87f0fcd3566a823"
     },
     "architecture-decision-records": {
       "source": ".",
@@ -106,7 +106,7 @@
     "openspec-init": {
       "source": ".",
       "sourceType": "local",
-      "computedHash": "b08d17fd30ca223af52ad5c540653ff30907ab018fd6ac1eb690ab4a754160b9"
+      "computedHash": "f87328a892b1c702e303dd0a347438fc4f583d8b6f8c751e4c1aeddff3d3116e"
     },
     "risen-prompt": {
       "source": ".",
