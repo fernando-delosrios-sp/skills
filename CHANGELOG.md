@@ -17,6 +17,8 @@ All notable changes to this skills collection are documented here.
 
 - **structured-choices multi-question gates** — A single gate may carry multiple questions when another skill composes it (e.g. grilling rounds). Payload examples document Cursor `AskQuestion` batch shape and session completion confirm dialog.
 
+- **grilling structured rounds** — Frontier rounds use structured-choices gates instead of numbered prose Q&A. Overlay captures the customization intent for upstream sync.
+
 ---
 
 ## 2026-08-13
