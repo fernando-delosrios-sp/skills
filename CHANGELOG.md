@@ -11,6 +11,7 @@ All notable changes to this skills collection are documented here.
 ### 🐛 Fixes
 
 - **apply-code-changes apply protocols** — Document worktree + single-session checkout and handoff; persist `Change` from adapter `CHANGE_ROOT` on autonomous first run; clarify Direct vs OpenSpec adapter precedence when both match. Branch step is workspace-aware (main stays off `FEATURE_BRANCH` during worktree); autonomous push uses explicit `FEATURE_BRANCH` not `HEAD`.
+- **apply-code-changes worktree consistency** — Branch resolution distinguishes `single` (worktree on `FEATURE_BRANCH`) vs `subagent-per-group` (group branches + merge target). Autonomous worktree preset downgrades to `local` when no worktree skill exists. Worktree sessions re-resolve `CHANGE_ROOT` inside the worktree. Ferspec autonomous flow persists OpenSpec `store` into Presets.
 - **apply-code-changes resume PR base** — Autonomous apply already on the feature branch now opens the PR against `base-branch` or the repo default (`main`), not against the feature branch itself.
 - **ferspec `setup-matt-pocock-skills` install** — The skill now ships in this package, so `npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills` from ferspec `INSTALL.md` succeeds.
 

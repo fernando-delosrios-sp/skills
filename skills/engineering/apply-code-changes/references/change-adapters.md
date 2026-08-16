@@ -19,7 +19,7 @@ Every adapter sets:
 
 | Variable | Meaning |
 |---|---|
-| `CHANGE_ROOT` | Directory containing `tasks.md` — all artifact reads/edits happen here |
+| `CHANGE_ROOT` | Directory containing `tasks.md` — all artifact reads/edits happen here. In **worktree** workspace, re-resolve to the same repo-relative path inside the active worktree after creation — never the pre-worktree path into main |
 | `NAME` | Basename of the change (for branches, PR titles, worktree names) |
 
 Optional when present under `CHANGE_ROOT`:
