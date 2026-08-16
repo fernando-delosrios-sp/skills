@@ -32,19 +32,19 @@ Optional under the change folder:
 | `specs/**/*.md` | Scenario → test coverage gate |
 | `design.md` | Design/spec coherence gate |
 | `proposal.md` | Changelog scope |
-| `tracking.md` | Loaded into `TRACKING_HINT` at pre-flight; merged into `TRACKING` at bind |
+| `tracking.md` | Loaded into `TRACKING_HINT` at pre-flight; merged into `TRACKING` pre-bind from feature branch (apply skill step 2) |
 
 ## OpenSpec adapter
 
 Match `/opsx-apply`: paths from CLI, not repo guesses.
 
-1. Resolve `NAME` from `/opsx:apply`, session context, or `TRACKING_HINT` / `tracking.md` → Change.
-2. Resolve `--store` when user, hints, or `TRACKING` Presets include it.
+1. Resolve `NAME` from `/opsx:apply`, session context, or `TRACKING_HINT` / on-disk `tracking.md` → Change.
+2. Resolve `--store` when user, command hints, or **`TRACKING_HINT` Presets → `store`** include it (`TRACKING` is not set until apply setup — never read `TRACKING` Presets here).
 3. Run `openspec status --change "<name>" --json` (append `--store` when set). Read `planningHome`, `changeRoot`, `artifactPaths`, `actionContext`.
 4. Run `openspec instructions apply --change "<name>" --json` (append `--store`). Read `contextFiles`.
 5. Set `CHANGE_ROOT = changeRoot`; compute `CHANGE_ROOT_REL` from repo root.
 6. When invoked without prior `/opsx:apply` context, steps 3–4 are mandatory before other reads.
-7. If `tracking.md` exists at `CHANGE_ROOT`, load into **`TRACKING_HINT` only** — not authoritative `TRACKING`. Persist at apply skill bind with merge rules.
+7. If `tracking.md` exists at `CHANGE_ROOT`, load into **`TRACKING_HINT` only** — including Presets → `store` for step 2. Apply skill merges from feature-branch `tracking.md` pre-bind (step 2); persist at bind.
 
 **Also sets:** `PLANNING_HOME`, `STORE` (when used).
 

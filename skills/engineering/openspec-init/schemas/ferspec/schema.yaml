@@ -132,16 +132,15 @@ apply:
     6. Changelog task complete (generated during apply, not archive)
 
     **Interactive**: dialog (workspace: local | worktree × parallelism: single | subagent per
-    task group) → execute (incl. Changelog group) → gate → STOP. Commits on branch; no PR unless user asks.
+    task group) — record both in TRACKING Presets before bind → execute (incl. Changelog group) → gate → STOP.
     Worktree + single: worktree on FEATURE_BRANCH; main stays on ORIGINAL_BRANCH until teardown after
     PR URL push. Worktree + subagent-per-group: main on FEATURE_BRANCH for orchestrator merges and
     artifact edits; one worktree per group on group branches. Local: main on FEATURE_BRANCH.
     Subagent-per-group: sequential dispatch — never concurrent subagents on shared git state.
 
-    **Autonomous**: change adapter (step 0) → load TRACKING_HINT for mode detection; prepare TRACKING
-    in memory; bind ACTIVE_CHANGE_ROOT per workspace matrix; merge tracking.md at bind (on-disk wins);
-    persist store into Presets when set; downgrade worktree preset when no worktree skill
-    → execute → gate → PR to ORIGINAL_BRANCH + issue link → STOP.
+    **Autonomous**: change adapter (step 0) — resolve --store from TRACKING_HINT Presets when present;
+    prepare TRACKING; pre-bind merge from feature-branch tracking.md before branch resolution;
+    bind ACTIVE_CHANGE_ROOT per workspace matrix; PR via gh with --base ORIGINAL_BRANCH + issue link → STOP.
 
     **Never in apply**: archive, spec sync, archive commit, `/opsx-archive`.
 
