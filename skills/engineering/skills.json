@@ -21,6 +21,13 @@
       }
     },
     {
+      "name": "code-review",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/code-review"
+      }
+    },
+    {
       "name": "codebase-design",
       "source": {
         "repo": "mattpocock/skills",
@@ -73,6 +80,13 @@
     },
     {
       "name": "openspec-init"
+    },
+    {
+      "name": "tdd",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/tdd"
+      }
     },
     {
       "name": "wayfinder",
