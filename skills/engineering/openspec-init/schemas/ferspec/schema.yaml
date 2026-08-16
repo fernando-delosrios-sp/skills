@@ -138,7 +138,9 @@ apply:
     **Branch resolution** (both modes): when FEATURE_BRANCH exists only on origin (not locally —
     e.g. CI resume or fresh clone), check it out as a local tracking branch; never recreate it from
     ORIGINAL_BRANCH, which would discard remote commits. Only create fresh from ORIGINAL_BRANCH when
-    the branch exists nowhere.
+    the branch exists nowhere. **Exception — worktree + single:** resolve the branch as a ref only
+    (`git branch`/`git branch --track`, no checkout) in both cases above; checking it out on main
+    would block bind's worktree creation, which needs ORIGINAL_BRANCH still active there.
 
     **Interactive**: dialog (workspace: local | worktree × parallelism: single | subagent per
     task group) — record both in TRACKING Presets and current-run preset overrides before bind;
@@ -154,12 +156,15 @@ apply:
     then overlay non-empty hint values and set Change to the current adapter path — except Branch,
     which only overlays when the hint's own Change matches the current adapter path (otherwise a
     stale hint could name an unrelated branch); add workspace and parallelism to the current-run
-    preset overrides so the setup-time (PRECHECK'd) workspace choice survives the merge; pre-bind
-    merge feature-branch tracking.md field-by-field (Presets keys, not the whole object) before
-    branch resolution, and STOP instead of merging when a candidate branch's on-disk Change points
-    at a different change; re-resolve a hint-derived store when feature-branch tracking selects a
-    different store; bind ACTIVE_CHANGE_ROOT per workspace matrix; PR via gh with --base
-    ORIGINAL_BRANCH + issue link → STOP.
+    preset overrides so the setup-time (PRECHECK'd) workspace choice survives the merge — bind must
+    wait for this preset-override + PRECHECK step, never proceed on the bare step-1 baseline; find
+    the feature branch's tracking.md by change name (not the current, possibly wrong-store, relative
+    path) before pre-bind merge; when a hint-derived store is unconfirmed, re-resolve it against the
+    branch's declared store and restart the merge **before** comparing on-disk Change to the current
+    change root, since an old-store root naturally mismatches a correct-store Change; STOP on a
+    Change mismatch only once that store re-resolution has run (or immediately for an explicit
+    store); bind ACTIVE_CHANGE_ROOT per workspace matrix; PR via gh with --base ORIGINAL_BRANCH +
+    issue link → STOP.
 
     **Never in apply**: archive, spec sync, archive commit, `/opsx-archive`.
 

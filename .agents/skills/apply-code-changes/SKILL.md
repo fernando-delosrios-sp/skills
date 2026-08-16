@@ -84,31 +84,33 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 2. Persist adapter outputs in `TRACKING`: when the OpenSpec adapter set `STORE`, set Presets → `store`; add it to `PRESET_OVERRIDES` **only** when `STORE_SOURCE` is `explicit`.
 3. Add `workspace` and `parallelism` to `PRESET_OVERRIDES` from `TRACKING`'s current values — locks the setup-time decision through the pre-bind merge so a feature-branch `tracking.md` cannot reintroduce `worktree` unchecked. Apply Presets from `TRACKING`. When `workspace: worktree`, **PRECHECK** worktree skill — if absent, downgrade to `local` in both `TRACKING` and `PRESET_OVERRIDES`, note assumption; continue on `local`.
 
+**Do not bind** until autonomous setup step 3 completes — step 1 only prepares the baseline; `PRESET_OVERRIDES` and the worktree PRECHECK happen in steps 2–3, and a stale hint's `worktree` value must never reach bind unchecked.
+
 ### 2. Pre-bind merge, branch resolution, and bind
 
 **Pre-bind tracking merge** — before branch resolution or bind (never read adapter-path `tracking.md` for branch/preset decisions after this):
 
 1. Candidate branch: `TRACKING` → Branch, else adapter default (`openspec/<name>` or `feature/<name>`).
-2. When that branch exists locally or on `origin`: read `CHANGE_ROOT_REL/tracking.md` from it (`git show <branch>:CHANGE_ROOT_REL/tracking.md`, prefer local branch, else `origin/<branch>`). A non-empty on-disk Branch that differs from the candidate, **or a non-empty on-disk Change that differs from `CHANGE_ROOT`**, is inconsistent metadata: **STOP**; do not redirect to another branch and do not merge its Issue/PR/Presets.
+2. When that branch exists locally or on `origin`: read `CHANGE_ROOT_REL/tracking.md` from it (`git show <branch>:CHANGE_ROOT_REL/tracking.md`, prefer local branch, else `origin/<branch>`). When `STORE_SOURCE` is `hint` and that path is absent on the branch, search the branch tree instead for a `tracking.md` whose parent directory basename is `NAME` (`git ls-tree -r --name-only <branch>` filtered to `.../NAME/tracking.md`) — the current `CHANGE_ROOT_REL` was computed from an unconfirmed store guess and may not match the branch's actual store layout. A non-empty on-disk Branch that differs from the candidate is inconsistent metadata: **STOP**; do not redirect to another branch and do not merge its Issue/PR/Presets. For a non-empty on-disk Change that differs from `CHANGE_ROOT`: when `STORE_SOURCE` is `hint`, run step 4 first — an old-store `CHANGE_ROOT` naturally mismatches a correct-store `Change`, so this alone must not STOP; only STOP if the mismatch persists after step 4's restart (or immediately when `STORE_SOURCE` is `explicit`, since there is no store left to adopt).
 3. Merge the feature-branch tracking file **field-by-field**: its non-empty Issue, Branch, and PR values win; its non-empty `Presets` **keys** win individually. Then overlay `PRESET_OVERRIDES` key-by-key and set **Change** = full `CHANGE_ROOT`. **Never replace the `Presets` object wholesale or inherit `Change` from a different checkout.**
-4. When `STORE_SOURCE` is `hint` and the feature branch has a different non-empty Presets → `store`, adopt that store. For OpenSpec, rerun pre-flight status/instructions with the adopted store **without re-resolving it from the old hint**, recompute `CHANGE_ROOT` / `CHANGE_ROOT_REL`, reload `TRACKING_HINT`, and restart the pre-bind merge once. An explicit store never changes here.
+4. When `STORE_SOURCE` is `hint` and the located file's Presets → `store` is non-empty and differs from `STORE`, adopt that store. For OpenSpec, rerun pre-flight status/instructions with the adopted store **without re-resolving it from the old hint**, recompute `CHANGE_ROOT` / `CHANGE_ROOT_REL`, reload `TRACKING_HINT`, and restart the pre-bind merge (steps 1–3) once — re-evaluate step 2's Change check against the newly recomputed `CHANGE_ROOT`, not the stale one. An explicit store never changes here.
 5. When the branch does not exist, retain the prepared `TRACKING` baseline; it already contains non-empty `TRACKING_HINT` values.
 
 **Branch resolution** — from merged **`TRACKING` only**:
 
 5. **`FEATURE_BRANCH`:** `TRACKING` → Branch, else adapter default.
 6. **`ORIGINAL_BRANCH`:** must ≠ `FEATURE_BRANCH`. First match: `TRACKING` Presets → `base-branch`; else current branch when ≠ `FEATURE_BRANCH`; else repo default (`main` / `origin/HEAD`). Note assumption in autonomous mode when not preset.
-7. **Resolve `FEATURE_BRANCH` existence** (reuse the local/origin check from pre-bind merge step 2 — do not re-query):
+7. **Resolve `FEATURE_BRANCH` existence** (reuse the local/origin check from pre-bind merge step 2 — do not re-query). When merged `TRACKING` Presets → `workspace` is `worktree` and `parallelism` is `single`, resolve the branch **ref only** — never check it out on the main checkout, because bind (step 9) requires `ORIGINAL_BRANCH` still active on main to attach the worktree; git refuses a worktree on a branch already checked out elsewhere:
    - Exists locally: leave it as-is.
-   - Exists on `origin` only: create a local tracking branch from it (`git checkout -b FEATURE_BRANCH origin/FEATURE_BRANCH` or `git branch --track`) — **never** recreate from `ORIGINAL_BRANCH`, which would discard remote commits (CI resume, fresh clone).
-   - Exists nowhere: **create** `FEATURE_BRANCH` from `ORIGINAL_BRANCH`.
+   - Exists on `origin` only: `worktree`+`single` → `git branch --track FEATURE_BRANCH origin/FEATURE_BRANCH` (creates the ref without checkout); other modes → `git checkout -b FEATURE_BRANCH origin/FEATURE_BRANCH` — **never** recreate from `ORIGINAL_BRANCH`, which would discard remote commits (CI resume, fresh clone).
+   - Exists nowhere: `worktree`+`single` → `git branch FEATURE_BRANCH ORIGINAL_BRANCH` (ref only); other modes → **checkout -b** `FEATURE_BRANCH` from `ORIGINAL_BRANCH`.
 8. When `TRACKING` Presets `base-branch` is empty, set `ORIGINAL_BRANCH` in `TRACKING`.
 
-**Bind** — requires merged `TRACKING` Presets → `workspace` and `parallelism` (interactive: after setup steps 2–3; autonomous: baseline from setup step 1). Set `WORK_CHECKOUT`, checkout main or create worktree, then `ACTIVE_CHANGE_ROOT = WORK_CHECKOUT + "/" + CHANGE_ROOT_REL`:
+**Bind** — requires merged `TRACKING` Presets → `workspace` and `parallelism` (interactive: after setup steps 2–3; autonomous: after setup steps 1–3, never the step 1 baseline alone). Set `WORK_CHECKOUT`, checkout main or create worktree, then `ACTIVE_CHANGE_ROOT = WORK_CHECKOUT + "/" + CHANGE_ROOT_REL`:
 
 9. Per **workspace matrix** row for those Presets — `FEATURE_BRANCH` already exists per step 7 (local, tracking `origin/FEATURE_BRANCH`, or freshly created); bind only checks it out, it never recreates it:
    - **`local`:** checkout `FEATURE_BRANCH` on main → `WORK_CHECKOUT` = main repo.
-   - **`worktree` + `single`:** keep main on `ORIGINAL_BRANCH`; create worktree `apply-<name>` on `FEATURE_BRANCH` → `WORK_CHECKOUT` = worktree path. Keep worktree through autonomous handoff step 4.
+   - **`worktree` + `single`:** ensure main is on `ORIGINAL_BRANCH` — checkout back to it first if a prior run left main on `FEATURE_BRANCH` (e.g., an earlier `local` session); create worktree `apply-<name>` on `FEATURE_BRANCH` → `WORK_CHECKOUT` = worktree path. Keep worktree through autonomous handoff step 4.
    - **`worktree` + `subagent-per-group`:** checkout `FEATURE_BRANCH` on main → `WORK_CHECKOUT` = main repo.
 10. **Persist `tracking.md`** at `ACTIVE_CHANGE_ROOT`: if absent, write merged `TRACKING`; if present, reconcile it with the same field-level formula in step 3, including `PRESET_OVERRIDES`. Never replace Presets wholesale or overwrite non-empty on-disk values with empty prepared values.
 11. **Re-read** `tasks.md`, specs, `design.md`, `proposal.md` from `ACTIVE_CHANGE_ROOT`.
@@ -191,7 +193,7 @@ On FAIL: fix immediately; do not hand off.
 - No concurrent subagents on shared git state.
 - No adapter creating on-disk `tracking.md`.
 - No branch resolution or bind before pre-bind merge from feature-branch `tracking.md` when that branch exists.
-- No branch/bind without `TRACKING` Presets → `workspace` and `parallelism` (interactive: setup steps 2–3 only — not after step 1).
+- No branch/bind without `TRACKING` Presets → `workspace` and `parallelism` (interactive: setup steps 2–3 only — not after step 1; autonomous: setup steps 1–3 only — not the step 1 baseline alone).
 - No replacement of the `Presets` object during a tracking merge: merge keys and reapply `PRESET_OVERRIDES`.
 - No autonomous setup that skips the complete `TRACKING` baseline because `TRACKING_HINT` has an Issue.
 - No inheritance of `Change` from a tracking file: it is always the current adapter `CHANGE_ROOT`.
@@ -203,4 +205,5 @@ On FAIL: fix immediately; do not hand off.
 - No autonomous setup that leaves `workspace` out of `PRESET_OVERRIDES` — pre-bind merge could otherwise reintroduce `worktree` without the setup-time PRECHECK.
 - No `gh pr create` without `--base ORIGINAL_BRANCH`.
 - No `worktree` + `single` teardown before PR URL is pushed from the worktree.
+- No checking out `FEATURE_BRANCH` on the main checkout during branch resolution when the target is `worktree` + `single` — resolve the branch ref only, so main can still hold `ORIGINAL_BRANCH` when bind attaches the worktree.
 - No mixing superpowers-bridge apply with this skill on the same change.
