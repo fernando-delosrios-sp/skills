@@ -2,14 +2,16 @@
 
 Adapters resolve **where** the change lives and **which validators** run at the completion gate. The core apply loop is identical after adapter output is set.
 
-## Selection (first match wins)
+## Selection (precedence)
 
-| Adapter | When |
-|---|---|
-| **OpenSpec** | `/opsx:apply`, a change **name** without an explicit directory path, or `openspec status --change "<name>"` succeeds |
-| **Direct** | User supplies an explicit directory path that contains `tasks.md` |
+When multiple adapters match, use the **highest-precedence signal** — not table order:
 
-When both could apply, prefer **OpenSpec** if the user invoked `/opsx:apply` or named a registered change. Prefer **Direct** when the user pointed at a folder path.
+| Precedence | Adapter | When |
+|---|---|---|
+| 1 (highest) | **Direct** | User supplies an explicit directory path that contains `tasks.md` |
+| 2 | **OpenSpec** | `/opsx:apply`, a change **name** without an explicit directory path, or `openspec status --change "<name>"` succeeds |
+
+**Tie-break:** explicit folder path → **Direct**; `/opsx:apply` or registered change name without path → **OpenSpec**.
 
 ## Shared outputs
 

@@ -10,6 +10,7 @@ All notable changes to this skills collection are documented here.
 
 ### 🐛 Fixes
 
+- **apply-code-changes apply protocols** — Document worktree + single-session checkout and handoff; persist `Change` from OpenSpec `changeRoot` on autonomous first run; clarify Direct vs OpenSpec adapter precedence when both match.
 - **apply-code-changes resume PR base** — Autonomous apply already on the feature branch now opens the PR against `base-branch` or the repo default (`main`), not against the feature branch itself.
 - **ferspec `setup-matt-pocock-skills` install** — The skill now ships in this package, so `npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills` from ferspec `INSTALL.md` succeeds.
 

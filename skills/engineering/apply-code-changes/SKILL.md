@@ -50,8 +50,9 @@ Autonomous signals: existing `tracking.md` with Issue filled, explicit user requ
 
 **Autonomous** — no dialog:
 
-1. Create `tracking.md` from the ferspec template when missing; fill Issue, Change, Branch, Presets from issue metadata.
-2. Apply Presets (`workspace`, `parallelism`, `base-branch`, `store`) without user prompts.
+1. Create `tracking.md` from the ferspec template when missing; fill Issue and Branch from issue metadata; fill **Change** with adapter `CHANGE_ROOT` (full path — OpenSpec `changeRoot` from step 0, or Direct user path); fill Presets from issue metadata when present.
+2. Persist adapter outputs: Presets → `store` when OpenSpec adapter set `STORE`.
+3. Apply Presets (`workspace`, `parallelism`, `base-branch`, `store`) without user prompts.
 
 ### 2. Branch resolution
 
@@ -80,6 +81,11 @@ Per implementation task:
 Documentation group: update files listed in proposal Impact and tasks.
 
 Changelog group: invoke **changelog-generator**; mark tasks complete when entry exists.
+
+**Workspace `worktree`:** PRECHECK a worktree skill or documented project workflow — STOP with `local` offer if absent. Main repo checkout stays on `ORIGINAL_BRANCH` (or another branch ≠ `FEATURE_BRANCH`); never hold `FEATURE_BRANCH` in two checkouts.
+
+- **`single` parallelism:** one isolated worktree `apply-<name>` on `FEATURE_BRANCH`. Run steps 3–4 entirely inside the worktree (artifact reads/writes still use adapter `CHANGE_ROOT`). Commits land on `FEATURE_BRANCH`. Before handoff: checkout `FEATURE_BRANCH` in the main repo (or push from the worktree path), then remove the worktree per the worktree skill.
+- **`subagent-per-group` parallelism:** see below — one worktree per numbered group.
 
 **Parallelism `subagent-per-group`:** never run concurrent subagents against the same checkout or branch.
 

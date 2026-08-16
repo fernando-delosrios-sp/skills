@@ -131,14 +131,17 @@ apply:
 
     **Interactive**: dialog (workspace: local | worktree × parallelism: single | subagent per
     task group) → execute (incl. Changelog group) → gate → STOP. Commits on branch; no PR unless user asks.
-    Subagent-per-group: sequential dispatch on local workspace (orchestrator commits); worktree isolation
-    with sequential merge on worktree workspace — never concurrent subagents on shared git state.
+    Worktree + single: one isolated worktree on FEATURE_BRANCH for the full session; main checkout stays
+    off the feature branch; return to FEATURE_BRANCH in main repo before handoff. Subagent-per-group:
+    sequential dispatch on local workspace (orchestrator commits); worktree isolation with sequential
+    merge per group — never concurrent subagents on shared git state.
 
-    **Autonomous**: create tracking.md from @./templates/tracking.md → execute (incl. Changelog
-    group; no dialog; presets from tracking/issue metadata) → gate → PR from the feature branch
-    to ORIGINAL_BRANCH (Presets `base-branch`, else current branch when it is not the feature
-    branch, else repo default `main` / origin HEAD — never the feature branch) + issue updated
-    with PR link → STOP.
+    **Autonomous**: resolve change via OpenSpec adapter (changeRoot) → create tracking.md from
+    @./templates/tracking.md with Change = full changeRoot, Issue/Branch/Presets from issue metadata
+    → execute (incl. Changelog group; no dialog; presets from tracking/issue metadata) → gate → PR
+    from the feature branch to ORIGINAL_BRANCH (Presets `base-branch`, else current branch when it is
+    not the feature branch, else repo default `main` / origin HEAD — never the feature branch) + issue
+    updated with PR link → STOP.
 
     **Never in apply**: archive, spec sync, archive commit, `/opsx-archive`.
 
