@@ -156,9 +156,9 @@ apply:
     **Autonomous**: change adapter (step 0) — use an explicit/preloaded store when present, otherwise
     re-probe once from the first resolved tracking.md;
     always prepare a complete TRACKING baseline (`workspace: local` and `parallelism: single`),
-    then overlay non-empty hint values and set Change to the current adapter path — except Branch,
-    which only overlays when the hint's own Change matches the current adapter path (otherwise a
-    stale hint could name an unrelated branch); add workspace and parallelism to the current-run
+    then overlay non-empty hint values and set Change to the current adapter path — except Branch and
+    Issue, which only overlay when the hint's own Change matches the current adapter path (otherwise a
+    stale hint could name an unrelated branch or link the wrong tracker entry); add workspace and parallelism to the current-run
     preset overrides so the setup-time (PRECHECK'd) workspace choice survives the merge — bind must
     wait for this preset-override + PRECHECK step, never proceed on the bare step-1 baseline; find
     the feature branch's tracking.md by change name (not the current, possibly wrong-store, relative
