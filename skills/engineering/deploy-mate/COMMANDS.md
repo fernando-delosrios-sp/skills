@@ -82,7 +82,7 @@ Do **not** paste the full protocol — point to the matching section in this fil
 
 1. Run **status** (inline — do not stop for user unless `<env>` is ambiguous).
 2. Execute the **single next incomplete phase** in order: Recon → Survey → Catalog → Arm → Arm-ready → Scaffold → Document → Harvest (**one round only**) → Forge proposal → **arm visibility** → Forge artifacts → Inject (if next) → Deploy → Verify.
-3. **Stop at every gate** — Survey sign-off, Arm-ready audit ack, Scaffold ack, Harvest round end, Forge proposal sign-off, inject checkpoint, deploy confirmation. Do not auto-skip holds.
+3. **Stop at every gate** — Survey sign-off, Arm-ready audit ack, Scaffold ack, Harvest round end, Forge proposal sign-off, inject checkpoint, deploy CHECKPOINT (**`on-request` Ship policy only**). Do not auto-skip holds.
 4. After a Harvest round or any gate, **end the turn** and wait for the user.
 
 **Done when:** the current phase (or one Harvest round) completes or a gate blocks further progress.
@@ -429,7 +429,7 @@ Runtime visibility tooling is **not** required for Inject — it gates **Deploy*
 5. Record in `<env>/progress.md` → Deploy: date, command/workflow, outcome, link if CI.
 6. On failure: surface rollback steps from `deployment.md` → Rollback; do **not** re-Harvest deploy outputs unless user re-runs **catalog**.
 
-**Forbidden:** deploy during Harvest/Scaffold; deploy to obtain missing vars; deploy without user confirmation or required inject.
+**Forbidden:** deploy during Harvest/Scaffold; deploy to obtain missing vars; deploy without CHECKPOINT when Ship policy is **`on-request`**; deploy without required inject.
 
 **Done when:** deploy executed or CI triggered; outcome recorded; suggest `/deploy-mate verify`.
 
