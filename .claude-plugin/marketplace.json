@@ -41,6 +41,7 @@
         "./handoff",
         "./risen-prompt",
         "./search",
+        "./structured-choices",
         "./teach",
         "./to-questionnaire",
         "./wait-what",
