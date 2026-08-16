@@ -17,9 +17,10 @@ Orchestrate **apply**: execute `tasks.md` in order (Changelog group last), run t
 |---|---|---|
 | `CHANGE_ROOT` | Pre-flight (adapter) | Adapter `changeRoot` / user path — **planning read only** after bind |
 | `CHANGE_ROOT_REL` | Pre-flight | Repo-relative path from adapter `CHANGE_ROOT` — used to compute `ACTIVE_CHANGE_ROOT` |
-| `TRACKING_HINT` | Pre-flight (optional) | On-disk `tracking.md` peek at adapter path — **mode detection only**; may be wrong checkout |
+| `TRACKING_HINT` | Pre-flight (optional) | Non-authoritative adapter-path seed for mode detection, naming/store probe, and initial tracking; may be from the wrong checkout |
 | `TRACKING` | Setup + pre-bind merge | In-memory authoritative fields (Issue, Change, Branch, PR, Presets). **Branch resolution reads merged `TRACKING` only** |
-| `PRESET_OVERRIDES` | Setup / adapter | Non-persisted current-run preset values (interactive choices and resolved `STORE`) that override feature-branch `Presets` keys during every merge |
+| `STORE_SOURCE` | Pre-flight (OpenSpec) | `explicit` for user/command `--store`, `hint` for `TRACKING_HINT` → store; only an explicit store becomes an override |
+| `PRESET_OVERRIDES` | Setup / adapter | Non-persisted current-run preset values (interactive choices and an explicit `STORE`) that override feature-branch `Presets` keys during every merge |
 | `WORK_CHECKOUT` | Bind (step 2) | Git directory where the orchestrator runs (main repo or worktree path) |
 | `ACTIVE_CHANGE_ROOT` | Bind (step 2) | `WORK_CHECKOUT` + `CHANGE_ROOT_REL` — **all artifact I/O after bind** |
 
@@ -62,7 +63,7 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 
 1. Run a **change adapter** per [change-adapters.md](references/change-adapters.md); set `CHANGE_ROOT` and `CHANGE_ROOT_REL`. Adapters **never create** on-disk `tracking.md`.
 2. Read `tasks.md`, specs, `design.md`, `proposal.md` from `CHANGE_ROOT` for planning context.
-3. If `tracking.md` exists at `CHANGE_ROOT`, load into **`TRACKING_HINT` only** (for autonomous mode detection). Do **not** treat this as authoritative `TRACKING` — it may be from the wrong checkout on resume.
+3. If `tracking.md` exists at `CHANGE_ROOT`, load it into non-authoritative **`TRACKING_HINT`** for mode detection and initial setup. Do **not** treat it as final `TRACKING` — it may be from the wrong checkout on resume.
 4. Detect mode — interactive (default) vs autonomous (signals above).
 
 ### 1. Setup (mode-specific)
@@ -73,11 +74,12 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 2. **Workspace:** `local` | `worktree` (only when a worktree skill or documented workflow exists; else offer `local` only) → set `TRACKING` Presets → `workspace` **and** `PRESET_OVERRIDES` → `workspace`.
 3. **Parallelism:** `single` | `subagent-per-group` (when platform supports subagents) → set `TRACKING` Presets → `parallelism` **and** `PRESET_OVERRIDES` → `parallelism`.
 4. When Presets → `workspace` is `worktree`, **PRECHECK** worktree skill — if absent, downgrade both `TRACKING` and `PRESET_OVERRIDES` → `workspace` to `local`, note assumption.
+5. When the OpenSpec adapter set `STORE`, set `TRACKING` Presets → `store`; add it to `PRESET_OVERRIDES` **only** when `STORE_SOURCE` is `explicit`.
 
 **Autonomous** — no dialog:
 
 1. Always prepare a complete **`TRACKING`** baseline from the ferspec template + issue metadata: Issue and Branch when available, and Presets `workspace: local` + `parallelism: single`. Overlay every non-empty `TRACKING_HINT` field **field-by-field** (including individual `Presets` keys), then set **Change** = full `CHANGE_ROOT` — the current adapter path always wins. Initialize empty **`PRESET_OVERRIDES`**. **Do not write to disk.**
-2. Persist adapter outputs in `TRACKING`: when the OpenSpec adapter resolved `STORE`, set Presets → `store` in both `TRACKING` and `PRESET_OVERRIDES`.
+2. Persist adapter outputs in `TRACKING`: when the OpenSpec adapter set `STORE`, set Presets → `store`; add it to `PRESET_OVERRIDES` **only** when `STORE_SOURCE` is `explicit`.
 3. Apply Presets from `TRACKING`. When `workspace: worktree`, **PRECHECK** worktree skill — if absent, downgrade to `local` in both `TRACKING` and `PRESET_OVERRIDES`, note assumption; continue on `local`.
 
 ### 2. Pre-bind merge, branch resolution, and bind
@@ -87,7 +89,8 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 1. Candidate branch: `TRACKING` → Branch, else adapter default (`openspec/<name>` or `feature/<name>`).
 2. When that branch exists locally or on `origin`: read `CHANGE_ROOT_REL/tracking.md` from it (`git show <branch>:CHANGE_ROOT_REL/tracking.md`, prefer local branch, else `origin/<branch>`). A non-empty on-disk Branch that differs from the candidate is inconsistent metadata: **STOP**; do not redirect to another branch.
 3. Merge the feature-branch tracking file **field-by-field**: its non-empty Issue, Branch, and PR values win; its non-empty `Presets` **keys** win individually. Then overlay `PRESET_OVERRIDES` key-by-key and set **Change** = full `CHANGE_ROOT`. **Never replace the `Presets` object wholesale or inherit `Change` from a different checkout.**
-4. When the branch does not exist, retain the prepared `TRACKING` baseline; it already contains non-empty `TRACKING_HINT` values.
+4. When `STORE_SOURCE` is `hint` and the feature branch has a different non-empty Presets → `store`, adopt that store. For OpenSpec, rerun pre-flight status/instructions with the adopted store **without re-resolving it from the old hint**, recompute `CHANGE_ROOT` / `CHANGE_ROOT_REL`, reload `TRACKING_HINT`, and restart the pre-bind merge once. An explicit store never changes here.
+5. When the branch does not exist, retain the prepared `TRACKING` baseline; it already contains non-empty `TRACKING_HINT` values.
 
 **Branch resolution** — from merged **`TRACKING` only**:
 
@@ -96,7 +99,7 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 7. **Create `FEATURE_BRANCH`** from `ORIGINAL_BRANCH` when missing.
 8. When `TRACKING` Presets `base-branch` is empty, set `ORIGINAL_BRANCH` in `TRACKING`.
 
-**Bind** — requires `TRACKING` Presets → `workspace` and `parallelism` (from setup step 1). Set `WORK_CHECKOUT`, checkout main or create worktree, then `ACTIVE_CHANGE_ROOT = <toplevel>/<CHANGE_ROOT_REL>`:
+**Bind** — requires `TRACKING` Presets → `workspace` and `parallelism` (from setup step 1). Set `WORK_CHECKOUT`, checkout main or create worktree, then `ACTIVE_CHANGE_ROOT = WORK_CHECKOUT + "/" + CHANGE_ROOT_REL`:
 
 9. Per **workspace matrix** row for those Presets:
    - **`local`:** checkout `FEATURE_BRANCH` on main → `WORK_CHECKOUT` = main repo.
@@ -186,6 +189,7 @@ On FAIL: fix immediately; do not hand off.
 - No replacement of the `Presets` object during a tracking merge: merge keys and reapply `PRESET_OVERRIDES`.
 - No autonomous setup that skips the complete `TRACKING` baseline because `TRACKING_HINT` has an Issue.
 - No inheritance of `Change` from a tracking file: it is always the current adapter `CHANGE_ROOT`.
+- No elevation of a hint-derived `STORE` into `PRESET_OVERRIDES`; re-resolve against feature-branch store when it differs.
 - No post-bind artifact I/O via pre-bind adapter `CHANGE_ROOT` — use `ACTIVE_CHANGE_ROOT` (on main or in worktree per matrix).
 - No treating adapter-path `TRACKING_HINT` as authoritative when feature-branch `tracking.md` exists.
 - No `gh pr create` without `--base ORIGINAL_BRANCH`.

@@ -32,21 +32,21 @@ Optional under the change folder:
 | `specs/**/*.md` | Scenario → test coverage gate |
 | `design.md` | Design/spec coherence gate |
 | `proposal.md` | Changelog scope |
-| `tracking.md` | Loaded into `TRACKING_HINT` at pre-flight; merged into `TRACKING` pre-bind from feature branch (apply skill step 2) |
+| `tracking.md` | Loaded into non-authoritative `TRACKING_HINT` at pre-flight; merged into `TRACKING` pre-bind from feature branch (apply skill step 2) |
 
 ## OpenSpec adapter
 
 Match `/opsx-apply`: paths from CLI, not repo guesses.
 
 1. Resolve a source value from `/opsx:apply`, session context, or `TRACKING_HINT` / on-disk `tracking.md` → Change. Set `NAME` to that value's canonical filesystem **basename** (strip trailing separators first); STOP if it is empty, `.` or `..`. `Change` is a full `CHANGE_ROOT` path, never a branch or worktree-name input.
-2. Resolve `--store` when user, command hints, or **`TRACKING_HINT` Presets → `store`** include it (`TRACKING` is not set until apply setup — never read `TRACKING` Presets here).
+2. Resolve `--store` from user input or command hints first, else **`TRACKING_HINT` Presets → `store`**. Set `STORE_SOURCE` to `explicit` for user/command input, otherwise `hint`; a hint-derived store is a probe only, not a merge override.
 3. Run `openspec status --change "<name>" --json` (append `--store` when set). Read `planningHome`, `changeRoot`, `artifactPaths`, `actionContext`.
 4. Run `openspec instructions apply --change "<name>" --json` (append `--store`). Read `contextFiles`.
 5. Set `CHANGE_ROOT = changeRoot`; compute `CHANGE_ROOT_REL` from repo root.
 6. When invoked without prior `/opsx:apply` context, steps 3–4 are mandatory before other reads.
-7. If `tracking.md` exists at `CHANGE_ROOT`, load into **`TRACKING_HINT` only** — including Presets → `store` for step 2. Apply skill merges from feature-branch `tracking.md` pre-bind (step 2); persist at bind.
+7. If `tracking.md` exists at `CHANGE_ROOT`, load it into non-authoritative **`TRACKING_HINT`** — including Presets → `store` for step 2 when no explicit store was supplied. Apply skill merges from feature-branch `tracking.md` pre-bind (step 2); persist at bind.
 
-**Also sets:** `PLANNING_HOME`, `STORE` (when used).
+**Also sets:** `PLANNING_HOME`, `STORE`, `STORE_SOURCE` (when a store is used).
 
 **Default feature branch:** `TRACKING` → Branch at bind, else `openspec/<name>`.
 
