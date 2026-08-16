@@ -157,9 +157,10 @@ apply:
     re-probe once from the first resolved tracking.md;
     always prepare a complete TRACKING baseline (`workspace: local` and `parallelism: single`),
     then overlay non-empty hint values and set Change to the current adapter path — except Branch,
-    Issue, and Presets keys, which only overlay when the hint's own Change matches the current adapter
-    path (otherwise a stale hint could name an unrelated branch, link the wrong tracker entry, or force
-    unchecked worktree presets); hint Issue selects autonomous mode only on a trusted hint (Change
+    Issue, PR, and Presets keys, which only overlay when the hint's own Change matches the current
+    adapter path (otherwise a stale hint could name an unrelated branch, link the wrong tracker entry,
+    attach a previous change's pull request, or force unchecked worktree presets); hint Issue selects
+    autonomous mode only on a trusted hint (Change
     matches the current adapter path); snapshot TRACKING_SETUP after setup; find the feature branch's
     tracking.md by change name (not the current, possibly wrong-store, relative path) before
     pre-bind merge; when a hint-derived store is unconfirmed, skip the field merge and re-resolve
