@@ -95,10 +95,10 @@
     "path": "skills/engineering/improve-codebase-architecture",
     "sha": "8b78b531ab965735c5dc74f6f7a219e1e37326df",
     "synced_at": "2026-08-15T13:15:43.774Z",
-    "overlay_applied_at": "2026-08-16T08:22:32.498Z",
+    "overlay_applied_at": "2026-08-16T08:22:52.473Z",
     "applied_upstream_sha": "8b78b531ab965735c5dc74f6f7a219e1e37326df",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "b78557c2bcff687a62343c2873318b18cc512a88",
+    "blended_ref": "9eea8119f4cae7d4f10721beba121c7ba3fed9b0",
     "overlay_hash": "a641b9b99aa3244c33626263f53c18454b2879d102359174e7aeed2bf30512c9"
   },
   "codebase-design": {
