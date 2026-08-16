@@ -172,6 +172,19 @@ Write **strategy sections first** (Forge proposal). Repo files only after Sign-o
 ```markdown
 # Deployment — <env>
 
+## Ship policy
+
+<!-- Forge proposal — user picks policy for this environment -->
+
+| Policy | `on-request` \| `auto` |
+| Default | `on-request` |
+
+**`on-request`** — finish session work; cite deploy command from Steps; wait for user to request deploy or `/deploy-mate deploy`.
+
+**`auto`** — after deployable code changes, when pipeline gates pass, run Steps deploy then verify without asking.
+
+Full rules: skill `SHIP-POLICY.md` (or `.deploy-mate/SHIP-POLICY.md` if copied at Forge).
+
 ## Prerequisites
 - [ ] Document complete (obtain playbooks)
 - [ ] Harvest finished — `.env` complete (deploy blocked until done)
@@ -244,6 +257,18 @@ Add to project `.gitignore` if missing:
 ```
 .deploy-mate/**/.env
 ```
+
+## AGENTS.md fragment
+
+Merge into the **project** root `AGENTS.md` during **`forge artifacts`** (confirm before overwrite). One pointer — ambient Ship policy is not reliable without it; deploy-mate is user-invoked and its body does not load during regular session work.
+
+```markdown
+## Ship (deploy-mate)
+
+When `.deploy-mate/` exists and session work touches deployable code, read `.deploy-mate/<env>/deployment.md` → **Ship policy** before deploy or verify.
+```
+
+Replace `<env>` with the target environment name when the project has a single env; list both when multiple env folders exist.
 
 
 
