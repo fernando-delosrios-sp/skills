@@ -76,7 +76,7 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 4. When Presets → `workspace` is `worktree`, **PRECHECK** worktree skill — if absent, downgrade both `TRACKING` and `PRESET_OVERRIDES` → `workspace` to `local`, note assumption.
 5. When the OpenSpec adapter set `STORE`, set `TRACKING` Presets → `store`; add it to `PRESET_OVERRIDES` **only** when `STORE_SOURCE` is `explicit`.
 
-**Do not bind** until interactive setup steps 2–3 complete — step 1 only initializes tracking.
+**Do not bind** until interactive setup steps 2–5 complete — step 1 only initializes tracking; the worktree PRECHECK (step 4) and explicit-store `PRESET_OVERRIDES` lock (step 5) must run before bind, matching autonomous safeguards.
 
 **Autonomous** — no dialog:
 
@@ -106,7 +106,7 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
    - Exists nowhere: `worktree`+`single` → `git branch FEATURE_BRANCH ORIGINAL_BRANCH` (ref only); other modes → **checkout -b** `FEATURE_BRANCH` from `ORIGINAL_BRANCH`.
 8. When `TRACKING` Presets `base-branch` is empty, set `ORIGINAL_BRANCH` in `TRACKING`.
 
-**Bind** — requires merged `TRACKING` Presets → `workspace` and `parallelism` (interactive: after setup steps 2–3; autonomous: after setup steps 1–3, never the step 1 baseline alone). Set `WORK_CHECKOUT`, checkout main or create worktree, then `ACTIVE_CHANGE_ROOT = WORK_CHECKOUT + "/" + CHANGE_ROOT_REL`:
+**Bind** — requires merged `TRACKING` Presets → `workspace` and `parallelism` (interactive: after setup steps 2–5; autonomous: after setup steps 1–3, never the step 1 baseline alone). Set `WORK_CHECKOUT`, checkout main or create worktree, then `ACTIVE_CHANGE_ROOT = WORK_CHECKOUT + "/" + CHANGE_ROOT_REL`:
 
 9. Per **workspace matrix** row for those Presets — `FEATURE_BRANCH` already exists per step 7 (local, tracking `origin/FEATURE_BRANCH`, or freshly created); bind only checks it out, it never recreates it:
    - **`local`:** checkout `FEATURE_BRANCH` on main → `WORK_CHECKOUT` = main repo.
@@ -193,7 +193,7 @@ On FAIL: fix immediately; do not hand off.
 - No concurrent subagents on shared git state.
 - No adapter creating on-disk `tracking.md`.
 - No branch resolution or bind before pre-bind merge from feature-branch `tracking.md` when that branch exists.
-- No branch/bind without `TRACKING` Presets → `workspace` and `parallelism` (interactive: setup steps 2–3 only — not after step 1; autonomous: setup steps 1–3 only — not the step 1 baseline alone).
+- No branch/bind without `TRACKING` Presets → `workspace` and `parallelism` (interactive: setup steps 2–5 only — not after step 1; autonomous: setup steps 1–3 only — not the step 1 baseline alone).
 - No replacement of the `Presets` object during a tracking merge: merge keys and reapply `PRESET_OVERRIDES`.
 - No autonomous setup that skips the complete `TRACKING` baseline because `TRACKING_HINT` has an Issue.
 - No inheritance of `Change` from a tracking file: it is always the current adapter `CHANGE_ROOT`.
@@ -201,9 +201,9 @@ On FAIL: fix immediately; do not hand off.
 - No post-bind artifact I/O via pre-bind adapter `CHANGE_ROOT` — use `ACTIVE_CHANGE_ROOT` (on main or in worktree per matrix).
 - No treating adapter-path `TRACKING_HINT` as authoritative when feature-branch `tracking.md` exists.
 - No copying a `TRACKING_HINT` Branch into `TRACKING` when the hint's own Change does not match `CHANGE_ROOT` — untrusted naming falls back to the adapter default.
-- No merging a candidate branch's Issue/PR/Presets when its on-disk Change differs from `CHANGE_ROOT` — treat as a different change and STOP.
+- No merging a candidate branch's Issue/PR/Presets when its on-disk Change differs from `CHANGE_ROOT` — treat as a different change and STOP, **except** when `STORE_SOURCE` is `hint`: defer to pre-bind merge step 4 store adoption first (old-store `Change` naturally mismatches a correct-store `CHANGE_ROOT`); only STOP if the mismatch persists after that restart, or immediately when `STORE_SOURCE` is `explicit`.
 - No autonomous setup that leaves `workspace` out of `PRESET_OVERRIDES` — pre-bind merge could otherwise reintroduce `worktree` without the setup-time PRECHECK.
 - No `gh pr create` without `--base ORIGINAL_BRANCH`.
-- No `worktree` + `single` teardown before PR URL is pushed from the worktree.
+- No `worktree` + `single` teardown before PR URL is pushed from the worktree **(autonomous only)** — interactive removes the worktree after the gate report (no PR).
 - No checking out `FEATURE_BRANCH` on the main checkout during branch resolution when the target is `worktree` + `single` — resolve the branch ref only, so main can still hold `ORIGINAL_BRANCH` when bind attaches the worktree.
 - No mixing superpowers-bridge apply with this skill on the same change.

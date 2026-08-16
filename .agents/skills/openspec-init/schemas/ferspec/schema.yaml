@@ -144,11 +144,14 @@ apply:
 
     **Interactive**: dialog (workspace: local | worktree × parallelism: single | subagent per
     task group) — record both in TRACKING Presets and current-run preset overrides before bind;
-    preserve those choices through the feature-branch field-level merge → execute (incl. Changelog group) → gate → STOP.
-    Worktree + single: worktree on FEATURE_BRANCH; main stays on ORIGINAL_BRANCH until teardown after
-    PR URL push. Worktree + subagent-per-group: main on FEATURE_BRANCH for orchestrator merges and
-    artifact edits; one worktree per group on group branches. Local: main on FEATURE_BRANCH.
-    Subagent-per-group: sequential dispatch — never concurrent subagents on shared git state.
+    complete worktree PRECHECK and explicit-store preset-override lock (setup steps 4–5) before
+    bind, not just the workspace/parallelism dialog; preserve those choices through the
+    feature-branch field-level merge → execute (incl. Changelog group) → gate → STOP.
+    Worktree + single: worktree on FEATURE_BRANCH; main stays on ORIGINAL_BRANCH; remove worktree
+    after gate report (no PR). Worktree + subagent-per-group: main on FEATURE_BRANCH for
+    orchestrator merges and artifact edits; one worktree per group on group branches. Local: main
+    on FEATURE_BRANCH. Subagent-per-group: sequential dispatch — never concurrent subagents on
+    shared git state.
 
     **Autonomous**: change adapter (step 0) — use an explicit/preloaded store when present, otherwise
     re-probe once from the first resolved tracking.md;
