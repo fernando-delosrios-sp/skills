@@ -1,4 +1,4 @@
-**Legacy mode only.** When `openspec/config.yaml` or `openspec/specs/` exists, use [OPENSPEC-MODE.md](./OPENSPEC-MODE.md) instead — record decisions as capability spec requirements, not ADRs.
+**OpenSpec repos:** capability specs encode *what* (requirements); ADRs in `docs/adr/` encode *why* (rationale). Use both when the 3 criteria pass — see [OPENSPEC-MODE.md](./OPENSPEC-MODE.md) for routing and cross-linking.
 
 # ADR Format
 
@@ -24,6 +24,16 @@ Only include these when they add genuine value. Most ADRs won't need them.
 - **Considered Options** — only when the rejected alternatives are worth remembering
 - **Consequences** — only when non-obvious downstream effects need to be called out
 
+## Cross-linking (OpenSpec repos)
+
+When a related capability spec requirement exists, add a trailing pointer:
+
+```md
+_Spec: module-ordering — Requirement: Order write model persistence_
+```
+
+See [OPENSPEC-MODE.md](./OPENSPEC-MODE.md) for the full cross-link convention.
+
 ## Numbering
 
 Scan `docs/adr/` for the highest existing number and increment by one.
@@ -37,6 +47,8 @@ All three of these must be true:
 3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons
 
 If a decision is easy to reverse, skip it — you'll just reverse it. If it's not surprising, nobody will wonder why. If there was no real alternative, there's nothing to record beyond "we did the obvious thing."
+
+In OpenSpec repos, a behavioral requirement may live in a capability spec while the ADR holds the rationale — or an ADR alone when there is no new testable behavior.
 
 ### What qualifies
 

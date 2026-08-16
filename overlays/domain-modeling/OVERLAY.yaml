@@ -1,5 +1,5 @@
 skill: domain-modeling
-description: OpenSpec-aware domain modeling — specs replace ADR/CONTEXT when OpenSpec is present
+description: OpenSpec-aware domain modeling — ubiquitous-language specs replace CONTEXT; ADRs and capability specs coexist
 
 changes:
   - file: SKILL.md
@@ -9,25 +9,26 @@ changes:
       1. **Mode detection first:** Before file-structure guidance, check whether `openspec/config.yaml` or `openspec/specs/` exists in the target repo. Branch all subsequent behavior on this.
 
       2. **OpenSpec mode** (when detected):
-         - Do NOT use `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/`.
+         - Do NOT use `CONTEXT.md` or `CONTEXT-MAP.md`.
          - Maintain glossary in `openspec/specs/ubiquitous-language/spec.md` (replaces CONTEXT.md).
          - Enhance or create flat capability specs at `openspec/specs/<category-capability>/spec.md` — category encoded as kebab-case slug prefix (e.g. `module-ordering`, `service-auth`), NOT nested folders like `specs/modules/<name>/`.
-         - Reference [OPENSPEC-MODE.md](./OPENSPEC-MODE.md) for detection, naming, ubiquitous language, decision routing, and spec format.
+         - **ADRs remain in use** at `docs/adr/` — specs encode *what*, ADRs encode *why*. ferspec delegates ADR creation here; there is no separate `adr` artifact in the change workflow.
+         - Reference [OPENSPEC-MODE.md](./OPENSPEC-MODE.md) for detection, naming, ubiquitous language, spec/ADR routing, and cross-linking.
          - **Ubiquitous language:** when usage is consistent, update the spec inline; when mixed/conflicting, surface the conflict and propose alignment — do not silently canonicalize.
-         - **Architectural decisions:** same 3 criteria as upstream ADR section. If already implemented → ADDED/MODIFIED requirements in the most relevant existing capability spec. If change is required → route through OpenSpec change workflow (`openspec/changes/<name>/specs/<capability>/spec.md`, suggest `/opsx:propose`).
-         - Remap "During the session" behaviors to OpenSpec targets (challenge/update ubiquitous-language spec; offer spec enhancement or change proposal instead of ADR).
+         - **Architectural decisions:** same 3 criteria as upstream ADR section. Route behavioral contract to capability specs (canonical or change delta). Offer ADR in `docs/adr/` when rationale is non-obvious. When both apply, write both with cross-links per OPENSPEC-MODE.
+         - Remap "During the session" behaviors to OpenSpec targets (challenge/update ubiquitous-language spec; offer spec + ADR updates instead of ADR-only).
 
       3. **Legacy mode** (no OpenSpec): preserve upstream sections verbatim — CONTEXT.md, docs/adr/, CONTEXT-FORMAT.md, ADR-FORMAT.md.
 
-      4. **Frontmatter:** extend description to mention OpenSpec-aware modeling and ubiquitous-language specs when OpenSpec is present.
+      4. **Frontmatter:** extend description to mention OpenSpec-aware modeling, ubiquitous-language specs, and ADRs alongside capability specs when OpenSpec is present.
 
-      5. **Cross-skill:** when OpenSpec absent and user needs init, suggest `openspec-init` skill.
+      5. **Cross-skill:** when OpenSpec absent and user needs init, suggest `openspec-init` skill. For complex ADR process (MADR, supersession), suggest `architecture-decision-records` skill.
 
       Preserve upstream tone, session discipline (capture as you go, challenge terms, stress-test scenarios, cross-reference code), and lazy file creation.
 
   - file: ADR-FORMAT.md
     instructions: |
-      Prepend a short banner: "**Legacy mode only.** When `openspec/config.yaml` or `openspec/specs/` exists, use [OPENSPEC-MODE.md](./OPENSPEC-MODE.md) instead — record decisions as capability spec requirements, not ADRs."
+      Prepend a short banner: "**OpenSpec repos:** capability specs encode *what* (requirements); ADRs in `docs/adr/` encode *why* (rationale). Use both when the 3 criteria pass — see [OPENSPEC-MODE.md](./OPENSPEC-MODE.md) for routing and cross-linking."
       Keep all existing ADR content below the banner unchanged.
 
   - file: CONTEXT-FORMAT.md
