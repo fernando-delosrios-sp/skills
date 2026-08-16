@@ -11,6 +11,7 @@ context: |
 rules:
   # Define global rules for the project
   global:
+    - "Always use the `changelog-generator` skill to maintain and enforce a changelog for all changes."
   # Create a subsection mapping to each of the schema's defined artifacts
   # Each artifact section should contain a list of string rules.
   # e.g., if the schema defines 'specs' and 'tasks':
@@ -22,9 +23,7 @@ rules:
 ```
 
 ### Context Building
-
 To build a meaningful `context` section:
-
 1. Scan the project contents to find existing design decisions, technologies, and architecture.
 2. Engage in a conversation with the user to fully understand the project's goals and requirements.
 3. Populate the `context` with these findings.
