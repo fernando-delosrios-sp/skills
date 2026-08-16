@@ -63,7 +63,9 @@ After setup — autonomous first runs now have `tracking.md` with Branch filled.
    - `tracking.md` Presets → `base-branch` when set and ≠ `FEATURE_BRANCH`
    - Else when `git branch --show-current` ≠ `FEATURE_BRANCH`: current branch
    - Else (resume or CI already on the feature branch): repo default integration branch (`main`, or `git symbolic-ref refs/remotes/origin/HEAD`); note assumption in autonomous mode when not preset
-3. Create and checkout `FEATURE_BRANCH` when not already on it; otherwise stay on the existing feature branch.
+3. Ensure `FEATURE_BRANCH` exists and is checked out **where work runs**:
+   - **`local` workspace:** create and checkout `FEATURE_BRANCH` when not already on it; otherwise stay on the existing feature branch.
+   - **`worktree` workspace:** create `FEATURE_BRANCH` from `ORIGINAL_BRANCH` when missing, but keep the **main repo checkout** on `ORIGINAL_BRANCH` (or any branch ≠ `FEATURE_BRANCH`). The worktree holds `FEATURE_BRANCH` — never checkout `FEATURE_BRANCH` in main while a worktree on that branch exists.
 4. When `tracking.md` exists and Presets `base-branch` is empty, write `ORIGINAL_BRANCH` there so later resumes read the preset instead of re-deriving from checkout.
 
 ### 3. Execute tasks
@@ -84,7 +86,7 @@ Changelog group: invoke **changelog-generator**; mark tasks complete when entry 
 
 **Workspace `worktree`:** PRECHECK a worktree skill or documented project workflow — STOP with `local` offer if absent. Main repo checkout stays on `ORIGINAL_BRANCH` (or another branch ≠ `FEATURE_BRANCH`); never hold `FEATURE_BRANCH` in two checkouts.
 
-- **`single` parallelism:** one isolated worktree `apply-<name>` on `FEATURE_BRANCH`. Run steps 3–4 entirely inside the worktree (artifact reads/writes still use adapter `CHANGE_ROOT`). Commits land on `FEATURE_BRANCH`. Before handoff: checkout `FEATURE_BRANCH` in the main repo (or push from the worktree path), then remove the worktree per the worktree skill.
+- **`single` parallelism:** one isolated worktree `apply-<name>` on `FEATURE_BRANCH`. Run steps 3–4 entirely inside the worktree (artifact reads/writes still use adapter `CHANGE_ROOT`). Commits land on `FEATURE_BRANCH`. Before handoff: push `FEATURE_BRANCH` from the worktree (`git push -u origin HEAD` there), remove the worktree per the worktree skill. **Interactive only:** after the worktree is gone, checkout `FEATURE_BRANCH` in the main repo if the user should land on the branch. **Autonomous:** main checkout stays on `ORIGINAL_BRANCH`.
 - **`subagent-per-group` parallelism:** see below — one worktree per numbered group.
 
 **Parallelism `subagent-per-group`:** never run concurrent subagents against the same checkout or branch.
@@ -113,7 +115,7 @@ On FAIL: fix immediately; do not hand off.
 
 **Autonomous:**
 
-1. Push branch: `git push -u origin HEAD`
+1. Push `FEATURE_BRANCH`: `git push -u origin FEATURE_BRANCH` — explicit branch name, not `HEAD`, so push succeeds when the main checkout stayed on `ORIGINAL_BRANCH` after worktree teardown. Skip when a worktree session already pushed and `origin/FEATURE_BRANCH` is up to date.
 2. Open PR from `FEATURE_BRANCH` to `ORIGINAL_BRANCH` via `gh pr create` — title/body reference change name and linked issue.
 3. Update `tracking.md` → PR with URL.
 4. Link PR on the issue — follow `docs/agents/issue-tracker.md` when present; otherwise `gh issue comment` / equivalent from tracking Issue field.

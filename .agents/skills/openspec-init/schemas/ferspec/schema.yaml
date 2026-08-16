@@ -132,12 +132,14 @@ apply:
     **Interactive**: dialog (workspace: local | worktree × parallelism: single | subagent per
     task group) → execute (incl. Changelog group) → gate → STOP. Commits on branch; no PR unless user asks.
     Worktree + single: one isolated worktree on FEATURE_BRANCH for the full session; main checkout stays
-    off the feature branch; return to FEATURE_BRANCH in main repo before handoff. Subagent-per-group:
+    off the feature branch; push FEATURE_BRANCH from the worktree, remove it — optional FEATURE_BRANCH
+    checkout in main repo after teardown (interactive only). Subagent-per-group:
     sequential dispatch on local workspace (orchestrator commits); worktree isolation with sequential
     merge per group — never concurrent subagents on shared git state.
 
-    **Autonomous**: resolve change via OpenSpec adapter (changeRoot) → create tracking.md from
-    @./templates/tracking.md with Change = full changeRoot, Issue/Branch/Presets from issue metadata
+    **Autonomous**: run change adapter from step 0 (OpenSpec changeRoot or Direct folder path) → create
+    tracking.md from @./templates/tracking.md with Change = full CHANGE_ROOT, Issue/Branch/Presets from
+    issue metadata
     → execute (incl. Changelog group; no dialog; presets from tracking/issue metadata) → gate → PR
     from the feature branch to ORIGINAL_BRANCH (Presets `base-branch`, else current branch when it is
     not the feature branch, else repo default `main` / origin HEAD — never the feature branch) + issue
