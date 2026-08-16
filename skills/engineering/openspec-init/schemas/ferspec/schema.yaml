@@ -137,11 +137,11 @@ apply:
     sequential dispatch on local workspace (orchestrator commits); worktree isolation with sequential
     merge per group — never concurrent subagents on shared git state.
 
-    **Autonomous**: run change adapter from step 0 (OpenSpec changeRoot or Direct folder path) → prepare
-    tracking.md from @./templates/tracking.md with Change = full CHANGE_ROOT, Issue/Branch/Presets from
-    issue metadata (persist at ACTIVE_CHANGE_ROOT bind on feature branch/worktree); persist OpenSpec adapter
-    store into Presets when set; downgrade workspace worktree to local when no worktree skill exists
-    (write corrected Presets, note assumption)
+    **Autonomous**: run change adapter from step 0 (OpenSpec changeRoot or Direct folder path) → load or
+    prepare in-memory TRACKING from @./templates/tracking.md (Change = full CHANGE_ROOT,
+    Issue/Branch/Presets from issue metadata; persist at ACTIVE_CHANGE_ROOT bind only — adapters never
+    create on-disk tracking.md); persist OpenSpec adapter store into Presets when set; downgrade workspace
+    worktree to local when no worktree skill exists (update TRACKING Presets, note assumption)
     → execute (incl. Changelog group; no dialog; presets from tracking/issue metadata) → gate → PR
     from the feature branch to ORIGINAL_BRANCH (Presets `base-branch`, else current branch when it is
     not the feature branch, else repo default `main` / origin HEAD — never the feature branch) + issue

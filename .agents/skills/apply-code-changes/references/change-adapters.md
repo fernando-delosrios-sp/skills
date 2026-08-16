@@ -35,17 +35,17 @@ Optional when present under `CHANGE_ROOT`:
 
 Match `/opsx-apply`: paths come from CLI output, not repo-relative guesses.
 
-1. Resolve `NAME` (basename only) from `/opsx:apply` argument, session context, or `tracking.md` → Change.
-2. Resolve `--store <id>` when the user named a store, command hints carry it, or `tracking.md` Presets include `store`; keep sticky for the session.
+1. Resolve `NAME` (basename only) from `/opsx:apply` argument, session context, or `TRACKING` / on-disk `tracking.md` → Change.
+2. Resolve `--store <id>` when the user named a store, command hints carry it, or `TRACKING` Presets include `store`; keep sticky for the session.
 3. Run `openspec status --change "<name>" --json` (append `--store` when set). Read `planningHome`, `changeRoot`, `artifactPaths`, `actionContext`.
 4. Run `openspec instructions apply --change "<name>" --json` (append `--store`). Read `contextFiles` for concrete artifact paths.
 5. Set `CHANGE_ROOT = changeRoot`. Prefer `artifactPaths` / `contextFiles` over reconstructing paths.
 6. When invoked without prior `/opsx-apply` context, steps 3–4 are mandatory before touching artifacts.
-7. Persist for autonomous/resume in `tracking.md`: Change → full `changeRoot`; Presets → `store` when used.
+7. Load on-disk `tracking.md` into session `TRACKING` when present. Persist Change → full `changeRoot` and Presets → `store` at apply skill bind — not at adapter time.
 
 **Also sets:** `PLANNING_HOME` (from `planningHome.root`), `STORE` (when used).
 
-**Default feature branch:** `tracking.md` → Branch, else `openspec/<name>`.
+**Default feature branch:** `TRACKING` → Branch, else `openspec/<name>`.
 
 **Gate validator (item 4):** `openspec validate --all --json` with cwd `PLANNING_HOME` and `--store` when set — all `"valid": true`.
 
@@ -56,13 +56,12 @@ Match `/opsx-apply`: paths come from CLI output, not repo-relative guesses.
 For repos without OpenSpec, ad-hoc change folders, or copied ferspec-style layouts.
 
 1. Set `CHANGE_ROOT` to the user-supplied directory (absolute or repo-relative). Confirm `tasks.md` exists — otherwise STOP and ask for the path.
-2. Set `NAME` from `tracking.md` → Change basename, else basename of `CHANGE_ROOT`.
-3. Read artifacts from standard layout under `CHANGE_ROOT` (same relative paths as ferspec). No CLI resolution step.
-4. When `tracking.md` is missing and mode is autonomous, create it from the ferspec template if available; otherwise create a minimal stub with Issue, Change, Branch, Presets.
+2. Set `NAME` from `TRACKING` / on-disk `tracking.md` → Change basename, else basename of `CHANGE_ROOT`.
+3. Read artifacts from standard layout under `CHANGE_ROOT` (same relative paths as ferspec). Load on-disk `tracking.md` into `TRACKING` when present. No CLI resolution step. **Never create** on-disk `tracking.md` — autonomous preparation is apply skill setup step 1; persist at `ACTIVE_CHANGE_ROOT` bind.
 
 **Does not set:** `PLANNING_HOME`, `STORE`, `artifactPaths`, `contextFiles`.
 
-**Default feature branch:** `tracking.md` → Branch, else `feature/<name>`.
+**Default feature branch:** `TRACKING` → Branch, else `feature/<name>`.
 
 **Gate validator (item 4):** skip OpenSpec validate. If the user explicitly asks and `openspec validate` succeeds from repo root, you may run it — never required for Direct.
 
