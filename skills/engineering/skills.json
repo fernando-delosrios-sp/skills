@@ -1,6 +1,9 @@
 {
   "skills": [
     {
+      "name": "architecture-decision-records"
+    },
+    {
       "name": "c4-diagram",
       "source": {
         "repo": "aleksnikolaev/c4-diagram-skill",
