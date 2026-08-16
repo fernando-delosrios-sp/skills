@@ -4,8 +4,10 @@
       "name": "engineering",
       "source": "./skills/engineering",
       "skills": [
+        "./architecture-decision-records",
         "./c4-diagram",
         "./changelog-generator",
+        "./code-review",
         "./code-simplification",
         "./codebase-design",
         "./deploy-mate",
@@ -17,6 +19,7 @@
         "./improve",
         "./improve-codebase-architecture",
         "./openspec-init",
+        "./tdd",
         "./wayfinder",
         "./zoom-out"
       ]

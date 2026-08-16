@@ -1,5 +1,5 @@
 interface:
-  display_name: "Wayfinder"
-  short_description: "Map a large effort as decision tickets"
+  display_name: Wayfinder
+  short_description: Plan a huge chunk of work — more than one agent session can hold — as a
 policy:
   allow_implicit_invocation: false
