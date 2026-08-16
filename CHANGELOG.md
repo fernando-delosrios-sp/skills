@@ -16,6 +16,7 @@ All notable changes to this skills collection are documented here.
 - **apply-code-changes setup and resume** — Interactive records workspace/parallelism in `TRACKING` Presets; feature-branch `tracking.md` merges pre-bind before branch resolution; OpenSpec `--store` reads `TRACKING_HINT`; autonomous PR uses explicit `--base ORIGINAL_BRANCH`.
 - **apply-code-changes bind gate** — Bind waits for interactive setup steps 2–3 (workspace and parallelism), not step 1 tracking init alone.
 - **apply-code-changes resume PR base** — Autonomous apply already on the feature branch now opens the PR against `base-branch` or the repo default (`main`), not against the feature branch itself.
+- **apply-code-changes stale tracking hints** — Setup only trusts a `TRACKING_HINT` Branch when its own Change matches the current `CHANGE_ROOT`, so a stale hint can no longer select an unrelated branch or misname a new one; pre-bind merge now also STOPs instead of merging Issue/PR/Presets when a candidate branch's on-disk Change points at a different change. Autonomous setup locks `workspace`/`parallelism` into `PRESET_OVERRIDES` so pre-bind merge can no longer reintroduce `worktree` without the setup-time PRECHECK.
 - **ferspec `setup-matt-pocock-skills` install** — The skill now ships in this package, so `npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills` from ferspec `INSTALL.md` succeeds.
 
 ### 🔧 Improvements
