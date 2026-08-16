@@ -38,7 +38,7 @@ Optional under the change folder:
 
 Match `/opsx-apply`: paths from CLI, not repo guesses.
 
-1. Resolve `NAME` from `/opsx:apply`, session context, or `TRACKING_HINT` / on-disk `tracking.md` → Change.
+1. Resolve a source value from `/opsx:apply`, session context, or `TRACKING_HINT` / on-disk `tracking.md` → Change. Set `NAME` to that value's canonical filesystem **basename** (strip trailing separators first); STOP if it is empty, `.` or `..`. `Change` is a full `CHANGE_ROOT` path, never a branch or worktree-name input.
 2. Resolve `--store` when user, command hints, or **`TRACKING_HINT` Presets → `store`** include it (`TRACKING` is not set until apply setup — never read `TRACKING` Presets here).
 3. Run `openspec status --change "<name>" --json` (append `--store` when set). Read `planningHome`, `changeRoot`, `artifactPaths`, `actionContext`.
 4. Run `openspec instructions apply --change "<name>" --json` (append `--store`). Read `contextFiles`.
@@ -57,7 +57,7 @@ Match `/opsx-apply`: paths from CLI, not repo guesses.
 ## Direct adapter
 
 1. Set `CHANGE_ROOT` to user path; confirm `tasks.md` exists.
-2. Set `NAME` from `TRACKING_HINT` / basename of `CHANGE_ROOT`.
+2. Set `NAME` to the canonical filesystem **basename** of `CHANGE_ROOT` (strip trailing separators first); STOP if it is empty, `.` or `..`. Do not derive it from `TRACKING_HINT`, which may be from another checkout.
 3. Compute `CHANGE_ROOT_REL`. Read standard layout from `CHANGE_ROOT`. Load `tracking.md` into **`TRACKING_HINT` only** when present.
 
 **Does not set:** `PLANNING_HOME`, `STORE`, `artifactPaths`, `contextFiles`.
