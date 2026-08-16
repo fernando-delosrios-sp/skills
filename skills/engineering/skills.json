@@ -92,6 +92,13 @@
       }
     },
     {
+      "name": "setup-matt-pocock-skills",
+      "source": {
+        "repo": "mattpocock/skills",
+        "path": "skills/engineering/setup-matt-pocock-skills"
+      }
+    },
+    {
       "name": "wayfinder",
       "source": {
         "repo": "mattpocock/skills",

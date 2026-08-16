@@ -1,33 +1,35 @@
 ---
 name: apply-code-changes
-description: Execute OpenSpec ferspec apply — tasks.md through completion gate, interactive or autonomous. Use when /opsx:apply runs on a ferspec change, or when implementing an OpenSpec change from tasks.md with TDD, commits, changelog, and optional PR handoff.
+description: Execute a planned change from tasks.md through completion gate and handoff — OpenSpec ferspec apply via /opsx:apply, or any folder with tasks.md (Direct adapter). TDD, commits, changelog, interactive or autonomous PR.
 ---
 
 # Apply Code Changes
 
-Orchestrate ferspec **apply**: read the change artifacts, execute `tasks.md` in order, run the completion gate, finish the Changelog group, and hand off (interactive stop or autonomous PR + issue link).
+Orchestrate **apply**: read change artifacts, execute `tasks.md` in order (Changelog group last), run the completion gate, and hand off (interactive stop or autonomous PR + issue link).
+
+**Core** = steps 0–5 below. **Change adapter** = path and validator resolution — [change-adapters.md](references/change-adapters.md) (**OpenSpec** default, **Direct** when the user supplies a folder with `tasks.md`).
 
 **Never in apply:** archive, spec sync, archive commit, `/opsx:archive`.
 
 ## Inputs
 
+Artifact paths are relative to `CHANGE_ROOT` (set by the adapter). Prefer OpenSpec `artifactPaths` / `contextFiles` when the OpenSpec adapter ran.
+
 | Priority | Source | Purpose |
 |---|---|---|
-| HIGH | `openspec/changes/<name>/tasks.md` | Checkbox progress (tracked) |
-| HIGH | `openspec/changes/<name>/specs/**/*.md` | Scenario → test coverage gate |
-| HIGH | `openspec/changes/<name>/design.md` | Design/spec coherence gate |
-| MED | `openspec/changes/<name>/proposal.md` | Capabilities for changelog scope |
-| MED | `openspec/changes/<name>/tracking.md` | Autonomous presets + issue/PR fields |
+| HIGH | `tasks.md` | Checkbox progress (tracked) |
+| HIGH | `specs/**/*.md` | Scenario → test coverage gate |
+| HIGH | `design.md` | Design/spec coherence gate |
+| MED | `proposal.md` | Capabilities for changelog scope |
+| MED | `tracking.md` | Autonomous presets + issue/PR fields |
 | LOW | `docs/agents/issue-tracker.md` | Issue fetch/update workflow (when present) |
-
-Resolve `<name>` from the user's `/opsx:apply` argument, session context, or `tracking.md` → Change.
 
 ## Mode
 
 | Mode | When | Handoff |
 |---|---|---|
-| **Interactive** | Default — user present, no autonomous signal | Gate passes → changelog → STOP on branch; no PR unless user asks |
-| **Autonomous** | Issue-driven apply, or user requests autonomous/PR handoff | Create or read `tracking.md` → gate → changelog → PR + issue link → STOP |
+| **Interactive** | Default — user present, no autonomous signal | Execute (incl. Changelog) → gate → STOP on branch; no PR unless user asks |
+| **Autonomous** | Issue-driven apply, or user requests autonomous/PR handoff | Create or read `tracking.md` → execute (incl. Changelog) → gate → PR + issue link → STOP |
 
 Autonomous signals: existing `tracking.md` with Issue filled, explicit user request, or CI/non-interactive context (use Presets in tracking; note assumptions).
 
@@ -35,24 +37,35 @@ Autonomous signals: existing `tracking.md` with Issue filled, explicit user requ
 
 ### 0. Pre-flight
 
-1. Confirm change path exists under `openspec/changes/<name>/`.
-2. Read `tasks.md`, delta specs, `design.md`, `proposal.md`.
-3. Record `ORIGINAL_BRANCH=$(git branch --show-current)` unless `tracking.md` Presets name `base-branch`.
-4. Create feature branch when none exists: `openspec/<name>` or value from tracking.
+1. Select and run a **change adapter** per [change-adapters.md](references/change-adapters.md); confirm `CHANGE_ROOT` exists.
+2. Read artifacts from `CHANGE_ROOT`: `tasks.md`, delta specs, `design.md`, `proposal.md`, and `tracking.md` when present.
+3. Detect mode — interactive (default) vs autonomous (signals above).
 
 ### 1. Setup (mode-specific)
 
 **Interactive** — two gates via **structured-choices** (one gate per message):
 
 1. **Workspace:** `local` (continue on current checkout) | `worktree` (isolated checkout — only when a worktree skill or documented project workflow exists; otherwise offer `local` only).
-2. **Parallelism:** `single` (this session) | `subagent-per-group` (one subagent per numbered `##` group in tasks.md when platform supports subagents).
+2. **Parallelism:** `single` (this session) | `subagent-per-group` (one subagent per numbered `##` group — see **Parallelism** below; only when platform supports subagents).
 
 **Autonomous** — no dialog:
 
 1. Create `tracking.md` from the ferspec template when missing; fill Issue, Change, Branch, Presets from issue metadata.
-2. Apply Presets (`workspace`, `parallelism`, `base-branch`) without user prompts.
+2. Apply Presets (`workspace`, `parallelism`, `base-branch`, `store`) without user prompts.
 
-### 2. Execute tasks
+### 2. Branch resolution
+
+After setup — autonomous first runs now have `tracking.md` with Branch filled. Resolve `ORIGINAL_BRANCH` **before** creating or skipping the feature branch — current checkout is not the PR base when you are already on `FEATURE_BRANCH`.
+
+1. Resolve `FEATURE_BRANCH`: `tracking.md` → Branch, else adapter default (`openspec/<name>` or `feature/<name>` — see [change-adapters.md](references/change-adapters.md)).
+2. Resolve `ORIGINAL_BRANCH` (integration branch — PR target and review base). It must not equal `FEATURE_BRANCH`. First match:
+   - `tracking.md` Presets → `base-branch` when set and ≠ `FEATURE_BRANCH`
+   - Else when `git branch --show-current` ≠ `FEATURE_BRANCH`: current branch
+   - Else (resume or CI already on the feature branch): repo default integration branch (`main`, or `git symbolic-ref refs/remotes/origin/HEAD`); note assumption in autonomous mode when not preset
+3. Create and checkout `FEATURE_BRANCH` when not already on it; otherwise stay on the existing feature branch.
+4. When `tracking.md` exists and Presets `base-branch` is empty, write `ORIGINAL_BRANCH` there so later resumes read the preset instead of re-deriving from checkout.
+
+### 3. Execute tasks
 
 Work through `tasks.md` in order — numbered `##` groups, then Verification, Documentation, Changelog last.
 
@@ -68,29 +81,34 @@ Documentation group: update files listed in proposal Impact and tasks.
 
 Changelog group: invoke **changelog-generator**; mark tasks complete when entry exists.
 
-**Parallelism `subagent-per-group`:** dispatch one subagent per `##` group with this brief: read group tasks + related specs/design; follow steps 1–4 above; return with checkboxes updated and commits on branch.
+**Parallelism `subagent-per-group`:** never run concurrent subagents against the same checkout or branch.
 
-### 3. Completion gate (blocking)
+- **Eligible groups:** numbered implementation `##` groups only — not Verification, Documentation, or Changelog (orchestrator runs those).
+- **`local` workspace:** dispatch groups **sequentially** — wait for each subagent to return before starting the next. Subagents implement and report; they must **not** run git commands or edit `tasks.md`. Orchestrator runs tests, marks checkboxes, and invokes **git-commit** after each group.
+- **`worktree` workspace:** one isolated worktree per group (`apply-<name>-<group-slug>`) on branch `<FEATURE_BRANCH>-<group-slug>`. Subagents may commit on their group branch. Orchestrator **merges sequentially** into `FEATURE_BRANCH` after each group returns — never merge in parallel.
+- Subagent brief: read group tasks + related specs/design from `CHANGE_ROOT`; follow implement + test steps; return evidence. Pass `CHANGE_ROOT`; pass `PLANNING_HOME` and `--store` when the OpenSpec adapter set them.
+
+### 4. Completion gate (blocking)
 
 Re-run until every row passes:
 
 1. All `tasks.md` checkboxes `[x]`
 2. Canonical test command from Verification group — exit 0
 3. Every `#### Scenario:` in delta specs has a named automated test
-4. `openspec validate --all --json` — all `"valid": true`
+4. **Adapter validator** — OpenSpec: `openspec validate --all --json` (from `PLANNING_HOME`, with `--store` when set) all `"valid": true`; Direct: skip (optional only if user requests and CLI available)
 5. Each material `design.md` decision reflected in specs — drift = FAIL, fix before proceeding
 6. Changelog task complete (generated during apply, not archive)
 
 On FAIL: fix immediately; do not hand off.
 
-### 4. Handoff
+### 5. Handoff
 
 **Interactive:** report gate PASS, branch name, commits summary. Do not open PR unless the user asks.
 
 **Autonomous:**
 
 1. Push branch: `git push -u origin HEAD`
-2. Open PR to `ORIGINAL_BRANCH` (or Presets `base-branch`) via `gh pr create` — title/body reference change name and linked issue.
+2. Open PR from `FEATURE_BRANCH` to `ORIGINAL_BRANCH` via `gh pr create` — title/body reference change name and linked issue.
 3. Update `tracking.md` → PR with URL.
 4. Link PR on the issue — follow `docs/agents/issue-tracker.md` when present; otherwise `gh issue comment` / equivalent from tracking Issue field.
 
@@ -112,4 +130,8 @@ On FAIL: fix immediately; do not hand off.
 - No archive or spec sync inside apply.
 - No marking tasks `[x]` before tests pass.
 - No PR before completion gate passes (autonomous).
+- No using the feature branch as `ORIGINAL_BRANCH` — resume must resolve integration base from Presets or repo default.
 - No skipping Changelog — gate item 6 is blocking.
+- No hardcoded `openspec/changes/<name>/` — OpenSpec adapter resolves `changeRoot` from CLI every session; Direct adapter uses the user-supplied path only.
+- No concurrent subagents on shared git state — sequential dispatch or worktree isolation with sequential merge.
+- No mixing superpowers-bridge apply orchestration with this skill on the same change.

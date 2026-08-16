@@ -4,7 +4,7 @@
 
 ## Change
 
-<!-- openspec/changes/<name> -->
+<!-- changeRoot from openspec status — full path, not assumed repo-local -->
 
 ## Branch
 
@@ -17,9 +17,10 @@
 ## Presets
 
 <!--
-Autonomous apply only — workspace, parallelism, and metadata from the issue.
+Autonomous apply only — workspace, parallelism, store, and metadata from the issue.
 Example:
 - workspace: local
 - parallelism: single
 - base-branch: main
+- store: my-openspec-store
 -->

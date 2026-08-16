@@ -195,5 +195,12 @@
     "applied_upstream_sha": "8b78b531ab965735c5dc74f6f7a219e1e37326df",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
     "blended_ref": "b78557c2bcff687a62343c2873318b18cc512a88"
+  },
+  "setup-matt-pocock-skills": {
+    "repo": "mattpocock/skills",
+    "path": "skills/engineering/setup-matt-pocock-skills",
+    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "synced_at": "2026-08-16T10:02:37.891Z",
+    "overlay_applied_at": "2026-08-16T10:02:37.891Z"
   }
 }

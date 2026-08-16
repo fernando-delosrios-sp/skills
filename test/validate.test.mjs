@@ -1,7 +1,10 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateBlendState } from '../lib/validate.mjs';
-import { loadSkills } from '../lib/index.mjs';
+import { access } from 'node:fs/promises';
+import { join } from 'node:path';
+import { validateBlendState, validateStructure, collectLocalInstallSkillNames } from '../lib/validate.mjs';
+import { loadSkills, findSkillByName } from '../lib/index.mjs';
+import { getCanonicalDir } from '../lib/skill-paths.mjs';
 import { validateOverlays } from '../lib/overlay-pipeline.mjs';
 
 describe('validateBlendState', () => {
@@ -69,5 +72,35 @@ describe('validateOverlays structure-only', () => {
     assert.ok(
       !result.warnings.some((w) => /^Overlay "[^"]+" pending /.test(w.message))
     );
+  });
+});
+
+describe('collectLocalInstallSkillNames', () => {
+  it('extracts unique --skill flags from this package', () => {
+    const markdown = [
+      'npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills',
+      'npx skills add fernando-delosrios-sp/skills --skill tdd',
+      'npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills',
+      'npx skills add obra/superpowers --skill tdd',
+    ].join('\n');
+
+    assert.deepEqual(collectLocalInstallSkillNames(markdown), [
+      'setup-matt-pocock-skills',
+      'tdd',
+    ]);
+  });
+});
+
+describe('schema INSTALL.md catalog', () => {
+  it('every this-package --skill flag has a catalog entry and SKILL.md', async () => {
+    const skills = await loadSkills();
+    const result = await validateStructure();
+    const installErrors = result.errors.filter((e) => e.type === 'install-skill');
+
+    assert.deepEqual(installErrors, []);
+
+    const setup = findSkillByName(skills, 'setup-matt-pocock-skills');
+    assert.ok(setup, 'setup-matt-pocock-skills must be listed in skills.json');
+    await access(join(getCanonicalDir(setup), 'SKILL.md'));
   });
 });

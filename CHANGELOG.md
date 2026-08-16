@@ -8,6 +8,11 @@ All notable changes to this skills collection are documented here.
 
 - **ferspec OpenSpec schema** — Lean workflow under `openspec-init/schemas/ferspec/`: discovery → proposal/design/specs → tasks → apply. Thin schema instructions with Matt Pocock skill pointers; drops plan, verify, and retrospective artifacts; manual archive; autonomous `tracking.md` contract.
 
+### 🐛 Fixes
+
+- **apply-code-changes resume PR base** — Autonomous apply already on the feature branch now opens the PR against `base-branch` or the repo default (`main`), not against the feature branch itself.
+- **ferspec `setup-matt-pocock-skills` install** — The skill now ships in this package, so `npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills` from ferspec `INSTALL.md` succeeds.
+
 ---
 
 ## 2026-08-13

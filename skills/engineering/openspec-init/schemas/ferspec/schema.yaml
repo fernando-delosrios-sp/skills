@@ -109,9 +109,15 @@ apply:
   requires: [tasks]
   tracks: tasks.md
   instruction: |
-    Invoke **apply-code-changes** via Skill tool when present.
+    Invoke **apply-code-changes** via Skill tool when present (OpenSpec adapter — default
+    for `/opsx:apply`; skill also supports Direct adapter for explicit task folders).
 
-    **Fallback** (skill absent): read tasks.md, specs, design; execute tasks in order;
+    Resolve paths from CLI — never assume repo-local `openspec/changes/<name>/`. Run
+    `openspec status --change "<name>" --json` and `openspec instructions apply --change "<name>" --json`
+    (append `--store` when applicable); use `changeRoot`, `planningHome`, `artifactPaths`, and
+    `contextFiles` for all artifact reads and edits.
+
+    **Fallback** (skill absent): resolve paths as above; read tasks.md, specs, design; execute tasks in order;
     invoke **tdd** when present (non-blocking if absent — gate still requires tests green);
     delegate commits to **git-commit**; run **changelog-generator** for the Changelog group.
 
@@ -119,16 +125,20 @@ apply:
     1. All tasks.md checkboxes `[x]`
     2. Canonical test command exit 0
     3. Every `#### Scenario:` in delta specs → named automated test
-    4. `openspec validate --all --json` — all `"valid": true`
+    4. `openspec validate --all --json` (from `planningHome.root`, with `--store` when set) — all `"valid": true`
     5. design.md decisions reflected in specs — material drift = FAIL
     6. Changelog task complete (generated during apply, not archive)
 
     **Interactive**: dialog (workspace: local | worktree × parallelism: single | subagent per
-    task group) → execute → gate → changelog → STOP. Commits on branch; no PR unless user asks.
+    task group) → execute (incl. Changelog group) → gate → STOP. Commits on branch; no PR unless user asks.
+    Subagent-per-group: sequential dispatch on local workspace (orchestrator commits); worktree isolation
+    with sequential merge on worktree workspace — never concurrent subagents on shared git state.
 
-    **Autonomous**: create tracking.md from @./templates/tracking.md → execute (no dialog;
-    presets from tracking/issue metadata) → gate → changelog → PR to original branch +
-    issue updated with PR link → STOP.
+    **Autonomous**: create tracking.md from @./templates/tracking.md → execute (incl. Changelog
+    group; no dialog; presets from tracking/issue metadata) → gate → PR from the feature branch
+    to ORIGINAL_BRANCH (Presets `base-branch`, else current branch when it is not the feature
+    branch, else repo default `main` / origin HEAD — never the feature branch) + issue updated
+    with PR link → STOP.
 
     **Never in apply**: archive, spec sync, archive commit, `/opsx-archive`.
 

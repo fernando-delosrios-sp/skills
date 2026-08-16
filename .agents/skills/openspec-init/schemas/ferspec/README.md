@@ -72,7 +72,7 @@ See [templates/adopters/AGENTS.md.fragment.md](./templates/adopters/AGENTS.md.fr
 
 **Requires:** tasks · **Tracks:** tasks.md
 
-Invoke **apply-code-changes** when installed; schema carries a minimal fallback.
+Invoke **apply-code-changes** when installed; schema carries a minimal fallback. The skill uses the **OpenSpec adapter** by default; **Direct adapter** applies any folder with `tasks.md` (no OpenSpec required).
 
 ### Completion gate (blocking)
 
