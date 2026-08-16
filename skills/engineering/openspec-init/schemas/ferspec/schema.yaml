@@ -156,18 +156,19 @@ apply:
     **Autonomous**: change adapter (step 0) — use an explicit/preloaded store when present, otherwise
     re-probe once from the first resolved tracking.md;
     always prepare a complete TRACKING baseline (`workspace: local` and `parallelism: single`),
-    then overlay non-empty hint values and set Change to the current adapter path — except Branch and
-    Issue, which only overlay when the hint's own Change matches the current adapter path (otherwise a
-    stale hint could name an unrelated branch or link the wrong tracker entry); add workspace and parallelism to the current-run
-    preset overrides so the setup-time (PRECHECK'd) workspace choice survives the merge — bind must
-    wait for this preset-override + PRECHECK step, never proceed on the bare step-1 baseline; find
-    the feature branch's tracking.md by change name (not the current, possibly wrong-store, relative
-    path) before pre-bind merge; when a hint-derived store is unconfirmed, re-resolve it against the
-    branch's declared store and restart the merge **before** comparing on-disk Change to the current
-    change root, since an old-store root naturally mismatches a correct-store Change; STOP on a
-    Change mismatch only once that store re-resolution has run (or immediately for an explicit
-    store); bind ACTIVE_CHANGE_ROOT per workspace matrix; PR via gh with --base ORIGINAL_BRANCH +
-    issue link → STOP.
+    then overlay non-empty hint values and set Change to the current adapter path — except Branch,
+    Issue, and Presets keys, which only overlay when the hint's own Change matches the current adapter
+    path (otherwise a stale hint could name an unrelated branch, link the wrong tracker entry, or force
+    unchecked worktree presets); snapshot TRACKING_SETUP after setup; find the feature branch's
+    tracking.md by change name (not the current, possibly wrong-store, relative path) before
+    pre-bind merge; when a hint-derived store is unconfirmed, skip the field merge and re-resolve
+    store adoption first — restore TRACKING_SETUP before the restart — since an old-store root
+    naturally mismatches a correct-store Change; run the field merge only after Change aligns (or
+    STOP once store re-resolution has run for explicit store); add workspace and parallelism to the
+    current-run preset overrides so the setup-time (PRECHECK'd) workspace choice survives the merge —
+    bind must wait for this preset-override + PRECHECK step, never proceed on the bare step-1 baseline;
+    bind ACTIVE_CHANGE_ROOT per workspace matrix; PR via gh with --base ORIGINAL_BRANCH + issue link
+    → STOP.
 
     **Never in apply**: archive, spec sync, archive commit, `/opsx-archive`.
 
