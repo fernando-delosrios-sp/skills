@@ -1,0 +1,168 @@
+# ferspec Schema
+
+Lean OpenSpec workflow for work that needs speccing. **Schema = what; skills = how.**
+
+[![OpenSpec baseline](https://img.shields.io/badge/OpenSpec_baseline-1.4.1-0277bd)](#compatibility)
+
+---
+
+## Install
+
+See [INSTALL.md](./INSTALL.md) for step-by-step setup (schema copy, AGENTS.md fragment, skills).
+
+Quick manual install:
+
+```bash
+mkdir -p ~/your-project/openspec/schemas
+npx --yes degit fernando-delosrios-sp/skills/skills/engineering/openspec-init/schemas/ferspec ~/your-project/openspec/schemas/ferspec
+cd ~/your-project && openspec schema validate ferspec
+```
+
+Use `--schema ferspec` on new changes: `/opsx:new my-feature --schema ferspec`
+
+---
+
+## Purpose
+
+A lean artifact graph: discovery → proposal / design / specs → tasks → apply. Matt Pocock skills for execution. Direct PR for bug fixes, typos, and config tweaks.
+
+---
+
+## Artifact DAG
+
+```text
+discovery ──┬──→ proposal ──→ specs (Gherkin) ──┐
+            │                                  ├──→ tasks ──→ [apply]
+            └──→ design ─────────────────────────┘
+
+Dropped: plan, verify, retrospective, changelog artifact
+Optional: skip grilling when scope is locked (write discovery.md manually)
+Autonomous only: tracking.md (created at apply start)
+Archive: manual via /opsx:archive — never part of apply
+```
+
+| Artifact | Role | Skill |
+|---|---|---|
+| discovery.md | Scope, Language, Decisions, Open questions, Scenarios | grill-with-docs → grilling + domain-modeling |
+| proposal.md | Why, capabilities, impact | Extract from discovery |
+| design.md | Structured architecture | Extract from discovery; c4-diagram when 3+ containers |
+| specs/** | Gherkin delta specs | gherkin-authoring; promote Language → ubiquitous-language |
+| tasks.md | Checkboxes + Documentation + Changelog | Mandatory; apply tracks this file |
+| tracking.md | Issue ↔ change ↔ branch ↔ PR | Autonomous apply only |
+
+Durable vocabulary lands in `openspec/specs/ubiquitous-language/spec.md` at specs/archive — not in discovery or repo-root CONTEXT.md.
+
+---
+
+## Entry & exit gates
+
+### Direct PR (skip opsx)
+
+| Scenario | Use opsx? |
+|---|---|
+| New feature / capability / architectural / breaking change | ✅ Yes |
+| Bug fix (no contract change) / test backfill / linter / typo / docs / config tweak | ❌ Direct PR |
+
+### Verbal discovery → opsx
+
+Grill verbally until all 5 promotion criteria hold (scope locked, forks resolved, deps mapped, acceptance criteria stateable, conversation converging). Then suggest `/opsx:propose` — wait for user ack.
+
+See [templates/adopters/AGENTS.md.fragment.md](./templates/adopters/AGENTS.md.fragment.md) for agent routing.
+
+---
+
+## Apply phase
+
+**Requires:** tasks · **Tracks:** tasks.md
+
+Invoke **apply-code-changes** when installed; schema carries a minimal fallback.
+
+### Completion gate (blocking)
+
+1. All tasks.md checkboxes `[x]`
+2. Canonical test command exit 0
+3. Every Gherkin scenario in delta specs → named automated test
+4. `openspec validate --all --json` all valid
+5. Design decisions reflected in specs (material drift = FAIL)
+6. Changelog task complete (during apply, not archive)
+
+### Interactive
+
+```text
+dialog (workspace × parallelism) → execute → gate → changelog → STOP
+```
+
+Commits on branch; no PR unless the user asks.
+
+### Autonomous
+
+```text
+tracking.md → execute → gate → changelog → PR + issue link → STOP
+```
+
+PR is the handoff mechanism. Archive is **never** part of apply.
+
+### Archive (manual)
+
+After PR merge or when interactive work is ready:
+
+```text
+sync → archive change → commit archive output
+```
+
+User runs `/opsx:archive` themselves.
+
+---
+
+## Skills map
+
+| Concern | Skill | Notes |
+|---|---|---|
+| Discovery | grill-with-docs, grilling, domain-modeling | Language → discovery.md |
+| Design | c4-diagram | Optional; 3+ containers |
+| Specs | gherkin-authoring | Gherkin delta specs |
+| Apply | apply-code-changes | **Required for full apply UX**; schema has fallback |
+| TDD | tdd | Optional invoke; gate requires tests green |
+| Commits | git-commit | Spec drift warn + user ack |
+| Changelog | changelog-generator | During apply |
+| PR (autonomous) | gh / issue-tracker doc | Via apply-code-changes |
+
+---
+
+## CLI cheat sheet
+
+| Scenario | Command |
+|---|---|
+| New change | `/opsx:new <name> --schema ferspec` |
+| One-shot planning | `/opsx:ff <name> --schema ferspec` |
+| Continue planning | `/opsx:continue <name>` |
+| Implement | `/opsx:apply <name>` |
+| Archive (manual) | `/opsx:archive <name>` |
+| Validate | `openspec validate --all --json` |
+
+---
+
+## Versioning
+
+| Identifier | Where | Meaning |
+|---|---|---|
+| Schema major | `schema.yaml: version: 1` | Graph contract — breaking changes bump this |
+| Bundle release | [VERSION](./VERSION) | SemVer of this bundle |
+
+Current bundle: **1.0.0**
+
+---
+
+## Compatibility
+
+| ferspec | OpenSpec CLI | Baseline as of |
+|---|---|---|
+| v1 | ≥ 1.4.1 | 2026-08-16 |
+
+---
+
+## Related
+
+- [schema.yaml](./schema.yaml) — machine-readable definition
+- [plan.md](./plan.md) — design brief and implementation checklist
+- [templates/](./templates/) — artifact templates

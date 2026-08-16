@@ -2,6 +2,14 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-08-16
+
+### ✨ New Features
+
+- **ferspec OpenSpec schema** — Lean workflow under `openspec-init/schemas/ferspec/`: discovery → proposal/design/specs → tasks → apply. Thin schema instructions with Matt Pocock skill pointers; drops plan, verify, and retrospective artifacts; manual archive; autonomous `tracking.md` contract.
+
+---
+
 ## 2026-08-13
 
 ### ✨ New Features
