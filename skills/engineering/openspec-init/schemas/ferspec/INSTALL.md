@@ -2,9 +2,14 @@
 
 Setup for the **ferspec** OpenSpec schema in a target project.
 
-## 1. Copy the schema
+> **openspec-init routing:** Step 3 runs **Post-copy setup** only. Step 6 runs **Skills**, then **Verify** (after step 5). Do not re-copy the schema or run `openspec init` during those steps — openspec-init steps 1–2 handle CLI setup and schema copy.
+
+## Standalone manual install
+
+For projects **not** using openspec-init:
 
 ```bash
+# Run openspec init first if the project has no openspec/ directory
 mkdir -p ~/your-project/openspec/schemas
 npx --yes degit fernando-delosrios-sp/skills/skills/engineering/openspec-init/schemas/ferspec ~/your-project/openspec/schemas/ferspec
 cd ~/your-project
@@ -12,9 +17,9 @@ openspec schema validate ferspec
 openspec schemas   # confirm ferspec is listed
 ```
 
-If the project has no `openspec/` directory, run `openspec init` first.
+Then complete **Post-copy setup**, **Skills**, and **Verify** below.
 
-## 2. Insert workflow routing
+## Post-copy setup (openspec-init step 3)
 
 Check the project root for agent config:
 
@@ -27,13 +32,14 @@ When a file exists:
 2. Read `openspec/schemas/ferspec/templates/adopters/AGENTS.md.fragment.md`.
 3. Append as a new section at the end.
 
-## 3. Install skills
+## Skills (openspec-init step 6)
 
 Install from [fernando-delosrios-sp/skills](https://github.com/fernando-delosrios-sp/skills).
 
 **Ask the user before running any install commands.** Recommend the full bundle below — skills reference each other, and skipping dependencies degrades behavior even when the schema still runs.
 
 ```bash
+npx skills add fernando-delosrios-sp/skills --skill structured-choices
 npx skills add fernando-delosrios-sp/skills --skill grill-with-docs
 npx skills add fernando-delosrios-sp/skills --skill grilling
 npx skills add fernando-delosrios-sp/skills --skill domain-modeling
@@ -50,6 +56,7 @@ npx skills add fernando-delosrios-sp/skills --skill apply-code-changes
 
 | Skill | Phase | Invoked by |
 |---|---|---|
+| structured-choices | cross-cutting | model-invocation; user gates across workflow |
 | grill-with-docs | discovery | schema.yaml |
 | grilling | discovery | grill-with-docs |
 | domain-modeling | discovery | grill-with-docs; Language format |
@@ -77,12 +84,11 @@ npx skills add fernando-delosrios-sp/skills --skill search
 | wayfinder | pre-change | user; uses grilling + domain-modeling |
 | search | pre-change | wayfinder research tickets (`/research` → investigate) |
 
-## 4. Ubiquitous language spec
+## Verify (openspec-init step 6, after step 5)
 
-Confirm `openspec/specs/ubiquitous-language/spec.md` exists (created during `openspec init` or first specs phase). Discovery Language terms marked `promote` merge here at archive.
-
-## 5. Verify
+Run after ubiquitous-language and domain specs exist (openspec-init step 5):
 
 1. `openspec schema validate ferspec`
 2. Installed skills appear in the agent's available skills list
-3. New change: `/opsx:new test-ferspec --schema ferspec`
+3. Confirm `openspec/specs/ubiquitous-language/spec.md` exists — discovery Language terms marked `promote` merge here at archive
+4. New change: `/opsx:new test-ferspec --schema ferspec`

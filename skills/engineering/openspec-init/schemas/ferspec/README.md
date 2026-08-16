@@ -8,15 +8,9 @@ Lean OpenSpec workflow for work that needs speccing. **Schema = what; skills = h
 
 ## Install
 
-See [INSTALL.md](./INSTALL.md) for step-by-step setup (schema copy, AGENTS.md fragment, skills).
+**Via openspec-init:** The skill copies this schema (step 2), then runs [INSTALL.md](./INSTALL.md) post-copy setup (step 3), config and specs (steps 4–5), and skills + verify (step 6).
 
-Quick manual install:
-
-```bash
-mkdir -p ~/your-project/openspec/schemas
-npx --yes degit fernando-delosrios-sp/skills/skills/engineering/openspec-init/schemas/ferspec ~/your-project/openspec/schemas/ferspec
-cd ~/your-project && openspec schema validate ferspec
-```
+**Standalone:** See [INSTALL.md § Standalone manual install](./INSTALL.md#standalone-manual-install), then complete the remaining INSTALL.md sections.
 
 Use `--schema ferspec` on new changes: `/opsx:new my-feature --schema ferspec`
 
