@@ -4,6 +4,7 @@
       "name": "engineering",
       "source": "./skills/engineering",
       "skills": [
+        "./apply-code-changes",
         "./architecture-decision-records",
         "./c4-diagram",
         "./changelog-generator",

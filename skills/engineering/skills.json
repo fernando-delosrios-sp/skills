@@ -1,6 +1,9 @@
 {
   "skills": [
     {
+      "name": "apply-code-changes"
+    },
+    {
       "name": "architecture-decision-records"
     },
     {
