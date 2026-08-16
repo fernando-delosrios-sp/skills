@@ -38,13 +38,13 @@ Optional under the change folder:
 
 Match `/opsx-apply`: paths from CLI, not repo guesses.
 
-1. Resolve a source value from `/opsx:apply`, session context, or `TRACKING_HINT` / on-disk `tracking.md` → Change. Set `NAME` to that value's canonical filesystem **basename** (strip trailing separators first); STOP if it is empty, `.` or `..`. `Change` is a full `CHANGE_ROOT` path, never a branch or worktree-name input.
-2. Resolve `--store` from user input or command hints first, else **`TRACKING_HINT` Presets → `store`**. Set `STORE_SOURCE` to `explicit` for user/command input, otherwise `hint`; a hint-derived store is a probe only, not a merge override.
+1. Resolve a source value from `/opsx:apply`, session context, or a **preloaded** `TRACKING_HINT` → Change. Set `NAME` to that value's canonical filesystem **basename** (strip trailing separators first); STOP if it is empty, `.` or `..`. `Change` is a full `CHANGE_ROOT` path, never a branch or worktree-name input.
+2. Resolve `--store` from user input or command hints first, else a **preloaded** `TRACKING_HINT` Presets → `store`. Set `STORE_SOURCE` to `explicit` for user/command input, otherwise `hint`; a hint-derived store is a probe only, not a merge override. When no preloaded hint exists, leave `STORE` unset for the first probe.
 3. Run `openspec status --change "<name>" --json` (append `--store` when set). Read `planningHome`, `changeRoot`, `artifactPaths`, `actionContext`.
 4. Run `openspec instructions apply --change "<name>" --json` (append `--store`). Read `contextFiles`.
 5. Set `CHANGE_ROOT = changeRoot`; compute `CHANGE_ROOT_REL` from repo root.
-6. When invoked without prior `/opsx:apply` context, steps 3–4 are mandatory before other reads.
-7. If `tracking.md` exists at `CHANGE_ROOT`, load it into non-authoritative **`TRACKING_HINT`** — including Presets → `store` for step 2 when no explicit store was supplied. Apply skill merges from feature-branch `tracking.md` pre-bind (step 2); persist at bind.
+6. If `tracking.md` exists at `CHANGE_ROOT`, load it into non-authoritative **`TRACKING_HINT`**. When `STORE_SOURCE` is not `explicit` and its Presets → `store` is non-empty and differs from `STORE`, set `STORE_SOURCE = hint`, rerun steps 3–5 with that store, then reload `TRACKING_HINT` from the resulting `CHANGE_ROOT`. If the reloaded hint names a different store, **STOP** and require an explicit `--store`.
+7. When invoked without prior `/opsx:apply` context, steps 3–6 are mandatory before other reads. A store that is only reachable through an as-yet-unresolved change tree cannot select itself; require `--store` or an OpenSpec declared/default store in that case.
 
 **Also sets:** `PLANNING_HOME`, `STORE`, `STORE_SOURCE` (when a store is used).
 

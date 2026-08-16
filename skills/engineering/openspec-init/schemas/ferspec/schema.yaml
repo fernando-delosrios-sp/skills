@@ -114,7 +114,9 @@ apply:
 
     Pre-flight: resolve paths from CLI — never assume repo-local `openspec/changes/<name>/`. A
     hint-derived `--store` is only a probe; an explicit store overrides feature-branch tracking.
-    Run
+    When no hint is available before the first status call, load tracking from that resolved root
+    and re-run the CLI once if it names a store. A store in an otherwise unreachable tree requires
+    an explicit `--store` or OpenSpec declared/default store. Run
     `openspec status --change "<name>" --json` and `openspec instructions apply --change "<name>" --json`
     (append `--store` when applicable) for `changeRoot`, `planningHome`, `artifactPaths`, and
     `contextFiles`. Adapter output is planning-only; after apply-code-changes **bind** (step 2),
@@ -141,7 +143,8 @@ apply:
     artifact edits; one worktree per group on group branches. Local: main on FEATURE_BRANCH.
     Subagent-per-group: sequential dispatch — never concurrent subagents on shared git state.
 
-    **Autonomous**: change adapter (step 0) — resolve --store from TRACKING_HINT Presets when present;
+    **Autonomous**: change adapter (step 0) — use an explicit/preloaded store when present, otherwise
+    re-probe once from the first resolved tracking.md;
     always prepare a complete TRACKING baseline (`workspace: local` and `parallelism: single`),
     then overlay non-empty hint values and set Change to the current adapter path; pre-bind merge feature-branch
     tracking.md field-by-field (Presets keys, not the whole object) before branch resolution;

@@ -63,7 +63,7 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 
 1. Run a **change adapter** per [change-adapters.md](references/change-adapters.md); set `CHANGE_ROOT` and `CHANGE_ROOT_REL`. Adapters **never create** on-disk `tracking.md`.
 2. Read `tasks.md`, specs, `design.md`, `proposal.md` from `CHANGE_ROOT` for planning context.
-3. If `tracking.md` exists at `CHANGE_ROOT`, load it into non-authoritative **`TRACKING_HINT`** for mode detection and initial setup. Do **not** treat it as final `TRACKING` — it may be from the wrong checkout on resume.
+3. The adapter loads `tracking.md` at its resolved `CHANGE_ROOT` into non-authoritative **`TRACKING_HINT`** for mode detection and initial setup, re-probing OpenSpec once when that hint selects a store. Do **not** treat it as final `TRACKING` — it may be from the wrong checkout on resume.
 4. Detect mode — interactive (default) vs autonomous (signals above).
 
 ### 1. Setup (mode-specific)
