@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "architecture-decision-records": {
+      "source": ".",
+      "sourceType": "local",
+      "computedHash": "868f5cb607295e50b6d537eb0314c43757ec21907cde5613cdf238f5d3459fc6"
+    },
     "brainstorming": {
       "source": "obra/superpowers",
       "sourceType": "github",
@@ -8,42 +13,42 @@
       "computedHash": "225b53fce53d627d3a1e94bfea84060ccdbf11a58a2d5cf11eefef89d598020e"
     },
     "c4-diagram": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "0d2e0644b64d203d9941bba6b5b4ab886607fac2e2c8e8e91cc75e8345c55cf9"
     },
     "caveman": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "0dce77e8fde6d2b7dd6d8576bc889173dd95ef85893e4e47fa66173e8d60f89f"
     },
     "changelog-generator": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "81a401df2faaadca3dd72dbb0461520c8f4956cb7206edbda2138531fa81d713"
     },
     "code-simplification": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "5235011bb65cfb32c08107586c8518706142bb366a8687a092ef0e9c704b2cce"
     },
     "codebase-design": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "e6394592ecf4b5aa5bc93f95a20d0a56314788bde2e1221f87296d3becb734a2"
     },
     "deploy-mate": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "f5a4cb5a05425ef470664e1a3b248b9d1451a01aea48418567c580e1fc615c75"
     },
     "diagnosing-bugs": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "c86c725ad271ba57d7e9ffd86122b898438314ef9c20ec1dbe03f3e8f149c3b2"
     },
     "domain-modeling": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "89741de6feac56dddd206e8f5a5046a696f94171fe4f5e9839a5a988d0d519bb"
     },
@@ -54,92 +59,92 @@
       "computedHash": "5c0356b889fea6d693eac5b34b44758a889745ff39203fa4270d96609f682632"
     },
     "gherkin-authoring": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "f908f0665764ec6f9d3133b27eca41bccbbfb081d34d48a275195b142efdf4e9"
     },
     "git-commit": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "85ed61b6d6a835360c4953f2719f5c32eff9092331e5a5f0fc3d64f2ac8624c0"
     },
     "grill-me": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "f361db4e15e6bfd562a9282b1dccda513910a50061f9e838ce017be9c69dde3f"
     },
     "grill-with-docs": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "9c460cbd94fd3c63cdef967dbdb6e66ca687103cdc380cd37834e4d10b738f78"
     },
     "grilling": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "5cd99bfc48a0b77745e33a3cf6963e858d887d81022ee6878d791bd8fa00ce91"
     },
     "handoff": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "ad03e8d4ea3cbbff66420eb7ba3cc375b5cbe1821a2449b53e863256cf5b5cde"
     },
     "improve": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "edd3c79214e0da182869c552b0c75b1cc9b80bce22208c20a90e96da29db64fd"
     },
     "improve-codebase-architecture": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "6de40b668826cff010d4509f0f924ea63b3cbc647f0f793243463f4544399344"
     },
     "openspec-init": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "14789a63d8b28e7fc4c7deb16918596f61d8ef0feb578c49b16b5662c380e7f2"
     },
     "risen-prompt": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "6d891756e824881e6b0bb908b740004ebd09cba993f034a29d92f53822187dbe"
     },
     "search": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "1f938c565e15baa94d6c3d3633d2d22c852698b1f9d63198941201f7b041904a"
     },
     "skill-overlay": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "5bd759ba28e109494f1c3c8c908b70d824516c97cc11f54aac774d9e2af7e0ea"
     },
     "teach": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "68999bb1a241384b2f921f3321d779b7d05eb6089077b70d88cee2aee3d75ccc"
     },
     "to-questionnaire": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "d8938509f3400d9977343e11e876fc6e1982b0b9c133a2f2e9d3d730a67a103e"
     },
     "wait-what": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "05fa8debe650ca6a18e0ed11b1a946d896dc5644519f59694ab3e17f8ccdcc92"
     },
     "wayfinder": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "f343ecf46157cb645a5494644418308ad95391e9fc696faa47ae5a412bf5f6e4"
     },
     "writing-for-agents": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "ccfa1e94d8f6ab5c6a1edd55293ca477faf93c39207771331efdb1e798ed21d6"
     },
     "zoom-out": {
-      "source": "/Users/fernando.delosrios/Documents/Development/AI/skills",
+      "source": ".",
       "sourceType": "local",
       "computedHash": "85d1e5849601c93de95f24aa60dcb9d3a75c9132e885a2d640f31031bf7ed6cf"
     }
