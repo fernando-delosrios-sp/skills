@@ -44,10 +44,11 @@
     "path": "skills/productivity/grilling",
     "sha": "8b78b531ab965735c5dc74f6f7a219e1e37326df",
     "synced_at": "2026-08-15T13:15:48.428Z",
-    "overlay_applied_at": "2026-08-16T08:22:32.663Z",
+    "overlay_applied_at": "2026-08-16T10:09:05.517Z",
     "applied_upstream_sha": "8b78b531ab965735c5dc74f6f7a219e1e37326df",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "b78557c2bcff687a62343c2873318b18cc512a88"
+    "blended_ref": "584218526914e937bd1d3a76b0aef27e90d9d5e4",
+    "overlay_hash": "f4434b5564b0febc3dda2cf39759ed436b42b7d47d3b460da152639207d0d23b"
   },
   "handoff": {
     "repo": "mattpocock/skills",
@@ -116,11 +117,11 @@
     "path": "skills/engineering/domain-modeling",
     "sha": "8b78b531ab965735c5dc74f6f7a219e1e37326df",
     "synced_at": "2026-08-15T13:15:40.219Z",
-    "overlay_applied_at": "2026-08-16T08:22:32.386Z",
+    "overlay_applied_at": "2026-08-16T10:09:05.514Z",
     "applied_upstream_sha": "8b78b531ab965735c5dc74f6f7a219e1e37326df",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "b78557c2bcff687a62343c2873318b18cc512a88",
-    "overlay_hash": "79a8802bd4f553ebb793f72f0c7d0c938bcc1d4b36970704272b0d1243f4d7d2"
+    "blended_ref": "584218526914e937bd1d3a76b0aef27e90d9d5e4",
+    "overlay_hash": "54aa960ac0d24083740266d83c7b9341c9c22b183cac4e5b83d87428815f6695"
   },
   "c4-diagram": {
     "repo": "aleksnikolaev/c4-diagram-skill",
@@ -201,6 +202,9 @@
     "path": "skills/engineering/setup-matt-pocock-skills",
     "sha": "068b6e0c62393147daf03530149cdce209c93da8",
     "synced_at": "2026-08-16T10:02:37.891Z",
-    "overlay_applied_at": "2026-08-16T10:02:37.891Z"
+    "overlay_applied_at": "2026-08-16T10:09:05.518Z",
+    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "584218526914e937bd1d3a76b0aef27e90d9d5e4"
   }
 }
