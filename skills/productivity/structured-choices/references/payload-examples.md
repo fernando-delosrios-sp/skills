@@ -49,6 +49,55 @@ Universal `<decision_prompt>` shapes and platform adapter mapping.
 }
 ```
 
+## Grilling round (multi-question)
+
+One gate per round — map each frontier decision to a question. Cursor `AskQuestion` accepts a `questions` array; universal block uses a wrapper when the host has no native multi-question tool.
+
+**Cursor `AskQuestion` (preferred):**
+
+```json
+{
+  "title": "Grilling — round 1",
+  "questions": [
+    {
+      "id": "auth-strategy",
+      "prompt": "How should unauthenticated users reach the dashboard?",
+      "options": [
+        { "id": "redirect-login", "label": "Redirect to login (Recommended)" },
+        { "id": "public-readonly", "label": "Public read-only view", "detail": "Show cached summary without PII" },
+        { "id": "block-404", "label": "Return 404", "detail": "Hide existence of dashboard" }
+      ]
+    },
+    {
+      "id": "session-store",
+      "prompt": "Where should sessions live?",
+      "options": [
+        { "id": "redis", "label": "Redis (Recommended)", "detail": "Shared across app instances" },
+        { "id": "cookie", "label": "Signed cookie", "detail": "Stateless; size limits apply" },
+        { "id": "postgres", "label": "Postgres", "detail": "Reuse existing DB; heavier ops" }
+      ]
+    }
+  ]
+}
+```
+
+**Session completion (`confirm_dialog`):**
+
+```json
+{
+  "type": "confirm_dialog",
+  "question": "Frontier is empty — do we have shared understanding on this plan?",
+  "options": [
+    { "id": "yes", "label": "Yes, we align (Recommended)" },
+    { "id": "no", "label": "No — keep grilling" }
+  ],
+  "allow_custom_input": false,
+  "recommended": "yes"
+}
+```
+
+Record each answer by question `id` and option `id` before recomputing the frontier.
+
 ## Adapter mapping
 
 | Universal field | Cursor `AskQuestion` | Generic decision tool |
@@ -60,5 +109,6 @@ Universal `<decision_prompt>` shapes and platform adapter mapping.
 | `multi_select` type | `allow_multiple: true` | `input_type: "select"` + multi flag |
 | `confirm_dialog` type | two-option `AskQuestion` | `input_type: "confirm_dialog"` |
 | `allow_custom_input` | built-in "Other" (always available) | `allow_custom_input` param |
+| Multi-question round | `questions` array (one entry per frontier item) | repeat gate or host-specific batch API |
 
 After the user responds, map their selection back to `id` before continuing.

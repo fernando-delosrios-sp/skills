@@ -16,7 +16,7 @@ At each **_gate_** — a fork, confirmation, or permission pause before you proc
 
 ## Gate rules
 
-- **One gate per assistant message** — halt until the user responds.
+- **One gate per assistant message** — halt until the user responds. A gate may contain multiple questions when another skill composes it (e.g. grilling rounds).
 - **Two or more fixed options** — do not fake a choice.
 - **Record by `id`** — proceed using the option `id`, not paraphrased label text.
 - **Recommended first** — mark the suggested option in `label` with `(Recommended)` and in `recommended`.
@@ -53,5 +53,5 @@ More examples and adapter field mapping: [`references/payload-examples.md`](refe
 
 ## Carve-outs
 
-- Multi-question interview rounds ([`grilling`](../grilling/SKILL.md)) — numbered rounds are intentional; at most one gate per round when options are fixed.
+- **Grilling rounds** — [`grilling`](../grilling/SKILL.md) composes this skill: one multi-question gate per round (native tool `questions` array or equivalent). Not a prose-list exception.
 - Async questionnaires for third parties — use [`to-questionnaire`](../to-questionnaire/SKILL.md), not this skill.
