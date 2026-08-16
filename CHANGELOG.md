@@ -19,6 +19,10 @@ All notable changes to this skills collection are documented here.
 
 - **grilling structured rounds** — Frontier rounds use structured-choices gates instead of numbered prose Q&A. Overlay captures the customization intent for upstream sync.
 
+### 📚 Documentation
+
+- **domain-modeling ADR routing** — Suggest the `architecture-decision-records` skill for complex ADRs (MADR format, supersession chains).
+
 ---
 
 ## 2026-08-13
