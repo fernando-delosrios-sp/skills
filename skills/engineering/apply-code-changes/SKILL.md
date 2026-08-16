@@ -76,6 +76,8 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 4. When Presets → `workspace` is `worktree`, **PRECHECK** worktree skill — if absent, downgrade both `TRACKING` and `PRESET_OVERRIDES` → `workspace` to `local`, note assumption.
 5. When the OpenSpec adapter set `STORE`, set `TRACKING` Presets → `store`; add it to `PRESET_OVERRIDES` **only** when `STORE_SOURCE` is `explicit`.
 
+**Do not bind** until interactive setup steps 2–3 complete — step 1 only initializes tracking.
+
 **Autonomous** — no dialog:
 
 1. Always prepare a complete **`TRACKING`** baseline from the ferspec template + issue metadata: Issue and Branch when available, and Presets `workspace: local` + `parallelism: single`. Overlay every non-empty `TRACKING_HINT` field **field-by-field** (including individual `Presets` keys), then set **Change** = full `CHANGE_ROOT` — the current adapter path always wins. Initialize empty **`PRESET_OVERRIDES`**. **Do not write to disk.**
@@ -99,7 +101,7 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 7. **Create `FEATURE_BRANCH`** from `ORIGINAL_BRANCH` when missing.
 8. When `TRACKING` Presets `base-branch` is empty, set `ORIGINAL_BRANCH` in `TRACKING`.
 
-**Bind** — requires `TRACKING` Presets → `workspace` and `parallelism` (from setup step 1). Set `WORK_CHECKOUT`, checkout main or create worktree, then `ACTIVE_CHANGE_ROOT = WORK_CHECKOUT + "/" + CHANGE_ROOT_REL`:
+**Bind** — requires merged `TRACKING` Presets → `workspace` and `parallelism` (interactive: after setup steps 2–3; autonomous: baseline from setup step 1). Set `WORK_CHECKOUT`, checkout main or create worktree, then `ACTIVE_CHANGE_ROOT = WORK_CHECKOUT + "/" + CHANGE_ROOT_REL`:
 
 9. Per **workspace matrix** row for those Presets:
    - **`local`:** checkout `FEATURE_BRANCH` on main → `WORK_CHECKOUT` = main repo.
@@ -185,7 +187,7 @@ On FAIL: fix immediately; do not hand off.
 - No concurrent subagents on shared git state.
 - No adapter creating on-disk `tracking.md`.
 - No branch resolution or bind before pre-bind merge from feature-branch `tracking.md` when that branch exists.
-- No branch/bind without `TRACKING` Presets → `workspace` and `parallelism` (interactive must record both in setup).
+- No branch/bind without `TRACKING` Presets → `workspace` and `parallelism` (interactive: setup steps 2–3 only — not after step 1).
 - No replacement of the `Presets` object during a tracking merge: merge keys and reapply `PRESET_OVERRIDES`.
 - No autonomous setup that skips the complete `TRACKING` baseline because `TRACKING_HINT` has an Issue.
 - No inheritance of `Change` from a tracking file: it is always the current adapter `CHANGE_ROOT`.
