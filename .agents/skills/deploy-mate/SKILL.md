@@ -36,7 +36,7 @@ Each **leading word** names one phase. Use it in chat, artifacts, and `progress.
 
 **Deploy scope** — every Catalog var is tagged `deploy-critical`, `local-dev`, or `runtime-derived`. Harvest collects **deploy-critical** only.
 
-**Ship policy** — per-environment rule in `deployment.md` for when the agent deploys after session work (`on-request` | `auto`). Pipeline and ambient behavior: [SHIP-POLICY.md](SHIP-POLICY.md). Requires project `AGENTS.md` pointer (see [ARTIFACTS.md](ARTIFACTS.md) § AGENTS.md fragment) for ambient work — skill presence alone does not load these rules.
+**Ship policy** — per-environment rule in `deployment.md` for when the agent deploys after session work (`on-request` | `auto`; missing section → **`on-request`**). Pipeline and ambient behavior: [SHIP-POLICY.md](SHIP-POLICY.md). Requires project `AGENTS.md` pointer (see [ARTIFACTS.md](ARTIFACTS.md) § AGENTS.md fragment) for ambient work — skill presence alone does not load these rules.
 
 ## Artifacts
 

@@ -183,7 +183,7 @@ Write **strategy sections first** (Forge proposal). Repo files only after Sign-o
 
 **`auto`** — after deployable code changes, when pipeline gates pass, run Steps deploy then verify without asking.
 
-Full rules: skill `SHIP-POLICY.md` (or `.deploy-mate/SHIP-POLICY.md` if copied at Forge).
+Full rules: skill `SHIP-POLICY.md` (or `.deploy-mate/SHIP-POLICY.md` if copied at Forge). **Resolution:** missing section → **`on-request`** (see SHIP-POLICY § Policy resolution).
 
 ## Prerequisites
 - [ ] Document complete (obtain playbooks)

@@ -4,6 +4,16 @@ Per-environment rule for **when** the agent runs deploy and verify outside an ex
 
 **Source of truth:** `.deploy-mate/<env>/deployment.md` → **Ship policy** (written at Forge proposal sign-off).
 
+## Policy resolution
+
+Before deploy (pipeline or ambient), resolve the effective policy:
+
+1. Read `deployment.md` → **Ship policy** → Policy value.
+2. **Missing section, empty table, or no explicit `auto`** → treat as **`on-request`** (CHECKPOINT required).
+3. Only when Policy is explicitly **`auto`** → skip deploy CHECKPOINT when all gates pass.
+
+Pre-Forge `deployment.md` files without **Ship policy** always resolve to **`on-request`**.
+
 ## Policy values
 
 | Policy | Ambient (session work) | `/deploy-mate deploy` |
@@ -35,8 +45,8 @@ If a gate fails: report blockers and the unlocking command; **do not** deploy.
 ## Ambient protocol
 
 1. Resolve `<env>` — argument, session context, or sole folder under `.deploy-mate/*/`
-2. Read `deployment.md` → **Ship policy** and **Steps**
-3. **`on-request`:** summarize fix; quote deploy command; end turn
+2. Resolve Ship policy (see **Policy resolution**); read **Steps**
+3. **`on-request`** (including missing policy): summarize fix; quote deploy command; end turn
 4. **`auto`:** run gate check → execute Steps deploy → run verify protocol from [COMMANDS.md](COMMANDS.md) § verify → report outcome + rollback path on failure
 
 ## Project AGENTS.md pointer

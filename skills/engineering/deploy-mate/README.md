@@ -99,6 +99,8 @@ Per-environment rule in `deployment.md` for when the agent deploys **outside** a
 | **`on-request`** (default) | Agent finishes fixes and cites the deploy command; waits for you to ask |
 | **`auto`** | After deployable changes, when gates pass, agent runs deploy + verify without asking |
 
+Pre-Forge `deployment.md` files without a **Ship policy** section resolve to **`on-request`** — deploy always requires CHECKPOINT unless Policy is explicitly **`auto`**.
+
 For ambient session work (bug fixes, “fix and deploy”), the project `AGENTS.md` must include the pointer from [ARTIFACTS.md](ARTIFACTS.md) § AGENTS.md fragment — the skill body is not loaded during regular work without it. `forge artifacts` can merge this fragment when `AGENTS.md` exists.
 
 Details: [SHIP-POLICY.md](SHIP-POLICY.md).
