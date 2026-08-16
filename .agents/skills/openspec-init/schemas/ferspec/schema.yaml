@@ -112,13 +112,15 @@ apply:
     Invoke **apply-code-changes** via Skill tool when present (OpenSpec adapter — default
     for `/opsx:apply`; skill also supports Direct adapter for explicit task folders).
 
-    Resolve paths from CLI — never assume repo-local `openspec/changes/<name>/`. Run
+    Pre-flight: resolve paths from CLI — never assume repo-local `openspec/changes/<name>/`. Run
     `openspec status --change "<name>" --json` and `openspec instructions apply --change "<name>" --json`
-    (append `--store` when applicable); use `changeRoot`, `planningHome`, `artifactPaths`, and
-    `contextFiles` for all artifact reads and edits.
+    (append `--store` when applicable) for `changeRoot`, `planningHome`, `artifactPaths`, and
+    `contextFiles`. Adapter output is planning-only; after apply-code-changes **bind** (step 2),
+    all artifact reads and edits use `ACTIVE_CHANGE_ROOT` on the bound checkout — see skill workspace
+    matrix. Never edit artifacts via pre-bind `changeRoot` after bind.
 
-    **Fallback** (skill absent): resolve paths as above; read tasks.md, specs, design; execute tasks in order;
-    invoke **tdd** when present (non-blocking if absent — gate still requires tests green);
+    **Fallback** (skill absent): resolve paths as above; read tasks.md, specs, design from bound
+    checkout when resuming on the feature branch; execute tasks in order; invoke **tdd** when present;
     delegate commits to **git-commit**; run **changelog-generator** for the Changelog group.
 
     **Completion gate** (blocking — all must pass):
@@ -131,21 +133,15 @@ apply:
 
     **Interactive**: dialog (workspace: local | worktree × parallelism: single | subagent per
     task group) → execute (incl. Changelog group) → gate → STOP. Commits on branch; no PR unless user asks.
-    Worktree + single: one isolated worktree on FEATURE_BRANCH for the full session; main checkout stays
-    off the feature branch; push FEATURE_BRANCH from the worktree, remove it — optional FEATURE_BRANCH
-    checkout in main repo after teardown (interactive only). Subagent-per-group:
-    sequential dispatch on local workspace (orchestrator commits); worktree isolation with sequential
-    merge per group — never concurrent subagents on shared git state.
+    Worktree + single: worktree on FEATURE_BRANCH; main stays on ORIGINAL_BRANCH until teardown after
+    PR URL push. Worktree + subagent-per-group: main on FEATURE_BRANCH for orchestrator merges and
+    artifact edits; one worktree per group on group branches. Local: main on FEATURE_BRANCH.
+    Subagent-per-group: sequential dispatch — never concurrent subagents on shared git state.
 
-    **Autonomous**: run change adapter from step 0 (OpenSpec changeRoot or Direct folder path) → load or
-    prepare in-memory TRACKING from @./templates/tracking.md (Change = full CHANGE_ROOT,
-    Issue/Branch/Presets from issue metadata; persist at ACTIVE_CHANGE_ROOT bind only — adapters never
-    create on-disk tracking.md); persist OpenSpec adapter store into Presets when set; downgrade workspace
-    worktree to local when no worktree skill exists (update TRACKING Presets, note assumption)
-    → execute (incl. Changelog group; no dialog; presets from tracking/issue metadata) → gate → PR
-    from the feature branch to ORIGINAL_BRANCH (Presets `base-branch`, else current branch when it is
-    not the feature branch, else repo default `main` / origin HEAD — never the feature branch) + issue
-    updated with PR link → STOP.
+    **Autonomous**: change adapter (step 0) → load TRACKING_HINT for mode detection; prepare TRACKING
+    in memory; bind ACTIVE_CHANGE_ROOT per workspace matrix; merge tracking.md at bind (on-disk wins);
+    persist store into Presets when set; downgrade worktree preset when no worktree skill
+    → execute → gate → PR to ORIGINAL_BRANCH + issue link → STOP.
 
     **Never in apply**: archive, spec sync, archive commit, `/opsx-archive`.
 
