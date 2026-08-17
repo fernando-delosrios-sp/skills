@@ -28,6 +28,7 @@ Look at the current repo to understand its starting state. Read whatever exists;
 - `docs/agents/` — does this skill's prior output already exist?
 - `.scratch/` — sign that a local-markdown issue tracker convention is already in use
 - Is the `triage` skill installed? (a `triage` skill folder alongside this one, or `triage` in your available skills.) This decides whether Section B runs at all.
+- Is the `structured-choices` skill installed? (a `structured-choices` skill folder alongside this one, or `structured-choices` in your available skills.) This decides whether the `### User gates` sub-block is written in step 4.
 - Monorepo signals — a `pnpm-workspace.yaml`, a `workspaces` field in `package.json`, or a populated `packages/*` with its own `src/`. Present only in a genuinely large multi-package repo; their absence means single-context, which is almost every repo.
 
 ### 2. Present findings and ask
@@ -99,9 +100,15 @@ The block:
 ### Domain docs
 
 [one-line summary of layout — "OpenSpec mode", "single-context", or "multi-context"]. See `docs/agents/domain.md`.
+
+### User gates
+
+Present forks and confirmations via **structured-choices** — native tool (e.g. Cursor `AskQuestion`), `<decision_prompt>`, or lettered prose per that skill's adapter order.
 ```
 
 Include the `### Triage labels` sub-block, and write `docs/agents/triage-labels.md`, only when `triage` is installed and Section B ran. When it isn't, both are omitted.
+
+Include the `### User gates` sub-block only when `structured-choices` is installed. When it isn't, omit the sub-block.
 
 Then write the docs files using the seed templates in this skill folder as a starting point:
 

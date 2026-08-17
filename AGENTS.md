@@ -160,6 +160,10 @@ Issues live in GitHub (`fernando-delosrios-sp/skills`) via the `gh` CLI. See `do
 
 OpenSpec mode — vocabulary in `openspec/specs/ubiquitous-language/spec.md`; ADRs in `docs/adr/` (create lazily). See `docs/agents/domain.md`.
 
+### User gates
+
+Present forks and confirmations via **structured-choices** — native tool (e.g. Cursor `AskQuestion`), `<decision_prompt>`, or lettered prose per that skill's adapter order.
+
 <!-- Source: ferspec/templates/adopters/AGENTS.md.fragment.md -->
 <!-- Drop this section into your project's AGENTS.md so agents route future work using this schema correctly. -->
 
@@ -169,6 +173,12 @@ OpenSpec mode — vocabulary in `openspec/specs/ubiquitous-language/spec.md`; AD
 - Keep explanations **succinct**. State the conclusion first; add detail only when it helps a decision.
 - When a topic could go deep, **offer to develop it further** — do not unprompted long dissertations or essay-length replies.
 - When you need input, **ask one question at a time** and wait for the answer before the next.
+
+## User gates
+
+When presenting forks, confirmations, or permission pauses, follow the **structured-choices** skill — one gate per message; never duplicate options as numbered lists in chat.
+
+Adapter order (first match wins): **native decision tool** → **`<decision_prompt>` block** → **lettered prose**. Native-tool examples: Cursor `AskQuestion`, `prompt_user_decision`. Full contract and payloads: **structured-choices** skill.
 
 ## Workflow routing (read on session start)
 
