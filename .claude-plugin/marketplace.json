@@ -22,6 +22,7 @@
         "./openspec-init",
         "./setup-matt-pocock-skills",
         "./tdd",
+        "./triage",
         "./wayfinder",
         "./zoom-out"
       ]
