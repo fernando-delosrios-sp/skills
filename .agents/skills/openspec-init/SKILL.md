@@ -25,7 +25,7 @@ Record the chosen option by `id` (schema dir name, domain slug, yes/no/skip).
   - **Re-init from scratch** — wipe `openspec/schemas/<schema>/` and refresh `openspec/config.yaml`; **preserve** `openspec/specs/` and `openspec/changes/` unless the user gives separate explicit confirmation to delete those. Single gate with clear wording before any destructive action.
 - **Fresh init**: When `openspec/config.yaml` is absent, run [Init path](#init-path) (steps 1–6).
 
-On update, read active schema from `openspec/config.yaml` → `schema:` key. U1 uses it for CLI compatibility and version checks when the local schema dir exists; when missing, U1 skips local reads and U2 lists it as **not installed locally**. U2 may change the active schema via user selection.
+On update, read active schema from `openspec/config.yaml` → `schema:` key for U2 recommendation. U1 checks CLI availability only. U2 lists all bundled schemas with diff status; graph-version migration hard-stops run at **Apply selection** for the **chosen** schema before any full replace.
 
 **Never auto-touch on update:** existing `openspec/specs/**` content (except optional missing-only ubiquitous-language backfill) and `openspec/changes/**`.
 
@@ -40,14 +40,7 @@ Run in order. Each diff step requires user ack before write.
 ### U1. Preflight
 
 - Confirm `openspec` CLI is available (`openspec --version`).
-- Read bundled `VERSION` and `schema.yaml` → `version:` (graph contract) from this skill's `schemas/<schema>/`.
-- If the schema README documents a **Compatibility** table (min OpenSpec CLI), block update when CLI is below minimum; otherwise warn.
-- **Local schema dir absent** (`openspec/schemas/<schema>/` missing): do **not** read local `VERSION` or `schema.yaml`; do **not** hard-stop or warn on graph version — defer install to U2. Note in summary that the active schema is not installed locally; show bundled version only.
-- **Local schema dir present**:
-  - Read local `VERSION` and `schema.yaml` → `version:` for the same fields.
-  - **Hard-stop** when bundled graph `version` > local — read migration notes in `schemas/<schema>/UPDATE.md`; require ack before continuing.
-  - **Warn-only** when bundle `VERSION` major bumps but graph version is unchanged (prose/template changes; in-flight changes usually safe).
-  - Show both version numbers in the pre-overwrite summary.
+- Read active schema from `openspec/config.yaml` → `schema:` for U2 recommendation only — do **not** run per-schema graph-version or migration checks here (those run in U2 for the schema the user chooses).
 
 ### U2. Schema selection & refresh
 
@@ -57,6 +50,14 @@ Same schema picker as [init step 2](#2-schema-selection--installation), with per
 - **Diff status**: For each schema, `diff -ruN` local `openspec/schemas/<name>/` vs bundled `schemas/<name>/`. Record: **identical**, **not installed locally**, or a one-line summary (e.g. "adds UPDATE.md only", "3 files differ").
 - **_Gate_** — one option per bundled schema (`id` = directory name; `detail` = README summary + diff status). Recommend the active schema from `config.yaml`; when it has a non-empty diff, suffix the label with `(Recommended)`.
 - **Apply selection** — set working `<schema>` to the chosen id:
+  - **Migration preflight** (before any copy — applies to the **chosen** schema, not only the previously active one):
+    - If the chosen schema's README documents a **Compatibility** table (min OpenSpec CLI), block when CLI is below that schema's minimum; otherwise warn.
+    - **Local schema dir absent** (`openspec/schemas/<schema>/` missing): skip graph-version checks — fresh install.
+    - **Local schema dir present**:
+      - Read bundled and local `VERSION` and `schema.yaml` → `version:` (graph contract).
+      - **Hard-stop** when bundled graph `version` > local — read migration notes in `schemas/<schema>/UPDATE.md`; require ack before continuing.
+      - **Warn-only** when bundle `VERSION` major bumps but graph version is unchanged (prose/template changes; in-flight changes usually safe).
+      - Show both version numbers in the pre-overwrite summary.
   - Local missing or differs from bundled → full replace: copy bundled directory to `openspec/schemas/<schema>/`.
   - **Identical** → skip copy.
   - Chosen schema ≠ active `schema:` in config → **schema change**; U3 updates `schema:` to the chosen name.

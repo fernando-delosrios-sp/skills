@@ -1,0 +1,13 @@
+skill: tdd
+description: OpenSpec-aware domain vocabulary during TDD exploration
+
+changes:
+  - file: SKILL.md
+    instructions: |
+      Adapt the domain vocabulary guidance (opening paragraph after intro) for dual-mode (OpenSpec vs legacy):
+
+      1. **Mode detection:** Before reading domain glossary, check whether `openspec/config.yaml` or `openspec/specs/` exists — same detection as `/domain-modeling`.
+
+      2. **When exploring the codebase:** In OpenSpec mode, read `openspec/specs/ubiquitous-language/spec.md` and relevant capability specs under `openspec/specs/`; in legacy mode read `CONTEXT.md` (or via `CONTEXT-MAP.md`) and respect ADRs in the area. Preserve upstream intent — test names and interface vocabulary should match the project's domain language.
+
+      Preserve upstream TDD loop, seams, anti-patterns, and rules sections.

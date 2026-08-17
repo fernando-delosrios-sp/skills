@@ -14,6 +14,8 @@ All notable changes to this skills collection are documented here.
 ### 🐛 Fixes
 
 - **code-review setup hint** — When `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills` instead of invoking it implicitly.
+- **tdd domain vocabulary** — Dual-mode glossary guidance (OpenSpec ubiquitous-language spec vs legacy `CONTEXT.md`) with overlay to survive upstream sync.
+- **openspec-init schema migration** — Graph-version hard-stops and `UPDATE.md` acknowledgment now run in U2 for the chosen schema before overwrite, not only for the previously active schema in U1.
 
 ### 🔧 Improvements
 
