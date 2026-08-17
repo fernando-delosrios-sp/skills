@@ -2,6 +2,25 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-08-17
+
+### ✨ New Features
+
+- **ferspec project adoption** — Active OpenSpec schema switched to ferspec; `openspec/schemas/ferspec/` installed with discovery/design/specs artifact templates and updated `openspec/config.yaml` rules.
+- **openspec-init schema picker** — Update flow lists bundled schemas with diff status, supports switching active schema, and refreshes config from the chosen bundle.
+- **triage skill** — Synced from mattpocock/skills for issue triage workflows.
+- **Agent routing docs** — `docs/agents/issue-tracker.md` and `docs/agents/domain.md` plus ferspec workflow routing in `AGENTS.md`.
+
+### 🐛 Fixes
+
+- **code-review setup hint** — When `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills` instead of invoking it implicitly.
+
+### 🔧 Improvements
+
+- **skills-lock github sources** — Engineering skills now lock to `fernando-delosrios-sp/skills` github paths for consistent installs across machines.
+
+---
+
 ## 2026-08-16
 
 ### ✨ New Features
