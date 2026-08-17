@@ -2,80 +2,80 @@
   "grill-me": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/grill-me",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:22.752Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.983Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:33.850Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.652Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "writing-for-agents": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/writing-for-agents",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:29.738Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.986Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:40.879Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.656Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "to-questionnaire": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/to-questionnaire",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:27.432Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.985Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:38.582Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.655Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "wait-what": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/wait-what",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:28.595Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.986Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:39.742Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.656Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "grilling": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/grilling",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:23.971Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.984Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:34.994Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.653Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21",
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba",
     "overlay_hash": "f4434b5564b0febc3dda2cf39759ed436b42b7d47d3b460da152639207d0d23b"
   },
   "handoff": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/handoff",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:25.134Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.985Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:36.278Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.654Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "teach": {
     "repo": "mattpocock/skills",
     "path": "skills/productivity/teach",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:26.283Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.985Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:37.435Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.655Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "improve": {
     "repo": "shadcn/improve",
     "path": "skills/improve",
     "sha": "03369ee6d7cafbfcecc4346539b05b3dc0a603bb",
     "synced_at": "2026-08-06T09:51:13.182Z",
-    "overlay_applied_at": "2026-08-16T10:29:32.162Z",
+    "overlay_applied_at": "2026-08-17T08:19:43.172Z",
     "applied_upstream_sha": "03369ee6d7cafbfcecc4346539b05b3dc0a603bb",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
     "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b",
@@ -84,43 +84,43 @@
   "diagnosing-bugs": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/diagnosing-bugs",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:13.479Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.975Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:23.252Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.645Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "improve-codebase-architecture": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/improve-codebase-architecture",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:18.134Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.982Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:28.032Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.649Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21",
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba",
     "overlay_hash": "a641b9b99aa3244c33626263f53c18454b2879d102359174e7aeed2bf30512c9"
   },
   "codebase-design": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/codebase-design",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:12.354Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.974Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:22.073Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.644Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "domain-modeling": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/domain-modeling",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:14.633Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.981Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:24.426Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.646Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21",
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba",
     "overlay_hash": "54aa960ac0d24083740266d83c7b9341c9c22b183cac4e5b83d87428815f6695"
   },
   "c4-diagram": {
@@ -128,7 +128,7 @@
     "path": "skills/c4-diagram",
     "sha": "4d208688c3bd75829e49ac68df2b78d4ecfe9995",
     "synced_at": "2026-08-06T09:51:25.743Z",
-    "overlay_applied_at": "2026-08-16T10:29:31.955Z",
+    "overlay_applied_at": "2026-08-17T08:19:42.955Z",
     "applied_upstream_sha": "4d208688c3bd75829e49ac68df2b78d4ecfe9995",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
     "blended_ref": "2daeedcf5258b0fe0de111a28c1141c1d79e0d7b"
@@ -152,7 +152,7 @@
     "path": "skills/code-simplification",
     "sha": "df1edb2e05487d0aa6d93c747141e0aed1187f25",
     "synced_at": "2026-08-15T13:15:35.581Z",
-    "overlay_applied_at": "2026-08-16T10:29:32.063Z",
+    "overlay_applied_at": "2026-08-17T08:19:43.053Z",
     "applied_upstream_sha": "df1edb2e05487d0aa6d93c747141e0aed1187f25",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
     "blended_ref": "b78557c2bcff687a62343c2873318b18cc512a88"
@@ -160,51 +160,61 @@
   "grill-with-docs": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/grill-with-docs",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:15.854Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.981Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:25.619Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.647Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "wayfinder": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/wayfinder",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:21.618Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.983Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:32.719Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.652Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "code-review": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/code-review",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:11.217Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.971Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:20.878Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.639Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "tdd": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/tdd",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:29:19.287Z",
-    "overlay_applied_at": "2026-08-16T10:31:11.983Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:30.327Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.650Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "8701fc3336fad003c9d63d3c9faf2b3e058ffa21"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
   },
   "setup-matt-pocock-skills": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/setup-matt-pocock-skills",
-    "sha": "068b6e0c62393147daf03530149cdce209c93da8",
-    "synced_at": "2026-08-16T10:02:37.891Z",
-    "overlay_applied_at": "2026-08-16T10:29:32.259Z",
-    "applied_upstream_sha": "068b6e0c62393147daf03530149cdce209c93da8",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:29.168Z",
+    "overlay_applied_at": "2026-08-17T08:21:15.649Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
     "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
-    "blended_ref": "584218526914e937bd1d3a76b0aef27e90d9d5e4"
+    "blended_ref": "33d281a70e78fc943b1d779b0c2b2f7c48d743ba"
+  },
+  "triage": {
+    "repo": "mattpocock/skills",
+    "path": "skills/engineering/triage",
+    "sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "synced_at": "2026-08-17T08:19:31.534Z",
+    "overlay_applied_at": "2026-08-17T08:21:56.428Z",
+    "applied_upstream_sha": "9c9f36ccd3995266cd675468af71639c8dde1ec5",
+    "universal_overlay_hash": "d5de47d6c090cfd07f951a8757c66f70ef2ec8d004498f16cd96f31b7ba7aded",
+    "blended_ref": "66632065e21bf771f91dd3162f103ba1e9f2b763"
   }
 }
