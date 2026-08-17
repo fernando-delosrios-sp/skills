@@ -25,7 +25,7 @@ Record the chosen option by `id` (schema dir name, domain slug, yes/no/skip).
   - **Re-init from scratch** — wipe `openspec/schemas/<schema>/` and refresh `openspec/config.yaml`; **preserve** `openspec/specs/` and `openspec/changes/` unless the user gives separate explicit confirmation to delete those. Single gate with clear wording before any destructive action.
 - **Fresh init**: When `openspec/config.yaml` is absent, run [Init path](#init-path) (steps 1–6).
 
-On update, read active schema from `openspec/config.yaml` → `schema:` key for U1 preflight. U2 may change the active schema via user selection. If `openspec/schemas/<schema>/` is missing for the active schema, U2 lists it as not installed locally.
+On update, read active schema from `openspec/config.yaml` → `schema:` key. U1 uses it for CLI compatibility and version checks when the local schema dir exists; when missing, U1 skips local reads and U2 lists it as **not installed locally**. U2 may change the active schema via user selection.
 
 **Never auto-touch on update:** existing `openspec/specs/**` content (except optional missing-only ubiquitous-language backfill) and `openspec/changes/**`.
 
@@ -40,12 +40,14 @@ Run in order. Each diff step requires user ack before write.
 ### U1. Preflight
 
 - Confirm `openspec` CLI is available (`openspec --version`).
-- Read local `openspec/schemas/<schema>/VERSION` and `schema.yaml` → `version:` (graph contract).
-- Read bundled copies from this skill's `schemas/<schema>/` for the same fields.
+- Read bundled `VERSION` and `schema.yaml` → `version:` (graph contract) from this skill's `schemas/<schema>/`.
 - If the schema README documents a **Compatibility** table (min OpenSpec CLI), block update when CLI is below minimum; otherwise warn.
-- **Hard-stop** when bundled graph `version` > local — read migration notes in `schemas/<schema>/UPDATE.md`; require ack before continuing.
-- **Warn-only** when bundle `VERSION` major bumps but graph version is unchanged (prose/template changes; in-flight changes usually safe).
-- Show both version numbers in the pre-overwrite summary.
+- **Local schema dir absent** (`openspec/schemas/<schema>/` missing): do **not** read local `VERSION` or `schema.yaml`; do **not** hard-stop or warn on graph version — defer install to U2. Note in summary that the active schema is not installed locally; show bundled version only.
+- **Local schema dir present**:
+  - Read local `VERSION` and `schema.yaml` → `version:` for the same fields.
+  - **Hard-stop** when bundled graph `version` > local — read migration notes in `schemas/<schema>/UPDATE.md`; require ack before continuing.
+  - **Warn-only** when bundle `VERSION` major bumps but graph version is unchanged (prose/template changes; in-flight changes usually safe).
+  - Show both version numbers in the pre-overwrite summary.
 
 ### U2. Schema selection & refresh
 

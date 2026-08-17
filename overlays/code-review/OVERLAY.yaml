@@ -1,0 +1,20 @@
+skill: code-review
+description: OpenSpec-aware spec source discovery for the Spec axis
+
+changes:
+  - file: SKILL.md
+    instructions: |
+      Extend spec source discovery (step 2) for OpenSpec repos:
+
+      1. **Mode detection:** When `openspec/config.yaml` or `openspec/specs/` exists, search OpenSpec paths **before** legacy `docs/`, `specs/`, and `.scratch/` fallbacks.
+
+      2. **OpenSpec search order** (insert after user-provided path, before legacy paths):
+         - Delta specs under `openspec/changes/<change-name>/specs/` — match `<change-name>` to branch name, commit messages, or issue title/slug.
+         - Canonical capability specs under `openspec/specs/<domain>/spec.md` for domains touched by the diff or named in commit messages.
+         - `openspec/changes/<change-name>/proposal.md` or `design.md` when delta specs are absent but the change folder exists.
+
+      3. **Legacy fallback:** When OpenSpec is absent, preserve upstream search (`docs/`, `specs/`, `.scratch/`).
+
+      4. **Spec sub-agent brief:** When reviewing against OpenSpec delta specs, treat ADDED/MODIFIED requirements and `#### Scenario:` blocks as the contract; cite requirement headers and scenario steps.
+
+      Preserve upstream Standards axis, smell baseline, parallel sub-agents, and aggregation.

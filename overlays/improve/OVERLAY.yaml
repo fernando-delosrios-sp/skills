@@ -26,7 +26,7 @@ changes:
 
       5. **Subagent prompts:** In Phase 2, pass mode-appropriate settled-decision hints to subagents (capability spec slugs in OpenSpec mode; ADR identifiers in legacy mode).
 
-      6. **Frontmatter:** Extend description to mention OpenSpec-aware intent ingestion when capability specs exist.
+      6. **Frontmatter:** Extend description to mention OpenSpec-aware intent ingestion when capability specs exist. Add `disable-model-invocation: true` — this skill is a heavy read-only advisor meant for explicit invocation only; hosts must not auto-invoke it on casual audit or improvement wording.
 
       Preserve upstream hard rules, workflow phases, invocation variants, and tone.
 

@@ -53,7 +53,7 @@ rules:
     - "Invoke gherkin-authoring when present; use GIVEN/WHEN/THEN scenario steps."
     - "Promote discovery Language terms marked promote to ubiquitous-language delta during specs phase."
     - "Use domain-based spec categories (openspec/specs/<domain>/), not per-skill folders."
-    - "Each requirement MUST have at least one #### Scenario with WHEN/THEN format."
+    - "Each requirement MUST have at least one #### Scenario with GIVEN/WHEN/THEN steps (GIVEN optional when no precondition applies)."
     - "Use SHALL/MUST for normative requirements."
   tasks:
     - "Include mandatory Documentation and Changelog groups per ferspec template."

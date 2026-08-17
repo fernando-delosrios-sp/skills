@@ -1,0 +1,25 @@
+skill: setup-matt-pocock-skills
+description: OpenSpec-aware domain doc scaffolding — no repo-root CONTEXT.md in OpenSpec repos
+
+changes:
+  - action: add
+    file: domain-openspec.md
+    from: files/domain-openspec.md
+
+  - file: SKILL.md
+    instructions: |
+      Adapt setup for dual-mode domain docs (OpenSpec vs legacy):
+
+      1. **Explore (step 1):** Also check for `openspec/config.yaml` and `openspec/specs/` — signals OpenSpec mode.
+
+      2. **Section C — Domain docs:** Branch on mode:
+         - **OpenSpec detected** (recommended when present): scaffold **OpenSpec layout** — write `docs/agents/domain.md` from [domain-openspec.md](./domain-openspec.md). Do **not** create or reference repo-root `CONTEXT.md` or `CONTEXT-MAP.md`. Summarize as "OpenSpec mode" in the AGENTS block.
+         - **Legacy (no OpenSpec):** preserve upstream — default single-context (`CONTEXT.md` + `docs/adr/`); offer multi-context only when monorepo signals found.
+
+      3. **Write (step 4):** Template selection:
+         - OpenSpec mode → [domain-openspec.md](./domain-openspec.md)
+         - Legacy mode → [domain.md](./domain.md)
+
+      4. **Intro bullet:** When OpenSpec is detected, change the Domain docs bullet to reference ubiquitous-language spec and capability specs instead of `CONTEXT.md`.
+
+      Preserve upstream issue tracker (Section A), triage labels (Section B), and confirm/write flow.

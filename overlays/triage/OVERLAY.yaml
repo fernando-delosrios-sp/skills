@@ -1,0 +1,17 @@
+skill: triage
+description: OpenSpec-aware domain vocabulary during triage grilling
+
+changes:
+  - file: SKILL.md
+    instructions: |
+      Adapt triage for dual-mode domain vocabulary (OpenSpec vs legacy):
+
+      1. **Mode detection:** Before domain glossary reads or grilling side effects, check whether `openspec/config.yaml` or `openspec/specs/` exists — same detection as `/domain-modeling`.
+
+      2. **Gather context (step 1):** In OpenSpec mode, read `openspec/specs/ubiquitous-language/spec.md` and relevant capability specs under `openspec/specs/` instead of `CONTEXT.md` / `CONTEXT-MAP.md`. In legacy mode, preserve upstream behavior (CONTEXT.md, ADRs).
+
+      3. **Grill (step 4):** Replace "updating `CONTEXT.md`/ADRs inline as decisions land" with dual-mode guidance:
+         - **OpenSpec:** call "domain-modeling" for vocabulary and decision side effects — it maintains `openspec/specs/ubiquitous-language/spec.md`, capability specs, and ADRs; do **not** write repo-root `CONTEXT.md` or `CONTEXT-MAP.md`.
+         - **Legacy:** preserve upstream — sharpen domain terms and update `CONTEXT.md`/ADRs inline via domain-modeling as decisions land.
+
+      Preserve upstream roles, state machine, agent briefs, and triage flow.

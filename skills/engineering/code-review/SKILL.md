@@ -28,8 +28,12 @@ Look for the originating spec, in this order:
 
 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `docs/agents/issue-tracker.md`.
 2. A path the user passed as an argument.
-3. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
-4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
+3. When `openspec/config.yaml` or `openspec/specs/` exists (OpenSpec mode):
+   - Delta specs under `openspec/changes/<change-name>/specs/` — match `<change-name>` to branch name, commit messages, or issue title/slug.
+   - Canonical capability specs under `openspec/specs/<domain>/spec.md` for domains touched by the diff or named in commits.
+   - `openspec/changes/<change-name>/proposal.md` or `design.md` when delta specs are absent but the change folder exists.
+4. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature (legacy fallback).
+5. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
 
 ### 3. Identify the standards sources
 
@@ -67,7 +71,7 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 - The diff command and commit list.
 - The path or fetched contents of the spec.
-- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
+- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. For OpenSpec delta specs, treat ADDED/MODIFIED requirements and `#### Scenario:` blocks as the contract; cite requirement headers and scenario steps. Quote the spec line for each finding. Under 400 words."
 
 If the spec is missing, skip the Spec sub-agent and note this in the final report.
 
