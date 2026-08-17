@@ -61,7 +61,7 @@ npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills
 
 | Skill | Phase | Invoked by |
 |---|---|---|
-| structured-choices | cross-cutting | model-invocation; user gates across workflow |
+| structured-choices | cross-cutting | model-invocation; user gates; **install** wires User gates into AGENTS.md |
 | grill-with-docs | discovery | schema.yaml |
 | grilling | discovery | grill-with-docs |
 | domain-modeling | discovery | grill-with-docs; Language format |
@@ -77,6 +77,8 @@ npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills
 | setup-matt-pocock-skills | setup | user; once after skill install |
 
 If the user skips skills from this list, note which phases lose skill-backed behavior and which fallbacks apply.
+
+**structured-choices only** — when the ferspec fragment was not merged, invoke **structured-choices install** (or say `install structured-choices`) to wire User gates into `AGENTS.md` / `CLAUDE.md`.
 
 **Post-install setup** — run once after all skills above are installed:
 

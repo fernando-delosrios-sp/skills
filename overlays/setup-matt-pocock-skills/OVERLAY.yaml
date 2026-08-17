@@ -22,14 +22,6 @@ changes:
 
       4. **Intro bullet:** When OpenSpec is detected, change the Domain docs bullet to reference ubiquitous-language spec and capability specs instead of `CONTEXT.md`.
 
-      5. **User gates (AGENTS block):** In Explore (step 1), also check whether `structured-choices` is installed (skill folder alongside others, or `structured-choices` in available skills). When installed, include this sub-block in the `## Agent skills` template (step 4) after Domain docs:
-
-         ```markdown
-         ### User gates
-
-         Present forks and confirmations via **structured-choices** — native tool (e.g. Cursor `AskQuestion`), `<decision_prompt>`, or lettered prose per that skill's adapter order.
-         ```
-
-         Omit the sub-block when `structured-choices` is not installed. On update, add the sub-block if missing; do not remove an existing User gates section the user edited.
+      5. **User gates:** When `structured-choices` is installed, step 4 runs its **Install** path ([structured-choices](../structured-choices/SKILL.md#install)) after writing docs — do not add User gates to the setup AGENTS template; Install owns that content ([agents-block.md](../structured-choices/references/agents-block.md)).
 
       Preserve upstream issue tracker (Section A), triage labels (Section B), and confirm/write flow.
