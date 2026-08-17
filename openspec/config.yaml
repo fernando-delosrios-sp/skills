@@ -1,4 +1,4 @@
-schema: spec-driven
+schema: ferspec
 
 context: |
   Project: Personal agent skills collection and maintenance repository.
@@ -35,16 +35,27 @@ rules:
     - "Always use the `changelog-generator` skill to maintain and enforce a changelog for all changes."
     - "Follow the `git-commit` skill when making commits."
     - "New domain terms introduced in any change MUST be reflected in openspec/specs/ubiquitous-language/spec.md before archive."
+  discovery:
+    - "When scope is not locked, invoke grill-with-docs — output stays in discovery.md, not repo-root CONTEXT.md."
+    - "Mark each term draft, conflicts-with-canonical, or promote per domain-modeling CONTEXT-FORMAT."
+    - "Conflict-check terms against openspec/specs/ubiquitous-language/spec.md."
   proposal:
+    - "Extract from discovery.md — do not re-grill."
+    - "Capabilities MUST list every spec the specs phase will create or modify."
     - "Identify affected domains from openspec/specs/ — do not invent new domain folders without user agreement."
     - "Call out overlay vs upstream-only vs local-only skill impact explicitly."
+  design:
+    - "Extract from discovery.md — do not re-grill or re-explore."
+    - "When the change touches 3+ containers, invoke c4-diagram and link diagrams/<change-name>.drawio from design.md."
+    - "Reference lib/ module boundaries and npm script entry points when describing implementation."
+    - "Document overlay apply order: sync → static → audit → restore → remerge → apply."
   specs:
+    - "Invoke gherkin-authoring when present; use GIVEN/WHEN/THEN scenario steps."
+    - "Promote discovery Language terms marked promote to ubiquitous-language delta during specs phase."
     - "Use domain-based spec categories (openspec/specs/<domain>/), not per-skill folders."
     - "Each requirement MUST have at least one #### Scenario with WHEN/THEN format."
     - "Use SHALL/MUST for normative requirements."
-  design:
-    - "Reference lib/ module boundaries and npm script entry points when describing implementation."
-    - "Document overlay apply order: sync → static → audit → restore → remerge → apply."
   tasks:
+    - "Include mandatory Documentation and Changelog groups per ferspec template."
     - "Include tasks to update README.md and CHANGELOG.md when user-facing behavior changes."
     - "Include npm run validate before marking implementation complete."
