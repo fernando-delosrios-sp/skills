@@ -104,4 +104,4 @@ Run after ubiquitous-language and domain specs exist (openspec-init step 5):
 2. Installed skills appear in the agent's available skills list
 3. Confirm `openspec/specs/ubiquitous-language/spec.md` exists — terms marked `promote` in discovery become ubiquitous-language delta during specs phase; canonical merge at archive
 4. Smoke-test change: `/opsx:new test-ferspec --schema ferspec`
-5. Confirm `openspec/changes/test-ferspec/` exists with ferspec planning artifacts (proposal, discovery, design, specs, tasks). `tracking.md` is **not** created by `/opsx:new` — autonomous apply only. **Delete the smoke-test change** — `rm -rf openspec/changes/test-ferspec`. Do not archive; it has no spec deltas to merge.
+5. Confirm `openspec/changes/test-ferspec/` exists with ferspec planning artifacts (proposal, discovery, design, specs, tasks). `tracking.md` is **not** created by `/opsx:new` — apply bind writes it when needed. **Delete the smoke-test change** — `rm -rf openspec/changes/test-ferspec`. Do not archive; it has no spec deltas to merge.
