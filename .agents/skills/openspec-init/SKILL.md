@@ -25,7 +25,7 @@ Record the chosen option by `id` (schema dir name, domain slug, yes/no/skip).
   - **Re-init from scratch** — wipe `openspec/schemas/<schema>/` and refresh `openspec/config.yaml`; **preserve** `openspec/specs/` and `openspec/changes/` unless the user gives separate explicit confirmation to delete those. Single gate with clear wording before any destructive action.
 - **Fresh init**: When `openspec/config.yaml` is absent, run [Init path](#init-path) (steps 1–6).
 
-On update, read active schema from `openspec/config.yaml` → `schema:` key. If `openspec/schemas/<schema>/` is missing, stop and offer to copy the schema (init step 2) before continuing update.
+On update, read active schema from `openspec/config.yaml` → `schema:` key for U1 preflight. U2 may change the active schema via user selection. If `openspec/schemas/<schema>/` is missing for the active schema, U2 lists it as not installed locally.
 
 **Never auto-touch on update:** existing `openspec/specs/**` content (except optional missing-only ubiquitous-language backfill) and `openspec/changes/**`.
 
@@ -47,16 +47,24 @@ Run in order. Each diff step requires user ack before write.
 - **Warn-only** when bundle `VERSION` major bumps but graph version is unchanged (prose/template changes; in-flight changes usually safe).
 - Show both version numbers in the pre-overwrite summary.
 
-### U2. Schema refresh
+### U2. Schema selection & refresh
 
-- `diff -ruN` local `openspec/schemas/<schema>/` vs this skill's bundled `schemas/<schema>/`.
-- **_Gate_** — wait for ack.
-- Full replace: copy bundled directory to `openspec/schemas/<schema>/` (overwrites entire schema dir).
+Same schema picker as [init step 2](#2-schema-selection--installation), with per-schema diff status for update.
+
+- **List schemas**: Read subdirectories under this skill's `schemas/` (skip non-schema entries like `README.md`).
+- **Diff status**: For each schema, `diff -ruN` local `openspec/schemas/<name>/` vs bundled `schemas/<name>/`. Record: **identical**, **not installed locally**, or a one-line summary (e.g. "adds UPDATE.md only", "3 files differ").
+- **_Gate_** — one option per bundled schema (`id` = directory name; `detail` = README summary + diff status). Recommend the active schema from `config.yaml`; when it has a non-empty diff, suffix the label with `(Recommended)`.
+- **Apply selection** — set working `<schema>` to the chosen id:
+  - Local missing or differs from bundled → full replace: copy bundled directory to `openspec/schemas/<schema>/`.
+  - **Identical** → skip copy.
+  - Chosen schema ≠ active `schema:` in config → **schema change**; U3 updates `schema:` to the chosen name.
 - Run `openspec schema validate <schema>`.
+- **Completion criterion:** User chose a schema from the list; local dir matches bundled copy (after copy) or was already identical; validation passes.
 
 ### U3. Config refresh
 
 - Build a refreshed `openspec/config.yaml` following `references/config.md`:
+  - Set `schema:` to the schema chosen in U2.
   - **Preserve** existing `context:` verbatim.
   - **Preserve** user-added rule lines not present in the template.
   - **Add** missing artifact keys from the schema's `schema.yaml`.
