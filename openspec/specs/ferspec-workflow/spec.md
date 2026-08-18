@@ -71,7 +71,33 @@ The ferspec apply phase MUST NOT run archive, spec sync, or archive commit. Arch
 
 #### Scenario: Apply does not commit archive output
 
-- **GIVEN** apply-code-changes completes with passing completion gate
+- **GIVEN** apply-code-changes completes with passing verify-fix loop
 - **WHEN** handoff finishes
 - **THEN** apply MUST NOT invoke `/opsx:archive`
 - **AND** MUST NOT commit synced specs or moved archive folders as part of apply
+
+### Requirement: Apply verify-fix loop
+
+The ferspec apply phase MUST run a blocking verify-fix loop before handoff. The agent MUST invoke **openspec-verify-change** or `/opsx:verify` on the verification ref, fix FAILs and warnings autonomously, re-run the verify-aligned completion gate, and repeat until ✅ PASS.
+
+#### Scenario: Verify-fix blocks handoff
+
+- **GIVEN** apply-code-changes has finished implementation tasks
+- **AND** verify-aligned completion gate rows pass
+- **WHEN** `/opsx:verify` or openspec-verify-change reports ❌ FAIL or unresolved warnings
+- **THEN** apply MUST NOT hand off
+- **AND** MUST fix issues and re-run verify-fix until ✅ PASS
+
+#### Scenario: Post-apply verify confirms PASS
+
+- **GIVEN** apply-code-changes reports handoff complete
+- **WHEN** the user runs standalone `/opsx:verify`
+- **THEN** verify MUST confirm ✅ PASS
+- **AND** MUST NOT surface new FAILs or warnings that apply should have fixed
+
+#### Scenario: Worktree verify runs on original branch
+
+- **GIVEN** apply venue is `worktree`
+- **WHEN** verify-aligned gate and verify-fix run
+- **THEN** the agent MUST squash-merge `apply-<name>` to `ORIGINAL_BRANCH` on main repo first
+- **AND** MUST NOT run verify on the worktree checkout

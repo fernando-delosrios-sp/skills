@@ -74,19 +74,33 @@ See [templates/adopters/AGENTS.md.fragment.md](./templates/adopters/AGENTS.md.fr
 
 Invoke **apply-code-changes** when installed; schema carries a minimal fallback. The skill uses the **OpenSpec adapter** by default; **Direct adapter** applies any folder with `tasks.md` (no OpenSpec required).
 
-### Completion gate (blocking)
+### Completion gate — verify-aligned (blocking)
 
-1. All tasks.md checkboxes `[x]`
-2. Canonical test command exit 0
-3. Every Gherkin scenario in delta specs → named automated test
+Re-run after every verify-fix iteration until every row passes:
+
+1. All tasks.md checkboxes `[x]` (including Documentation and Changelog)
+2. Canonical test command from `tasks.md` exit 0; every Gherkin scenario → passing named automated test
+3. Lint/format when `tasks.md` or repo docs name commands — zero new warnings from this change
 4. `openspec validate --all --json` (from `planningHome.root`, with `--store` when set) — all valid
 5. Design decisions reflected in specs (material drift = FAIL)
-6. Changelog task complete (during apply, not archive)
+6. Documentation tasks reflect actual behavior
+7. Changelog task complete (during apply, not archive)
+8. `git status --porcelain` empty on verification ref
+
+**Worktree:** squash `apply-<name>` → `ORIGINAL_BRANCH` on main repo before verify-aligned — never verify on the worktree checkout.
+
+### Verify-fix loop (blocking)
+
+Invoke **openspec-verify-change** or `/opsx:verify` on the verification ref; fix FAILs and warnings; re-run verify-aligned; repeat until ✅ PASS.
+
+**Done when:** standalone `/opsx:verify` after apply would confirm PASS — not surface new FAILs or warnings. Apply owns verify-fix; never defer to the user.
+
+Dropped as planning artifacts: plan, verify.md, retrospective — verify-fix still runs inside apply (no `verify.md` file required).
 
 ### Apply flow
 
 ```text
-venue gate (local | worktree | remote) → bind → execute (incl. Changelog) → gate → handoff
+venue gate → bind → execute (incl. Changelog) → [worktree merge] → verify-aligned → verify-fix → handoff
 ```
 
 - **local** — work on `ORIGINAL_BRANCH`; return control (single) or squash merge (subagent-per-group)
@@ -129,6 +143,7 @@ openspec instructions archive --change "<name>" --json
 | Design | c4-diagram | Optional; 3+ containers |
 | Specs | gherkin-authoring | Gherkin delta specs |
 | Apply | apply-code-changes | **Required for full apply UX**; schema has fallback |
+| Verify-fix | openspec-verify-change (`/opsx:verify`) | Blocking inside apply before handoff |
 | TDD | tdd | Optional invoke; gate requires tests green |
 | Commits | git-commit | Apply + archive commit (archive manual fallback if absent) |
 | Changelog | changelog-generator | During apply |
@@ -144,6 +159,7 @@ openspec instructions archive --change "<name>" --json
 | One-shot planning | `/opsx:ff <name> --schema ferspec` |
 | Continue planning | `/opsx:continue <name>` |
 | Implement | `/opsx:apply <name>` |
+| Re-run verify after interruption | `/opsx:verify <name>` (FAILs → apply verify-fix) |
 | Archive (manual — sync + move + commit) | `/opsx:archive <name>` |
 | Validate | `openspec validate --all --json` (cwd `planningHome.root`; append `--store` when set) |
 
@@ -156,7 +172,7 @@ openspec instructions archive --change "<name>" --json
 | Schema major | `schema.yaml: version: 1` | Graph contract — breaking changes bump this |
 | Bundle release | [VERSION](./VERSION) | SemVer of this bundle |
 
-Current bundle: **1.0.0**
+Current bundle: **1.1.1**
 
 ---
 
