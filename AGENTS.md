@@ -174,12 +174,6 @@ Present forks and confirmations via **structured-choices** — native tool (e.g.
 - When a topic could go deep, **offer to develop it further** — do not unprompted long dissertations or essay-length replies.
 - When you need input, **ask one question at a time** and wait for the answer before the next.
 
-## User gates
-
-When presenting forks, confirmations, or permission pauses, follow the **structured-choices** skill — one gate per message; never duplicate options as numbered lists in chat.
-
-Adapter order (first match wins): **native decision tool** → **`<decision_prompt>` block** → **lettered prose**. Native-tool examples: Cursor `AskQuestion`, `prompt_user_decision`. Full contract and payloads: **structured-choices** skill.
-
 ## Workflow routing (read on session start)
 
 This repo uses the **ferspec** OpenSpec schema. Artifact instructions inject at each `/opsx:*` step; skills carry execution detail.

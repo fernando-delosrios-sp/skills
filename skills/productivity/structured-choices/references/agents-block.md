@@ -1,6 +1,6 @@
 # AGENTS.md blocks
 
-Canonical User gates text for **Install**. Keep in sync with ferspec `AGENTS.md.fragment.md` User gates section.
+Canonical User gates text for **structured-choices Install**. The ferspec adopters fragment omits User gates — Install owns that content after setup-matt-pocock-skills.
 
 ## Standalone — `## User gates`
 

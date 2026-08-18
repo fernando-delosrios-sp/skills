@@ -8,11 +8,7 @@
 - When a topic could go deep, **offer to develop it further** — do not unprompted long dissertations or essay-length replies.
 - When you need input, **ask one question at a time** and wait for the answer before the next.
 
-## User gates
-
-When presenting forks, confirmations, or permission pauses, follow the **structured-choices** skill — one gate per message; never duplicate options as numbered lists in chat.
-
-Adapter order (first match wins): **native decision tool** → **`<decision_prompt>` block** → **lettered prose**. Native-tool examples: Cursor `AskQuestion`, `prompt_user_decision`. Full contract and payloads: **structured-choices** skill.
+<!-- User gates: structured-choices Install owns AGENTS.md / CLAUDE.md User gates (### under Agent skills, or ## standalone). Run install after setup-matt-pocock-skills. -->
 
 ## Workflow routing (read on session start)
 
