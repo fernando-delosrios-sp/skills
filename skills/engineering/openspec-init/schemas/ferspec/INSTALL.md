@@ -68,7 +68,7 @@ npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills
 | architecture-decision-records | discovery | domain-modeling; grill-with-docs ADR side effects |
 | gherkin-authoring | specs | schema.yaml |
 | c4-diagram | design | schema.yaml |
-| git-commit | apply | schema.yaml |
+| git-commit | apply, archive | schema.yaml; archive commit (manual fallback if absent) |
 | changelog-generator | tasks, apply | schema.yaml; git-commit |
 | tdd | apply | schema.yaml |
 | codebase-design | apply | tdd (seam / interface vocabulary) |

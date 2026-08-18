@@ -97,13 +97,27 @@ Parallelism is agent-chosen (same criteria all venues). Archive is **never** par
 
 ### Archive (manual)
 
-After PR merge or when interactive work is ready:
+After PR merge or when interactive work is ready. User runs `/opsx:archive` themselves — **never** part of apply.
+
+`/opsx:archive` MUST run the full sequence — sync, move, **commit**, gate. Archive is incomplete until the post-commit gate passes (including when re-running on a change already moved under `archive/` with uncommitted spec sync on disk).
 
 ```text
-sync → archive change → commit archive output
+sync → archive move → commit archive output → post-commit gate
 ```
 
-User runs `/opsx:archive` themselves.
+Load advisory steps first:
+
+```bash
+openspec instructions archive --change "<name>" --json
+```
+
+| Sub-step | Action |
+|---|---|
+| **A** | Built-in `/opsx:archive` steps 1–5: artifact/task checks, delta spec sync assessment, sync if chosen, move to `openspec/changes/archive/YYYY-MM-DD-<name>/` |
+| **B** | **Commit archive output** (required — CLI does NOT commit): `git status --porcelain` → if non-empty, stage `openspec/specs/` + `openspec/changes/` (+ any sync paths) → invoke **git-commit** via Skill tool, or conventional commit manually if skill absent (e.g. `docs(openspec): archive <change-name> and sync specs`) |
+| **C** | **Post-commit gate** (blocking): `git status --porcelain` empty; when change is under `archive/`, confirm latest commit includes synced specs and archive folder: `git log -1 --name-only -- openspec/specs/ openspec/changes/archive/` |
+
+> Skipping **B** because `git-commit` is missing is a schema violation — use the manual fallback instead.
 
 ---
 
@@ -116,7 +130,7 @@ User runs `/opsx:archive` themselves.
 | Specs | gherkin-authoring | Gherkin delta specs |
 | Apply | apply-code-changes | **Required for full apply UX**; schema has fallback |
 | TDD | tdd | Optional invoke; gate requires tests green |
-| Commits | git-commit | Spec drift warn + user ack |
+| Commits | git-commit | Apply + archive commit (archive manual fallback if absent) |
 | Changelog | changelog-generator | During apply |
 | PR (remote venue) | gh / issue-tracker doc | Via apply-code-changes |
 
@@ -130,7 +144,7 @@ User runs `/opsx:archive` themselves.
 | One-shot planning | `/opsx:ff <name> --schema ferspec` |
 | Continue planning | `/opsx:continue <name>` |
 | Implement | `/opsx:apply <name>` |
-| Archive (manual) | `/opsx:archive <name>` |
+| Archive (manual — sync + move + commit) | `/opsx:archive <name>` |
 | Validate | `openspec validate --all --json` (cwd `planningHome.root`; append `--store` when set) |
 
 ---
@@ -142,7 +156,7 @@ User runs `/opsx:archive` themselves.
 | Schema major | `schema.yaml: version: 1` | Graph contract — breaking changes bump this |
 | Bundle release | [VERSION](./VERSION) | SemVer of this bundle |
 
-Current bundle: **1.0.0**
+Current bundle: **1.1.0**
 
 ---
 

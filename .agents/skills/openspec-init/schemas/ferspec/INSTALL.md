@@ -34,7 +34,7 @@ When a file exists:
 
 1. Ask the user for permission to append the routing fragment.
 2. Read `openspec/schemas/ferspec/templates/adopters/AGENTS.md.fragment.md`.
-3. Append as a new section at the end.
+3. Append fragment sections at the end (Agent communication and Workflow routing).
 
 ## Skills (openspec-init step 6)
 
@@ -68,7 +68,7 @@ npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills
 | architecture-decision-records | discovery | domain-modeling; grill-with-docs ADR side effects |
 | gherkin-authoring | specs | schema.yaml |
 | c4-diagram | design | schema.yaml |
-| git-commit | apply | schema.yaml |
+| git-commit | apply, archive | schema.yaml; archive commit (manual fallback if absent) |
 | changelog-generator | tasks, apply | schema.yaml; git-commit |
 | tdd | apply | schema.yaml |
 | codebase-design | apply | tdd (seam / interface vocabulary) |
@@ -78,7 +78,7 @@ npx skills add fernando-delosrios-sp/skills --skill setup-matt-pocock-skills
 
 If the user skips skills from this list, note which phases lose skill-backed behavior and which fallbacks apply.
 
-**structured-choices only** — when the ferspec fragment was not merged, invoke **structured-choices install** (or say `install structured-choices`) to wire User gates into `AGENTS.md` / `CLAUDE.md`.
+**User gates** — after **setup-matt-pocock-skills**, invoke **structured-choices install** (or say `install structured-choices`) to wire User gates into `AGENTS.md` / `CLAUDE.md`. The fragment does not include User gates; Install owns that content.
 
 **Post-install setup** — run once after all skills above are installed:
 

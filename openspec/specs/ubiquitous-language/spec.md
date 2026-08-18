@@ -135,6 +135,28 @@ The glossary SHALL define **Runtime visibility**, **Tier-1 visibility**, **Tier-
 - **THEN** all five term entries MUST appear under Term entries
 - **AND** each entry MUST follow the Term entry format (Context, Definition, Aliases, Notes)
 
+### Requirement: Archive post-commit gate term
+
+The ubiquitous language spec MUST define **Archive post-commit gate** as the blocking verification after archive commit: empty working tree and latest commit includes synced specs and archive folder paths.
+
+#### Scenario: Term used in ferspec archive docs
+
+- **GIVEN** ferspec README or agent routing references archive completion
+- **WHEN** the archive post-commit gate is described
+- **THEN** documentation MUST use **Archive post-commit gate** consistently
+- **AND** MUST NOT describe archive as complete without this gate passing
+
+### Requirement: Operation guidance term
+
+The ubiquitous language spec MUST define **Operation guidance** as advisory strings from `openspec/config.yaml` per-operation `guidance` arrays, loaded by `openspec instructions archive` or apply.
+
+#### Scenario: Term distinguishes from schema instructions
+
+- **GIVEN** ferspec archive commit steps are documented
+- **WHEN** referring to config-driven archive strings
+- **THEN** documentation MUST use **Operation guidance**
+- **AND** MUST NOT conflate with `schema.yaml` apply instruction blocks
+
 ## Term entries
 
 ### Term: Skill
@@ -268,4 +290,16 @@ The glossary SHALL define **Runtime visibility**, **Tier-1 visibility**, **Tier-
 **Definition**: The third tooling table in `configuration.md` mapping CLIs and MCPs used to execute tier-1 and tier-2 read paths, verified for platform access during `arm visibility`.
 **Aliases**: feedback tooling, visibility tooling
 **Notes**: Distinct from Deploy tooling and Collection tooling.
+
+### Term: Archive post-commit gate
+**Context**: ferspec-workflow
+**Definition**: Blocking verification after archive commit — empty `git status --porcelain` and the latest commit includes synced specs plus archive folder paths under `openspec/changes/archive/`.
+**Aliases**: none
+**Notes**: Archive MUST NOT be reported complete until this gate passes. Avoid describing archive as "done" without commit and gate.
+
+### Term: Operation guidance
+**Context**: ferspec-workflow / openspec-config
+**Definition**: Advisory strings from `openspec/config.yaml` per-operation `guidance` arrays (e.g. `operations.archive.guidance`), loaded by `openspec instructions archive --change "<name>" --json` and surfaced as `operationGuidance` for workflow agents.
+**Aliases**: archive guidance
+**Notes**: Distinct from `schema.yaml` apply instruction blocks. Agents treat applicable guidance as additive to built-in workflow steps.
 

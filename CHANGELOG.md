@@ -7,6 +7,7 @@ All notable changes to this skills collection are documented here.
 ### ✨ New Features
 
 - **git-commit private-data gate** — Mandatory staged-diff scan for secrets, PII, and sensitive local paths before commit; halts with structured-choices gate listing flagged files and signal types (never values).
+- **ferspec 1.1.0 archive commit** — Archive phase now requires commit and post-commit gate after sync/move; `operations.archive.guidance` in config surfaces steps via `openspec instructions archive`.
 
 ---
 
