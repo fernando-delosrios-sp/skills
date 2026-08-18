@@ -2,6 +2,14 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-08-18
+
+### ✨ New Features
+
+- **git-commit private-data gate** — Mandatory staged-diff scan for secrets, PII, and sensitive local paths before commit; halts with structured-choices gate listing flagged files and signal types (never values).
+
+---
+
 ## 2026-08-17
 
 ### ✨ New Features
