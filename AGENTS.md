@@ -162,7 +162,7 @@ OpenSpec mode — vocabulary in `openspec/specs/ubiquitous-language/spec.md`; AD
 
 ### User gates
 
-Present forks and confirmations via **structured-choices** — call the host's question tool (Cursor: `AskQuestion`) as your first move, since the call is the check; one gate per message, options never as prose lists. Fall back to plain prose once a call has failed, never to `<decision_prompt>` JSON.
+Present forks and confirmations via **structured-choices** — a gate is a call to the host's question tool (Cursor: `AskQuestion`), made as your first move since the call is the check; one gate per message, options never as prose lists.
 
 <!-- Source: ferspec/templates/adopters/AGENTS.md.fragment.md -->
 <!-- Drop this section into your project's AGENTS.md so agents route future work using this schema correctly. -->

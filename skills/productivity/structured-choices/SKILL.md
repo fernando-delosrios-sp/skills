@@ -62,9 +62,26 @@ At each **_gate_** — a fork, confirmation, or permission pause before you proc
 
 ### Emit the gate
 
-**Call the host's question tool** — Cursor names it `AskQuestion`, other hosts `prompt_user_decision`. Call it as your first move: **the call is the check**. Assume the tool is there and let the host prove otherwise; a belief about your own tool list is not evidence, and only a real call renders buttons. Field mapping: [`payload-examples.md`](references/payload-examples.md#adapter-mapping).
+The gate **is** a call to the host's question tool — Cursor names it `AskQuestion`, other hosts `prompt_user_decision`. Make the call your first move: **the call is the check**, and its result is the only evidence about the tool that exists. Emit this, with your own question and options:
 
-**Once a call has failed** — and only then — ask in plain prose: the question, one short line per option, and halt. State the fallback in one line about what you are doing ("Answer in text and I'll continue"), leaving host plumbing out of it. Keep the `<decision_prompt>` block ([contract](references/payload-examples.md#universal-contract)) for hosts that actually parse it — to a human it is unreadable JSON.
+```json
+{
+  "questions": [
+    {
+      "id": "issue-tracker",
+      "prompt": "Where should issues live for this repo?",
+      "options": [
+        { "id": "github", "label": "GitHub (Recommended)", "detail": "Remote already points there" },
+        { "id": "local-md", "label": "Local markdown", "detail": "Tracked in .scratch/" }
+      ]
+    }
+  ]
+}
+```
+
+More shapes — multi-select, confirm, grilling rounds — and field mapping for other hosts: [`payload-examples.md`](references/payload-examples.md#adapter-mapping).
+
+**A call that came back as an error** — read [`fallback.md`](references/fallback.md) and follow it.
 
 ### Carve-outs
 
