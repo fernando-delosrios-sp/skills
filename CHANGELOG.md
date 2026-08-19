@@ -8,6 +8,7 @@ All notable changes to this skills collection are documented here.
 
 - **structured-choices native-tool routing** — Gates now instruct a question-tool call (Cursor `AskQuestion`) as the primary path; the `<decision_prompt>` contract moved into `references/payload-examples.md` so the inert block is no longer the most concrete option in the skill body. `openspec-init` and the AGENTS.md User gates block delegate routing instead of restating the adapter ladder.
 - **structured-choices no-discovery, prose fallback** — Call the host question tool directly when it is in the tool list (no discovery or wrapper). If none is listed, ask in plain prose; keep `<decision_prompt>` JSON only for hosts that parse it.
+- **structured-choices call-is-the-check** — The prose fallback now triggers on a failed tool call instead of the agent's own read of its tool list, which was producing false "no interactive question tool in this session" messages in Cursor. Fallback wording drops the host-plumbing explanation. AGENTS.md User gates blocks carry the same rule.
 
 ---
 

@@ -62,9 +62,9 @@ At each **_gate_** — a fork, confirmation, or permission pause before you proc
 
 ### Emit the gate
 
-**Call the host's question tool** — Cursor names it `AskQuestion`, other hosts `prompt_user_decision`. If one is in your tool list, call it directly: no discovery step, no wrapper, no probing other tools first. Only a tool call renders real buttons, so it wins whenever one exists. Field mapping: [`payload-examples.md`](references/payload-examples.md#adapter-mapping).
+**Call the host's question tool** — Cursor names it `AskQuestion`, other hosts `prompt_user_decision`. Call it as your first move: **the call is the check**. Assume the tool is there and let the host prove otherwise; a belief about your own tool list is not evidence, and only a real call renders buttons. Field mapping: [`payload-examples.md`](references/payload-examples.md#adapter-mapping).
 
-**No question tool in your tool list** — say so in one line, then ask in plain prose: the question, one short line per option, and halt. Keep the `<decision_prompt>` block ([contract](references/payload-examples.md#universal-contract)) for hosts that actually parse it — to a human it is unreadable JSON.
+**Once a call has failed** — and only then — ask in plain prose: the question, one short line per option, and halt. State the fallback in one line about what you are doing ("Answer in text and I'll continue"), leaving host plumbing out of it. Keep the `<decision_prompt>` block ([contract](references/payload-examples.md#universal-contract)) for hosts that actually parse it — to a human it is unreadable JSON.
 
 ### Carve-outs
 
