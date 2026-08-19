@@ -1,8 +1,10 @@
-# Question tool payloads
+# Cursor `AskQuestion` payloads
 
-Call shapes for the host's question tool. Cursor `AskQuestion` is the reference host — every example below is a literal argument object for it. Other hosts take the same content through [Adapter mapping](#adapter-mapping).
+Call shapes for a gate in Cursor. Each block below is a literal argument object for `AskQuestion`.
 
-Cursor options carry `id` and `label` only. Anything explanatory rides inside the `label`, since an unknown property can be rejected and cost you the gate.
+An option carries `id` and `label` only, so anything explanatory rides inside the `label` — an unrecognised property can be rejected and cost you the gate.
+
+Running on another host: [`other-hosts.md`](other-hosts.md).
 
 ## Single choice
 
@@ -42,6 +44,8 @@ Two options, recommended first.
 ```
 
 ## Multi-select
+
+`allow_multiple` lets the user pick more than one option.
 
 ```json
 {
@@ -93,17 +97,6 @@ One gate per grilling round — one `questions` entry per frontier decision. The
 
 Record each answer by question `id` and option `id` before recomputing the frontier.
 
-## Adapter mapping
+## Free-text answers
 
-| Need | Cursor `AskQuestion` | Generic decision tool |
-| --- | --- | --- |
-| The question | `questions[].prompt` | `prompt_text` |
-| Option value | `options[].id` | `options[].value` |
-| Option display | `options[].label` | `options[].label` |
-| Explanatory detail | fold into `label` | `options[].description` |
-| Several answers | `allow_multiple: true` | `input_type: "select"` + multi flag |
-| Confirm | two-option question | `input_type: "confirm_dialog"` |
-| Free-text answer | built-in "Other" (always available) | `allow_custom_input` param |
-| Round of questions | `questions` array | repeat gate or host-specific batch API |
-
-After the user responds, map their selection back to `id` before continuing.
+Cursor always offers the user an "Other" escape hatch, so a gate accepts a typed answer without any extra field. Map whatever they type back to an option `id` where it fits, or treat it as a new constraint where it does not.

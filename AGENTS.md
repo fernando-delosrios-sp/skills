@@ -162,7 +162,7 @@ OpenSpec mode — vocabulary in `openspec/specs/ubiquitous-language/spec.md`; AD
 
 ### User gates
 
-Present forks and confirmations via **structured-choices** — a gate is a call to the host's question tool (Cursor: `AskQuestion`), made as your first move since the call is the check; one gate per message, options never as prose lists.
+Present forks and confirmations via **structured-choices** — a gate is a direct call to the question tool (in Cursor, built-in `AskQuestion`, invoked like `Read` or `Grep`), made as your first move because the call itself is the check, not your reading of the tool list; one gate per message, options carried by the call.
 
 <!-- Source: ferspec/templates/adopters/AGENTS.md.fragment.md -->
 <!-- Drop this section into your project's AGENTS.md so agents route future work using this schema correctly. -->
