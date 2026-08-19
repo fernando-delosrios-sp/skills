@@ -1,6 +1,23 @@
 # Payload examples
 
-Universal `<decision_prompt>` shapes and platform adapter mapping.
+Universal `<decision_prompt>` shapes and platform adapter mapping. Hosts with a question tool (Cursor `AskQuestion`) call that tool instead — see [Adapter mapping](#adapter-mapping).
+
+## Universal contract
+
+```markdown
+<decision_prompt>
+{
+  "type": "button_group",
+  "question": "<one sentence>",
+  "options": [
+    { "id": "<value>", "label": "<display> (Recommended)", "detail": "<optional>" }
+  ],
+  "allow_custom_input": true,
+  "recommended": "<id>"
+}
+```
+
+`type`: `button_group` | `select` | `confirm_dialog` | `multi_select`
 
 ## Schema selection
 

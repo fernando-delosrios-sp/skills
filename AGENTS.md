@@ -162,7 +162,7 @@ OpenSpec mode — vocabulary in `openspec/specs/ubiquitous-language/spec.md`; AD
 
 ### User gates
 
-Present forks and confirmations via **structured-choices** — native tool (e.g. Cursor `AskQuestion`), `<decision_prompt>`, or lettered prose per that skill's adapter order.
+Present forks and confirmations via **structured-choices** — call the host's question tool (Cursor: `AskQuestion`); one gate per message, options never as prose lists.
 
 <!-- Source: ferspec/templates/adopters/AGENTS.md.fragment.md -->
 <!-- Drop this section into your project's AGENTS.md so agents route future work using this schema correctly. -->

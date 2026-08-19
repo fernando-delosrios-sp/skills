@@ -122,7 +122,7 @@
     "openspec-init": {
       "source": ".",
       "sourceType": "local",
-      "computedHash": "f87328a892b1c702e303dd0a347438fc4f583d8b6f8c751e4c1aeddff3d3116e"
+      "computedHash": "fd624c45c907bfc9f6c9376c3df18ee28d63534005edfe1ffd409327770c4865"
     },
     "risen-prompt": {
       "source": ".",

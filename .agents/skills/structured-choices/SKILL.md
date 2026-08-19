@@ -39,7 +39,7 @@ Show the section draft. After confirmation, write to the target file. Report whi
 
 ## Gates (runtime)
 
-At each **_gate_** — a fork, confirmation, or permission pause before you proceed — present choices structurally. Options live in a tool call or `<decision_prompt>` block, not as numbered prose the user must retype.
+At each **_gate_** — a fork, confirmation, or permission pause before you proceed — present choices structurally. Options live in a question-tool call, not as numbered prose the user must retype.
 
 ### When to gate
 
@@ -55,37 +55,16 @@ At each **_gate_** — a fork, confirmation, or permission pause before you proc
 - **One gate per assistant message** — halt until the user responds. A gate may contain multiple questions when another skill composes it (e.g. grilling rounds).
 - **Two or more fixed options** — do not fake a choice.
 - **Record by `id`** — proceed using the option `id`, not paraphrased label text.
-- **Recommended first** — mark the suggested option in `label` with `(Recommended)` and in `recommended`.
+- **Recommended first** — list the suggested option first and suffix its `label` with `(Recommended)`.
 - **No duplicate lists** — never also print "1. foo 2. bar" in prose when using a tool or block.
 
 **Candidate count:** 1 match → inline one-line confirm; 2+ matches → full gate.
 
-### Platform adapters
+### Emit the gate
 
-Check top to bottom; use the first that applies:
+**Call the host's question tool** — Cursor names it `AskQuestion`, other hosts `prompt_user_decision`. Scan the tools available to you for one that presents choices to the user and match on that behaviour, not on the exact name: names drift between hosts and versions. Only a tool call renders real buttons, so it wins whenever one exists. Field mapping: [`payload-examples.md`](references/payload-examples.md#adapter-mapping).
 
-1. **Native decision tool** — if the tool catalog includes `AskQuestion`, `prompt_user_decision`, or any tool that presents interactive choices, call it with fields mapped from the universal contract below.
-2. **Universal block** — emit one `<decision_prompt>` JSON block (see [`references/payload-examples.md`](references/payload-examples.md)); halt immediately after the closing tag.
-3. **Minimal prose fallback** — only when structured output is impossible: short question plus lettered options on separate lines; still halt.
-
-### Universal contract
-
-```markdown
-<decision_prompt>
-{
-  "type": "button_group",
-  "question": "<one sentence>",
-  "options": [
-    { "id": "<value>", "label": "<display> (Recommended)", "detail": "<optional>" }
-  ],
-  "allow_custom_input": true,
-  "recommended": "<id>"
-}
-```
-
-`type`: `button_group` | `select` | `confirm_dialog` | `multi_select`
-
-More examples and adapter field mapping: [`references/payload-examples.md`](references/payload-examples.md).
+**Host with no question tool** — emit one `<decision_prompt>` block per the contract in [`payload-examples.md`](references/payload-examples.md#universal-contract) and halt right after the closing tag. Where structured output is impossible too, ask with lettered options on separate lines, and halt.
 
 ### Carve-outs
 
