@@ -20,4 +20,20 @@ Map the answer back to an option `id` before continuing, exactly as with a tool 
 
 ## Hosts that parse the contract
 
-A host that consumes `<decision_prompt>` JSON ([contract](payload-examples.md#universal-contract)) gets that block instead. To every other reader it is unreadable JSON, so it stays out of a human-facing gate.
+A host you know consumes `<decision_prompt>` JSON gets the block below instead of the prose above. Everyone else reads it as unreadable JSON, so a human-facing gate stays with prose.
+
+```markdown
+<decision_prompt>
+{
+  "type": "button_group",
+  "question": "<one sentence>",
+  "options": [
+    { "id": "<value>", "label": "<display> (Recommended)", "detail": "<optional>" }
+  ],
+  "allow_custom_input": true,
+  "recommended": "<id>"
+}
+</decision_prompt>
+```
+
+`type`: `button_group` | `select` | `confirm_dialog` | `multi_select`

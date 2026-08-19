@@ -1,76 +1,69 @@
-# Payload examples
+# Question tool payloads
 
-Universal `<decision_prompt>` shapes and platform adapter mapping. Hosts with a question tool (Cursor `AskQuestion`) call that tool instead — see [Adapter mapping](#adapter-mapping).
+Call shapes for the host's question tool. Cursor `AskQuestion` is the reference host — every example below is a literal argument object for it. Other hosts take the same content through [Adapter mapping](#adapter-mapping).
 
-## Universal contract
+Cursor options carry `id` and `label` only. Anything explanatory rides inside the `label`, since an unknown property can be rejected and cost you the gate.
 
-```markdown
-<decision_prompt>
-{
-  "type": "button_group",
-  "question": "<one sentence>",
-  "options": [
-    { "id": "<value>", "label": "<display> (Recommended)", "detail": "<optional>" }
-  ],
-  "allow_custom_input": true,
-  "recommended": "<id>"
-}
-```
-
-`type`: `button_group` | `select` | `confirm_dialog` | `multi_select`
-
-## Schema selection
+## Single choice
 
 ```json
 {
-  "type": "button_group",
-  "question": "Which OpenSpec schema should we install?",
-  "options": [
-    { "id": "superpowers-bridge", "label": "superpowers-bridge (Recommended)", "detail": "OpenSpec + Superpowers orchestration" },
-    { "id": "minimalist", "label": "minimalist", "detail": "Fast spec-to-tasks path" },
-    { "id": "behaviour-driven", "label": "behaviour-driven", "detail": "Gherkin-style specs" }
-  ],
-  "allow_custom_input": true,
-  "recommended": "superpowers-bridge"
+  "questions": [
+    {
+      "id": "schema",
+      "prompt": "Which OpenSpec schema should we install?",
+      "options": [
+        { "id": "superpowers-bridge", "label": "superpowers-bridge — OpenSpec + Superpowers orchestration (Recommended)" },
+        { "id": "minimalist", "label": "minimalist — fast spec-to-tasks path" },
+        { "id": "behaviour-driven", "label": "behaviour-driven — Gherkin-style specs" }
+      ]
+    }
+  ]
 }
 ```
 
-## Permission confirm
+## Confirm
+
+Two options, recommended first.
 
 ```json
 {
-  "type": "confirm_dialog",
-  "question": "Install recommended behavioral skills for this schema?",
-  "options": [
-    { "id": "yes", "label": "Yes, install (Recommended)" },
-    { "id": "skip", "label": "Skip — I will install manually" }
-  ],
-  "allow_custom_input": false,
-  "recommended": "yes"
+  "questions": [
+    {
+      "id": "install-skills",
+      "prompt": "Install recommended behavioral skills for this schema?",
+      "options": [
+        { "id": "yes", "label": "Yes, install (Recommended)" },
+        { "id": "skip", "label": "Skip — I will install manually" }
+      ]
+    }
+  ]
 }
 ```
 
-## Multi-select domains
+## Multi-select
 
 ```json
 {
-  "type": "multi_select",
-  "question": "Confirm the domain specs to create (select all that apply):",
-  "options": [
-    { "id": "billing", "label": "billing", "detail": "Payments and subscriptions" },
-    { "id": "identity", "label": "identity", "detail": "Auth and users" },
-    { "id": "catalog", "label": "catalog", "detail": "Products and inventory" }
-  ],
-  "allow_custom_input": true,
-  "recommended": null
+  "title": "Domain specs",
+  "questions": [
+    {
+      "id": "domains",
+      "prompt": "Confirm the domain specs to create:",
+      "allow_multiple": true,
+      "options": [
+        { "id": "billing", "label": "billing — payments and subscriptions" },
+        { "id": "identity", "label": "identity — auth and users" },
+        { "id": "catalog", "label": "catalog — products and inventory" }
+      ]
+    }
+  ]
 }
 ```
 
-## Grilling round (multi-question)
+## Multi-question round
 
-One gate per round — map each frontier decision to a question. Cursor `AskQuestion` accepts a `questions` array; universal block uses a wrapper when the host has no native multi-question tool.
-
-**Cursor `AskQuestion` (preferred):**
+One gate per grilling round — one `questions` entry per frontier decision. The user answers each in sequence inside the single gate.
 
 ```json
 {
@@ -81,35 +74,20 @@ One gate per round — map each frontier decision to a question. Cursor `AskQues
       "prompt": "How should unauthenticated users reach the dashboard?",
       "options": [
         { "id": "redirect-login", "label": "Redirect to login (Recommended)" },
-        { "id": "public-readonly", "label": "Public read-only view", "detail": "Show cached summary without PII" },
-        { "id": "block-404", "label": "Return 404", "detail": "Hide existence of dashboard" }
+        { "id": "public-readonly", "label": "Public read-only view — cached summary, no PII" },
+        { "id": "block-404", "label": "Return 404 — hide that the dashboard exists" }
       ]
     },
     {
       "id": "session-store",
       "prompt": "Where should sessions live?",
       "options": [
-        { "id": "redis", "label": "Redis (Recommended)", "detail": "Shared across app instances" },
-        { "id": "cookie", "label": "Signed cookie", "detail": "Stateless; size limits apply" },
-        { "id": "postgres", "label": "Postgres", "detail": "Reuse existing DB; heavier ops" }
+        { "id": "redis", "label": "Redis — shared across app instances (Recommended)" },
+        { "id": "cookie", "label": "Signed cookie — stateless; size limits apply" },
+        { "id": "postgres", "label": "Postgres — reuse existing DB; heavier ops" }
       ]
     }
   ]
-}
-```
-
-**Session completion (`confirm_dialog`):**
-
-```json
-{
-  "type": "confirm_dialog",
-  "question": "Frontier is empty — do we have shared understanding on this plan?",
-  "options": [
-    { "id": "yes", "label": "Yes, we align (Recommended)" },
-    { "id": "no", "label": "No — keep grilling" }
-  ],
-  "allow_custom_input": false,
-  "recommended": "yes"
 }
 ```
 
@@ -117,15 +95,15 @@ Record each answer by question `id` and option `id` before recomputing the front
 
 ## Adapter mapping
 
-| Universal field | Cursor `AskQuestion` | Generic decision tool |
+| Need | Cursor `AskQuestion` | Generic decision tool |
 | --- | --- | --- |
-| `question` | `prompt` | `prompt_text` |
-| `options[].id` | option `id` | `options[].value` |
-| `options[].label` | option `label` | `options[].label` |
-| `options[].detail` | (append to label or omit) | `options[].description` |
-| `multi_select` type | `allow_multiple: true` | `input_type: "select"` + multi flag |
-| `confirm_dialog` type | two-option `AskQuestion` | `input_type: "confirm_dialog"` |
-| `allow_custom_input` | built-in "Other" (always available) | `allow_custom_input` param |
-| Multi-question round | `questions` array (one entry per frontier item) | repeat gate or host-specific batch API |
+| The question | `questions[].prompt` | `prompt_text` |
+| Option value | `options[].id` | `options[].value` |
+| Option display | `options[].label` | `options[].label` |
+| Explanatory detail | fold into `label` | `options[].description` |
+| Several answers | `allow_multiple: true` | `input_type: "select"` + multi flag |
+| Confirm | two-option question | `input_type: "confirm_dialog"` |
+| Free-text answer | built-in "Other" (always available) | `allow_custom_input` param |
+| Round of questions | `questions` array | repeat gate or host-specific batch API |
 
 After the user responds, map their selection back to `id` before continuing.

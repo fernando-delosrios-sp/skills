@@ -62,7 +62,7 @@ At each **_gate_** — a fork, confirmation, or permission pause before you proc
 
 ### Emit the gate
 
-The gate **is** a call to the host's question tool — Cursor names it `AskQuestion`, other hosts `prompt_user_decision`. Make the call your first move: **the call is the check**, and its result is the only evidence about the tool that exists. Emit this, with your own question and options:
+The gate **is** a call to the host's question tool — Cursor names it `AskQuestion`, other hosts `prompt_user_decision`. Make the call your first move: **the call is the check**, and its result is the only evidence about the tool that exists. Cursor takes exactly this, with your own question and options:
 
 ```json
 {
@@ -71,15 +71,15 @@ The gate **is** a call to the host's question tool — Cursor names it `AskQuest
       "id": "issue-tracker",
       "prompt": "Where should issues live for this repo?",
       "options": [
-        { "id": "github", "label": "GitHub (Recommended)", "detail": "Remote already points there" },
-        { "id": "local-md", "label": "Local markdown", "detail": "Tracked in .scratch/" }
+        { "id": "github", "label": "GitHub — the remote already points there (Recommended)" },
+        { "id": "local-md", "label": "Local markdown — files under .scratch/" }
       ]
     }
   ]
 }
 ```
 
-More shapes — multi-select, confirm, grilling rounds — and field mapping for other hosts: [`payload-examples.md`](references/payload-examples.md#adapter-mapping).
+An option carries `id` and `label` only; explanation goes inside the `label`. More shapes — confirm, multi-select, grilling rounds — and field mapping for other hosts: [`payload-examples.md`](references/payload-examples.md).
 
 **A call that came back as an error** — read [`fallback.md`](references/fallback.md) and follow it.
 
