@@ -39,7 +39,7 @@ Show the section draft. After confirmation, write to the target file. Report whi
 
 ## Gates (runtime)
 
-At each **_gate_** — a fork, confirmation, or permission pause before you proceed — present choices structurally. Options live in a question-tool call, not as numbered prose the user must retype.
+At each **_gate_** — a fork, confirmation, or permission pause before you proceed — the choices reach the user through the host's question tool, as buttons they click.
 
 ### When to gate
 
@@ -48,7 +48,7 @@ At each **_gate_** — a fork, confirmation, or permission pause before you proc
 - Permission pauses (install packages/skills, modify config)
 - Ambiguous requirements the request or codebase cannot resolve
 
-**Skip the gate** when only one sensible path exists, the question is genuinely open-ended ("What should I call you?"), or the host is non-interactive (CI) — pick a documented default and note the assumption.
+**Skip the gate** when only one sensible path exists, the question is genuinely open-ended ("What should I call you?"), or no question tool answered the call — pick a documented default, state the assumption in one line, and carry on. A host that cannot take a gate gets a decision, not a questionnaire.
 
 ### Gate rules
 
@@ -56,7 +56,7 @@ At each **_gate_** — a fork, confirmation, or permission pause before you proc
 - **Two or more fixed options** — do not fake a choice.
 - **Record by `id`** — proceed using the option `id`, not paraphrased label text.
 - **Recommended first** — list the suggested option first and suffix its `label` with `(Recommended)`.
-- **No duplicate lists** — never also print "1. foo 2. bar" in prose when using a tool or block.
+- **One rendering per gate** — the call carries the options; the message beside it says only why you are asking.
 
 **Candidate count:** 1 match → inline one-line confirm; 2+ matches → full gate.
 
@@ -81,7 +81,7 @@ The gate **is** a call to the host's question tool — Cursor names it `AskQuest
 
 An option carries `id` and `label` only; explanation goes inside the `label`. More shapes — confirm, multi-select, grilling rounds — and field mapping for other hosts: [`payload-examples.md`](references/payload-examples.md).
 
-**A call that came back as an error** — read [`fallback.md`](references/fallback.md) and follow it.
+A gate reaches the user as a tool call and in no other form. Text that imitates a gate — a lettered list, a JSON block pasted into the message — asks the user to retype what a button would have captured, which is the cost this skill exists to remove.
 
 ### Carve-outs
 
