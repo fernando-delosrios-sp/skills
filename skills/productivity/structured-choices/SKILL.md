@@ -62,9 +62,9 @@ At each **_gate_** — a fork, confirmation, or permission pause before you proc
 
 ### Emit the gate
 
-**Call the host's question tool** — Cursor names it `AskQuestion`, other hosts `prompt_user_decision`. Scan the tools available to you for one that presents choices to the user and match on that behaviour, not on the exact name: names drift between hosts and versions. Only a tool call renders real buttons, so it wins whenever one exists. Field mapping: [`payload-examples.md`](references/payload-examples.md#adapter-mapping).
+**Call the host's question tool** — Cursor names it `AskQuestion`, other hosts `prompt_user_decision`. If one is in your tool list, call it directly: no discovery step, no wrapper, no probing other tools first. Only a tool call renders real buttons, so it wins whenever one exists. Field mapping: [`payload-examples.md`](references/payload-examples.md#adapter-mapping).
 
-**Host with no question tool** — emit one `<decision_prompt>` block per the contract in [`payload-examples.md`](references/payload-examples.md#universal-contract) and halt right after the closing tag. Where structured output is impossible too, ask with lettered options on separate lines, and halt.
+**No question tool in your tool list** — say so in one line, then ask in plain prose: the question, one short line per option, and halt. Keep the `<decision_prompt>` block ([contract](references/payload-examples.md#universal-contract)) for hosts that actually parse it — to a human it is unreadable JSON.
 
 ### Carve-outs
 

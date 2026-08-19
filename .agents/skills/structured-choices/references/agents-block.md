@@ -11,7 +11,7 @@ Use when the target file has no `## Agent skills` section. Append at end, or upd
 
 When presenting forks, confirmations, or permission pauses, follow the **structured-choices** skill — one gate per message; never duplicate options as numbered lists in chat.
 
-Call the host's question tool — Cursor `AskQuestion`, elsewhere `prompt_user_decision` or whatever tool presents choices to the user. Hosts without one fall back per the **structured-choices** skill.
+Call the host's question tool directly — Cursor `AskQuestion`, elsewhere `prompt_user_decision` — with no discovery step first. If none is in your tool list, ask in plain prose, never as `<decision_prompt>` JSON.
 ```
 
 ## Under Agent skills — `### User gates`
@@ -21,5 +21,5 @@ Use when `## Agent skills` already exists. Add or update this subsection (after 
 ```markdown
 ### User gates
 
-Present forks and confirmations via **structured-choices** — call the host's question tool (Cursor: `AskQuestion`); one gate per message, options never as prose lists.
+Present forks and confirmations via **structured-choices** — call the host's question tool directly (Cursor: `AskQuestion`), no discovery step first; one gate per message, options never as prose lists. If no question tool is in your tool list, ask in plain prose, never as `<decision_prompt>` JSON.
 ```
