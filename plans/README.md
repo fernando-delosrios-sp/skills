@@ -11,7 +11,7 @@ OpenSpec mode: capability specs under `openspec/specs/` are canonical. Do not cr
 | 001  | Run `npm test` in CI validate workflow | P1 | S | — | DONE |
 | 002  | Characterization tests for sync, import, static overlay, runUpdate | P1 | M | — | DONE |
 | 003  | Fail closed on corrupt `.locks/upstream.json` | P1 | S | — | DONE |
-| 004  | Drop unused prompt/simple-git deps; declare real `@inquirer/*` | P2 | S | — | TODO |
+| 004  | Drop unused prompt/simple-git deps; declare real `@inquirer/*` | P2 | S | — | DONE |
 | 005  | Keep README category catalog in sync with manifests | P2 | S | — | TODO |
 | 006  | Run git and npx via argv arrays, not shell strings | P1 | M | 002 | TODO |
 | 007  | Confine sync/overlay relative paths inside intended roots | P1 | M | 002 | TODO |
