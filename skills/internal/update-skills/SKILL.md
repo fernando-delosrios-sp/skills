@@ -71,18 +71,24 @@ Run `npm run validate`; fix and re-run until pass. Do not `recordBlend` until va
 
 One structured-choices gate:
 
-- **Commit** — invoke **git-commit** for blended skill trees so `blended_ref` can be that commit
-- **Commit and push** — commit then push to remote
+- **Commit** — two git-commits: blended trees, then `.locks/upstream.json` after `recordBlend`
+- **Commit and push** — the same two commits, then one push of HEAD after the lock commit
 - **Do nothing** — warn that restore will fail next cycle without a blend commit
 
-After the tree commit (when chosen): `recordBlend` for **each** blended skill with current `sha`, hashes, and shared `blended_ref` = HEAD. Then invoke **git-commit** again for `.locks/upstream.json` only — required; do not leave overlay locks dirty or `getOverlayRoute` will treat the blend as `fresh`. Clean remaining manifests: `npm run clean -- --manifests`.
+When the user chose Commit or Commit and push, run this sequence:
+
+1. Invoke **git-commit** for blended skill trees so `blended_ref` can be that commit
+2. `recordBlend` for **each** blended skill with current `sha`, hashes, and shared `blended_ref` = HEAD (the tree commit)
+3. Invoke **git-commit** again for `.locks/upstream.json` only — required so overlay locks land; missing `overlay_applied_at` makes `getOverlayRoute` treat the blend as `fresh`
+4. **Commit and push only:** push after step 3 so the remote includes the lock commit
+5. Clean remaining manifests: `npm run clean -- --manifests`
 
 Set in `.locks/upstream.json` via `recordBlend` fields:
 - `applied_upstream_sha` = current `sha`
 - `overlay_hash` = per-skill overlay fingerprint (when overlay exists)
 - `universal_overlay_hash` = universal overlay fingerprint (when generators exist)
 - `overlay_applied_at` = now
-- `blended_ref` = HEAD after commit
+- `blended_ref` = HEAD after the tree commit
 
 **Done when:** user chose an option and any commit/push requested is complete.
 

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { access } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { getOverlayRoute, loadLocks } from '../lib/locks.mjs';
 import { loadSkills, ROOT } from '../lib/index.mjs';
@@ -80,6 +80,17 @@ describe('committed overlay locks', () => {
       );
       assert.ok(lock.blended_ref, `${skill.name} is missing blended_ref`);
     }
+  });
+});
+
+describe('update-skills commit gate', () => {
+  it('defers push until after the overlay lock commit', async () => {
+    const skill = await readFile(resolve(ROOT, 'skills/internal/update-skills/SKILL.md'), 'utf8');
+    const gate = skill.slice(skill.indexOf('### 5. Commit gate'), skill.indexOf('### 6. Report'));
+
+    assert.equal(gate.includes('commit then push'), false);
+    assert.match(gate, /one push of HEAD after the lock commit/);
+    assert.match(gate, /push after step 3 so the remote includes the lock commit/);
   });
 });
 

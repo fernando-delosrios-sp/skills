@@ -14,7 +14,7 @@ All notable changes to this skills collection are documented here.
 
 ### 🐛 Fixes
 
-- **update-skills records overlay locks after the blend commit** — After `recordBlend`, the pipeline now requires a follow-up commit of `.locks/upstream.json`. Leaving `overlay_applied_at` unset made the next audit treat an already-landed blend as `fresh` and force another full apply.
+- **update-skills records overlay locks after the blend commit** — After `recordBlend`, the pipeline requires a follow-up commit of `.locks/upstream.json`. **Commit and push** waits until that lock commit is on HEAD, then pushes once. Leaving `overlay_applied_at` unset (locally or on the remote) made the next audit treat an already-landed blend as `fresh` and force another full apply.
 
 ---
 
