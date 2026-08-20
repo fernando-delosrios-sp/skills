@@ -27,6 +27,10 @@ describe('normalizeRepoUrl', () => {
       'git@github.com:owner/repo.git'
     );
   });
+
+  it('rejects an owner/repo value that contains a double quote', () => {
+    assert.throws(() => normalizeRepoUrl('owner/repo"; echo hi'), /unsafe repo ref/);
+  });
 });
 
 describe('readSkillTree', () => {

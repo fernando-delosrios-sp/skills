@@ -4,7 +4,9 @@ import { loadSkills } from '../lib/index.mjs';
 import { discoverOverlays } from '../lib/overlay-pipeline.mjs';
 import { categoryCheckbox } from '../lib/category-checkbox-prompt.mjs';
 import kleur from 'kleur';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 function buildSkillChoice(skill, overlayNames) {
   const tags = [];
@@ -16,6 +18,10 @@ function buildSkillChoice(skill, overlayNames) {
     value: skill.name,
     description: tags.join(', ') || undefined,
   };
+}
+
+export function npxSkillsAddArgs(skillNames) {
+  return ['skills', 'add', '.', ...skillNames.flatMap((name) => ['--skill', name])];
 }
 
 async function main() {
@@ -61,14 +67,15 @@ async function main() {
 
   console.log(kleur.dim(`\nInstalling ${selectedSkills.length} skill(s)...\n`));
 
-  const skillArgs = selectedSkills.flatMap((name) => ['--skill', name]);
-
   try {
-    execSync(['npx', 'skills', 'add', '.', ...skillArgs].join(' '), { stdio: 'inherit' });
-  } catch (err) {
+    execFileSync('npx', npxSkillsAddArgs(selectedSkills), { stdio: 'inherit', shell: false });
+  } catch {
     process.exit(1);
   }
 }
 
-main();
-
+const isDirectRun =
+  process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+if (isDirectRun) {
+  main();
+}

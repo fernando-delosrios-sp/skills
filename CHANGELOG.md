@@ -15,6 +15,10 @@ All notable changes to this skills collection are documented here.
 - **improve and improve-codebase-architecture OpenSpec handoffs** — In OpenSpec repos, selected findings and grilled architecture candidates now become advisor-written `openspec/changes/<slug>/` packages (proposal, design, delta specs, `tasks.md`) instead of standalone `plans/` files; legacy repos keep `plans/`.
 - **Declared Install prompt `@inquirer/*` packages; dropped unused prompt libs and `simple-git`** — `package.json` now lists `@inquirer/core`, `@inquirer/ansi`, and `@inquirer/figures` as direct dependencies so `npm run install` still resolves after removing `@inquirer/prompts`. Unused `@clack/prompts`, `prompts`, and `simple-git` are gone; the `skills` CLI pin remains.
 
+### 🔒 Security
+
+- **Maintainer git and npx run without a shell** — Clone, checkout, cat-file, show, ls-tree, HEAD SHA, and `npx skills add` now use argv arrays (`shell: false`). Owner/repo values that are not a safe `owner/repo` or a URL without shell metacharacters are rejected. Sync, import, and extract remove temp clone dirs with `fs.rm` instead of a shell `rm -rf`.
+
 ### 🐛 Fixes
 
 - **Fail-closed Upstream lock load** — Corrupt or non-object `.locks/upstream.json` now fails `loadLocks` instead of returning `{}` and letting the next save wipe blend metadata (`blended_ref`, overlay hashes, applied upstream SHA). A missing lock file still loads as empty (first clone without `.locks/`).
