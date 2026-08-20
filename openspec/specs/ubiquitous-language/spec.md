@@ -109,7 +109,7 @@ The glossary SHALL define **Structure validation** as checks that the repository
 
 - **GIVEN** a maintainer reads the ubiquitous-language spec
 - **WHEN** they look up Structure validation
-- **THEN** the definition MUST list: manifests, SKILL.md frontmatter, overlay YAML shape, static file refs, generator output presence, and marketplace sync
+- **THEN** the definition MUST list: manifests, SKILL.md frontmatter, overlay YAML shape, static file refs, generator output presence, marketplace sync, and README category catalog
 - **AND** MUST explicitly state it does not call `auditSkill` or inspect `blended_ref`
 
 #### Scenario: Structure-only is not the Validate workflow
@@ -118,6 +118,18 @@ The glossary SHALL define **Structure validation** as checks that the repository
 - **WHEN** they compare them to the Validate workflow
 - **THEN** `--structure-only` MUST be described as an optional CLI flag
 - **AND** MUST NOT be equated with this repository’s Validate workflow merge gate
+
+### Requirement: README category catalog glossary entry
+
+The glossary SHALL define **README category catalog** as the Categories markdown table in `README.md` that lists Skill names grouped by Category for human browsing. It MUST state that the table is a cache of Manifest names, not the Install source of truth.
+
+#### Scenario: README category catalog definition
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up README category catalog
+- **THEN** the definition MUST identify the Categories table in `README.md`
+- **AND** MUST state it is not the Install source of truth
+- **AND** MUST note the bounded context is skill-catalog / distribution
 
 ### Requirement: Validate workflow glossary entry
 
@@ -323,9 +335,15 @@ The glossary SHALL define **Upstream lock** as the JSON object stored in `.locks
 **Aliases**: none
 **Notes**: Runs `npm test` then full `npm run validate`. Distinct from the Sync workflow (`.github/workflows/sync.yaml`). Not structure-only validate.
 
+### Term: README category catalog
+**Context**: skill-catalog / distribution
+**Definition**: The Categories markdown table in `README.md` that lists Skill names grouped by Category for human browsing. It is a cache of Manifest names, not the Install source of truth.
+**Aliases**: none
+**Notes**: Structure validation compares the table to Manifest names per Category (`type: 'readme-catalog'`).
+
 ### Term: Structure validation
 **Context**: tooling
-**Definition**: Validation that manifests, SKILL.md frontmatter, overlay YAML shape, static file references, generator outputs, and marketplace sync are well-formed — without git audit or `blended_ref` inspection.
+**Definition**: Validation that manifests, SKILL.md frontmatter, overlay YAML shape, static file references, generator outputs, marketplace sync, and the README category catalog are well-formed — without git audit or `blended_ref` inspection.
 **Aliases**: structure-only validate
 **Notes**: Implemented by `validateStructure()`. `npm run validate -- --structure-only` is an optional CLI flag. This repository’s Validate workflow is not structure-only.
 
