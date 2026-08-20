@@ -64,6 +64,14 @@ describe('validateBlendState', () => {
   });
 });
 
+describe('validateStructure orphans', () => {
+  it('does not report skill directories missing from category manifests', async () => {
+    const result = await validateStructure();
+    const orphans = result.errors.filter((e) => e.type === 'orphan');
+    assert.deepEqual(orphans, []);
+  });
+});
+
 describe('validateOverlays structure-only', () => {
   it('does not emit overlay route audit warnings', async () => {
     const skills = await loadSkills();

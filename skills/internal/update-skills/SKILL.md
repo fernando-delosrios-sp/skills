@@ -71,11 +71,11 @@ Run `npm run validate`; fix and re-run until pass. Do not `recordBlend` until va
 
 One structured-choices gate:
 
-- **Commit** — invoke **git-commit** so `blended_ref` is HEAD after commit
+- **Commit** — invoke **git-commit** for blended skill trees so `blended_ref` can be that commit
 - **Commit and push** — commit then push to remote
 - **Do nothing** — warn that restore will fail next cycle without a blend commit
 
-After commit (when chosen): `recordBlend` for **each** blended skill with current `sha`, hashes, and shared `blended_ref`. Clean remaining manifests: `npm run clean -- --manifests`.
+After the tree commit (when chosen): `recordBlend` for **each** blended skill with current `sha`, hashes, and shared `blended_ref` = HEAD. Then invoke **git-commit** again for `.locks/upstream.json` only — required; do not leave overlay locks dirty or `getOverlayRoute` will treat the blend as `fresh`. Clean remaining manifests: `npm run clean -- --manifests`.
 
 Set in `.locks/upstream.json` via `recordBlend` fields:
 - `applied_upstream_sha` = current `sha`

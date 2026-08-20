@@ -12,6 +12,10 @@ All notable changes to this skills collection are documented here.
 
 - **Upstream overlay reblend** — Re-applied OpenSpec dual-mode overlays and OpenAI manifests after sync (code-review, domain-modeling, grilling, triage, tdd, setup, improve, improve-codebase-architecture, and generator-only skills).
 
+### 🐛 Fixes
+
+- **update-skills records overlay locks after the blend commit** — After `recordBlend`, the pipeline now requires a follow-up commit of `.locks/upstream.json`. Leaving `overlay_applied_at` unset made the next audit treat an already-landed blend as `fresh` and force another full apply.
+
 ---
 
 ## 2026-08-19
