@@ -27,7 +27,7 @@ context: |
   Conventions:
   - Skill names must be unique across the whole repo
   - Categories are free-form filesystem groupings (engineering, productivity, internal)
-  - Overlays customize foreign skills after sync via skill-overlay skill
+  - Overlays customize foreign skills after sync via update-skills skill
   - Use conventional commits; maintain CHANGELOG.md via changelog-generator skill
 
 rules:

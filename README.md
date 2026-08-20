@@ -27,7 +27,7 @@ npm run install
 |----------|--------|
 | **engineering** | c4-diagram, changelog-generator, code-simplification, codebase-design, deploy-mate, diagnosing-bugs, domain-modeling, gherkin-authoring, git-commit, graphify, improve, improve-codebase-architecture, openspec-init, zoom-out |
 | **productivity** | caveman, grill-me, grilling, handoff, risen-prompt, search, teach, to-questionnaire, wait-what, wayfinder, writing-for-agents, writing-great-skills |
-| **internal** | skill-overlay |
+| **internal** | update-skills |
 
 Each skill lives at `skills/<category>/<name>/SKILL.md` and is listed in `skills/<category>/skills.json`.
 
@@ -88,7 +88,7 @@ Each category directory owns a manifest at `skills/<category>/skills.json`:
 - Local-only skills omit `source`.
 - Category is implied by the manifest path (`skills/<category>/skills.json`), not repeated on each entry.
 - Skill `name` must be unique across the whole repo.
-- Skills with an overlay in `overlays/<name>/OVERLAY.yaml` are customized after sync using the **skill-overlay** skill.
+- Skills with an overlay in `overlays/<name>/OVERLAY.yaml` are customized after sync via the **update-skills** skill.
 
 ## Maintainer commands
 
@@ -163,7 +163,7 @@ Overlays define local customizations and derived outputs on top of upstream-cano
 sync → static → audit → restore (unchanged inputs) → remerge manifests → apply/reconcile (agent)
 ```
 
-When upstream SHA and overlay hash are both unchanged since last blend, `npm run overlay -- restore` checks out the prior blended tree from `blended_ref` in `.locks/upstream.json`. When either changed, the **skill-overlay** skill re-merges intent onto fresh upstream.
+When upstream SHA and overlay hash are both unchanged since last blend, `npm run overlay -- restore` checks out the prior blended tree from `blended_ref` in `.locks/upstream.json`. When either changed, the **update-skills** skill re-merges intent onto fresh upstream.
 
 ### Lock file (`.locks/upstream.json`)
 
@@ -216,7 +216,7 @@ Every generator entry requires:
 | `file` | no | Skill-relative output path — enables validate, manifest current-content, extract-overlay skip, static-pin skip |
 | `description` | no | Human note for overlay authoring |
 
-All generators are **agent-applied** via the **skill-overlay** skill. Config is resolved by [`lib/overlay-yaml.mjs`](lib/overlay-yaml.mjs) and validated by [`lib/generator-config.mjs`](lib/generator-config.mjs) — no code execution. Extract skips generator output paths (and modify diffs matching frontmatter-derived content for `openai-manifest`) via the same yaml layer.
+All generators are **agent-applied** via the **update-skills** skill. Config is resolved by [`lib/overlay-yaml.mjs`](lib/overlay-yaml.mjs) and validated by [`lib/generator-config.mjs`](lib/generator-config.mjs) — no code execution. Extract skips generator output paths (and modify diffs matching frontmatter-derived content for `openai-manifest`) via the same yaml layer.
 
 ### Universal overlay — `overlays/OVERLAY.yaml`
 
@@ -288,7 +288,7 @@ Per-skill `generators.add` entries **add to** universal generators. Omit `genera
 
 #### `changes` — semantic entry
 
-Applied by the **skill-overlay** skill in Cursor.
+Applied by the **update-skills** skill in Cursor.
 
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -309,7 +309,7 @@ Static ops run before semantic apply. A static `add/replace` for a generated pat
 
 ### Generated files (`agents/openai.yaml`)
 
-Declared in universal [`overlays/OVERLAY.yaml`](overlays/OVERLAY.yaml) as an agent generator. Applied by **skill-overlay** after semantic merge. Typical output derived from each skill's `SKILL.md` frontmatter:
+Declared in universal [`overlays/OVERLAY.yaml`](overlays/OVERLAY.yaml) as an agent generator. Applied by **update-skills** after semantic merge. Typical output derived from each skill's `SKILL.md` frontmatter:
 
 - `interface.display_name` — title-cased skill name
 - `interface.short_description` — first sentence of the description
@@ -317,7 +317,7 @@ Declared in universal [`overlays/OVERLAY.yaml`](overlays/OVERLAY.yaml) as an age
 
 Per-skill overlays may add more generators in `generators.add` or opt out via `generators.disable`.
 
-The **skill-overlay** skill performs intelligent semantic merging. It activates when sync flags a pending overlay, the user references `.tmp/overlay-apply/<skill>.md`, or asks to apply/customize/reconcile a skill overlay.
+The **update-skills** skill runs the full maintainer pipeline: `npm run update`, apply pending overlays, validate, and optional commit. It also handles apply-only, extract, audit, and reconcile when explicitly requested.
 
 ### When to use which mechanism
 
@@ -334,15 +334,16 @@ The **skill-overlay** skill performs intelligent semantic merging. It activates 
 
 #### After upstream changes
 
+Invoke **update-skills** in Cursor — it runs `npm run update`, applies pending overlays, validates, and offers commit / commit+push / do nothing.
+
 ```bash
-npm run update                              # sync + static + audit + restore + prepare remerge
-# In Cursor, remerge/fresh only: "skill-overlay apply <skill>"
+npm run update                              # npm half only — or let update-skills run this
 npm run validate
 git diff
 git commit                                  # blended_ref must reference this commit
 ```
 
-Step-by-step:
+Step-by-step (npm only, no agent apply):
 
 ```bash
 npm run sync
@@ -350,7 +351,7 @@ npm run overlay -- static
 npm run overlay -- audit
 npm run overlay -- restore                  # unchanged inputs only
 npm run overlay -- prepare                  # remerge manifests only
-# In Cursor: "skill-overlay apply <skill>"
+# then invoke update-skills for apply-only
 npm run validate
 git commit
 ```
@@ -359,7 +360,7 @@ git commit
 
 ```bash
 npm run overlay -- prepare-generators --all
-# In Cursor: apply generators per skill via skill-overlay
+# In Cursor: invoke update-skills (apply-only)
 npm run validate
 ```
 
@@ -367,7 +368,7 @@ npm run validate
 
 ```bash
 npm run import -- --repo owner/repo --path skills/foo --category productivity
-# Writes generator manifest; apply via skill-overlay
+# Writes generator manifest; apply via update-skills
 npm run validate
 ```
 
@@ -494,23 +495,23 @@ npm run overlay -- prepare-generators --all
 
 | Warning / issue | Fix |
 |-----------------|-----|
-| `Missing agents/openai.yaml (generator: openai-manifest)` | `npm run overlay -- prepare-generators --skill <name>`, then apply via skill-overlay |
+| `Missing agents/openai.yaml (generator: openai-manifest)` | `npm run overlay -- prepare-generators --skill <name>`, then apply via update-skills |
 | `generator requires instructions` in OVERLAY.yaml | Add non-empty `instructions` to every generator entry |
 | Custom manifest keeps getting regenerated | Pin with static `action: add` in per-skill overlay |
-| Overlay pending apply | Run semantic + generator apply via skill-overlay, update lock |
+| Overlay pending apply | Invoke **update-skills** (apply-only if update already ran) |
 
 ### Adding a new generator
 
 1. Add `{ id, instructions, file? }` to universal `overlays/OVERLAY.yaml` (all skills) or per-skill `generators.add`
 2. Run `npm run overlay -- prepare-generators --skill <name>` or `--all`
-3. Apply via **skill-overlay** in Cursor
+3. Apply via **update-skills** in Cursor
 
 ## Rules
 
 - Skill `name` must be unique across the whole repo.
 - Categories are free-form strings used only for filesystem layout.
 - `npm run sync` updates the working tree directly; review before committing.
-- Skills with overlays need semantic apply after sync — see skill-overlay skill.
+- Skills with overlays need semantic apply after sync — invoke **update-skills**.
 - Run `npm run validate` before committing.
 
 ## Further reading

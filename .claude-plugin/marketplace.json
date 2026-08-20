@@ -31,7 +31,7 @@
       "name": "internal",
       "source": "./skills/internal",
       "skills": [
-        "./skill-overlay"
+        "./update-skills"
       ]
     },
     {

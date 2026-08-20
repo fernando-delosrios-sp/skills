@@ -140,7 +140,7 @@
       "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
       "computedHash": "a0c9a0e7dcd8af6f6223c7011515b7c362cf9e968d332038a83033da6830dee6"
     },
-    "skill-overlay": {
+    "update-skills": {
       "source": ".",
       "sourceType": "local",
       "computedHash": "5bd759ba28e109494f1c3c8c908b70d824516c97cc11f54aac774d9e2af7e0ea"

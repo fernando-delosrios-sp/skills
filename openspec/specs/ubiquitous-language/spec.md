@@ -193,7 +193,7 @@ The ubiquitous language spec MUST define **Operation guidance** as advisory stri
 **Context**: overlays
 **Definition**: A customization layer defined in `overlays/<name>/OVERLAY.yaml` that modifies a synced skill via semantic merge, static file ops, and/or generators.
 **Aliases**: skill overlay
-**Notes**: Applied after sync; requires skill-overlay skill for semantic reconciliation.
+**Notes**: Applied after sync; requires update-skills skill for semantic reconciliation.
 
 ### Term: Sync
 **Context**: upstream-sync
@@ -247,7 +247,7 @@ The ubiquitous language spec MUST define **Operation guidance** as advisory stri
 **Context**: overlays / overlay-yaml
 **Definition**: An agent manifest producer declared in universal `overlays/OVERLAY.yaml` and optionally overridden per skill via `generators.add` or `generators.disable` in `overlays/<name>/OVERLAY.yaml`.
 **Aliases**: overlay generator
-**Notes**: Merge resolution lives in `lib/overlay-yaml.mjs`; outputs are agent-applied via the skill-overlay skill, not executed by npm scripts.
+**Notes**: Merge resolution lives in `lib/overlay-yaml.mjs`; outputs are agent-applied via the update-skills skill, not executed by npm scripts.
 
 ### Term: Structure validation
 **Context**: tooling

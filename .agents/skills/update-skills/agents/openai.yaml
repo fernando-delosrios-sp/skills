@@ -1,0 +1,3 @@
+interface:
+  display_name: Update Skills
+  short_description: Update this skills repo from upstream and apply pending overlays.

@@ -44,14 +44,14 @@ Overlays SHALL support static add/replace/remove operations with file payloads u
 - **WHEN** `npm run overlay -- static` runs
 - **THEN** the target file in `skills/` MUST be replaced with the payload from `overlays/<name>/files/`
 
-### Requirement: Semantic merge via skill-overlay skill
+### Requirement: Semantic merge via update-skills skill
 
-When upstream and overlay inputs diverge, reconciliation SHALL use the skill-overlay skill for intelligent semantic merging.
+When upstream and overlay inputs diverge, reconciliation SHALL use the update-skills skill for intelligent semantic merging.
 
 #### Scenario: Pending remerge after update
 
 - **GIVEN** `npm run update` prepares a remerge manifest in `.tmp/overlay-apply/`
-- **WHEN** the maintainer invokes skill-overlay apply
+- **WHEN** the maintainer invokes update-skills
 - **THEN** the blended result MUST land in `skills/<category>/<name>/` with blended_ref referencing the apply commit
 
 ### Requirement: Pending apply determined by overlay route

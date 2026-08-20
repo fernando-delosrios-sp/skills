@@ -1,5 +1,5 @@
 interface:
   display_name: Wayfinder
-  short_description: Plan a huge chunk of work — more than one agent session can hold — as a
+  short_description: Plan a huge chunk of work (more than one agent session can hold) as a sh
 policy:
   allow_implicit_invocation: false

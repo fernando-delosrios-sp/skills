@@ -52,6 +52,8 @@ What changes — one sentence.
 Domain terms worth formalising via `/domain-modeling`, discovered during analysis:
 
 - **{{term}}** — {{short definition}}. Currently used in {{files}} but not named consistently.
+
+> **Decision conflict** (optional): contradicts `module-ordering` / ADR-0007, but worth reopening because…
 ```
 
 - **Title** — short, names the deepening (e.g. "Collapse the Order intake pipeline").

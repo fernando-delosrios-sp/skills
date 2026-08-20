@@ -62,7 +62,8 @@ The facts the executor needs, inlined — never "as discussed" or "see audit":
   name), including product/design constraints encoded in specs; in legacy mode —
   the relevant `CONTEXT.md` terms, the ADR whose decision this work must stay
   consistent with, and `DESIGN.md` tokens/components to reuse.
-  Quote the specific lines — the executor has not read those docs.
+  Quote the specific lines — the executor has not read those docs. Cite only
+  OpenSpec paths (and other intent docs) the advisor actually found in recon.
 
 ## OpenSpec prerequisite (direction/spike plans only)
 

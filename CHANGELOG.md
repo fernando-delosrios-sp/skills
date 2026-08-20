@@ -2,6 +2,18 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-08-20 · v0.5.0
+
+### ✨ New Features
+
+- **update-skills** — Renamed from **skill-overlay**. Default path runs the full maintainer pipeline: `npm run update`, apply pending overlays, validate, and a commit / commit+push / do nothing gate. Extract, audit, reconcile, and apply-only remain as explicit modes. Update report includes per-skill change summary with upstream, overlay, and adaptation deltas.
+
+### 🔧 Improvements
+
+- **Upstream overlay reblend** — Re-applied OpenSpec dual-mode overlays and OpenAI manifests after sync (code-review, domain-modeling, grilling, triage, tdd, setup, improve, improve-codebase-architecture, and generator-only skills).
+
+---
+
 ## 2026-08-19
 
 ### 🐛 Fixes
