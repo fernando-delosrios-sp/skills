@@ -2,7 +2,12 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { access } from 'node:fs/promises';
 import { join } from 'node:path';
-import { validateBlendState, validateStructure, collectLocalInstallSkillNames } from '../lib/validate.mjs';
+import {
+  validateBlendState,
+  validateStructure,
+  collectLocalInstallSkillNames,
+  compareReadmeCatalog,
+} from '../lib/validate.mjs';
 import { loadSkills, findSkillByName } from '../lib/index.mjs';
 import { getCanonicalDir } from '../lib/skill-paths.mjs';
 import { validateOverlays } from '../lib/overlay-pipeline.mjs';
@@ -96,6 +101,63 @@ describe('collectLocalInstallSkillNames', () => {
       'setup-matt-pocock-skills',
       'tdd',
     ]);
+  });
+});
+
+describe('README category catalog', () => {
+  const catalogSkills = [
+    { name: 'tdd', category: 'engineering' },
+    { name: 'c4-diagram', category: 'engineering' },
+    { name: 'caveman', category: 'productivity' },
+    { name: 'update-skills', category: 'internal' },
+  ];
+
+  it('extra or missing names fail structure validation', () => {
+    const readme = [
+      '| Category | Skills |',
+      '|----------|--------|',
+      '| **engineering** | c4-diagram, graphify |',
+      '| **productivity** | caveman |',
+      '| **internal** | update-skills |',
+    ].join('\n');
+
+    const errors = compareReadmeCatalog(readme, catalogSkills);
+    const catalogErrors = errors.filter((e) => e.type === 'readme-catalog');
+    assert.equal(catalogErrors.length, 1);
+    assert.match(catalogErrors[0].message, /missing: tdd/);
+    assert.match(catalogErrors[0].message, /extra: graphify/);
+  });
+
+  it('missing table fails rather than skip', () => {
+    const errors = compareReadmeCatalog('# Skills\n\nNo table here.\n', catalogSkills);
+    const catalogErrors = errors.filter((e) => e.type === 'readme-catalog');
+    assert.ok(catalogErrors.length >= 1);
+    assert.equal(
+      catalogErrors.every((e) => e.type === 'readme-catalog'),
+      true
+    );
+  });
+
+  it('every loaded category is checked', () => {
+    const skills = [
+      ...catalogSkills,
+      { name: 'extra-skill', category: 'experimental' },
+    ];
+    const readme = [
+      '| **engineering** | tdd, c4-diagram |',
+      '| **productivity** | caveman |',
+      '| **internal** | update-skills |',
+    ].join('\n');
+
+    const errors = compareReadmeCatalog(readme, skills);
+    const catalogErrors = errors.filter((e) => e.type === 'readme-catalog');
+    assert.ok(catalogErrors.some((e) => /experimental/.test(e.message)));
+  });
+
+  it('matching catalog produces no readme-catalog error', async () => {
+    const result = await validateStructure();
+    const catalogErrors = result.errors.filter((e) => e.type === 'readme-catalog');
+    assert.deepEqual(catalogErrors, []);
   });
 });
 
