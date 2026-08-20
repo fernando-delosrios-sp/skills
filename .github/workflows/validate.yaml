@@ -20,5 +20,8 @@ jobs:
 
       - run: npm ci
 
+      - name: Test
+        run: npm test
+
       - name: Validate skills
         run: npm run validate

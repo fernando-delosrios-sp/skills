@@ -151,7 +151,7 @@ Requires Node.js ≥ 18.
 - **Structure validation** — manifests, SKILL.md frontmatter, overlay YAML shape, static file refs, generator outputs, marketplace sync. No git audit.
 - **Blend validation** — overlay audit routes, `blended_ref` presence, pending apply warnings for source skills.
 
-Use `npm run validate -- --structure-only` when CI only needs structure checks without git history.
+This repo’s Validate workflow (`.github/workflows/validate.yaml`) runs `npm test` then full `npm run validate`. Use `npm run validate -- --structure-only` locally when you only need structure checks without git history.
 
 ## Skill overlays
 
