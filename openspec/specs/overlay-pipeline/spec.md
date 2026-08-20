@@ -1,7 +1,11 @@
 # overlay-pipeline Specification
 
 ## Purpose
-TBD - created by archiving change split-overlay-lifecycle-module. Update Purpose after archive.
+
+The overlay-pipeline capability is the maintainer lifecycle for **source skills**. It audits overlay **route** (`restore` / `remerge` / `fresh` / `none`), restores unchanged blends from `blended_ref`, applies static file operations, prepares remerge and **Generator** manifests, and extracts overlay drafts. The public Node interface is `lib/overlay-pipeline.mjs`. CLI (`scripts/sync.mjs`) and `lib/update.mjs` MUST import that module (or its barrel), not internal overlay-* submodules. **Pending apply** is decided by `isPendingApply` from Overlay route (`fresh` / `remerge`), not lock timestamps. Semantic merge remains agent-applied via **update-skills**; npm only prepares manifests and static ops.
+
+Discovery and hashing live in `overlay-model.mjs`; YAML primitives live in `overlay-yaml.mjs`. Static ops, manifests under `.tmp/overlay-apply/`, and extract are submodules reached through the pipeline. Restore checks out `blended_ref` when Canonical tree inputs are unchanged.
+
 ## Requirements
 ### Requirement: Deep pipeline public interface
 
