@@ -89,6 +89,18 @@ Pending apply for a customized source skill SHALL be determined exclusively by o
 - **WHEN** pending apply is evaluated
 - **THEN** the skill MUST be considered pending apply when route is `fresh` or `remerge`
 
+### Requirement: Overlay route requires intact Upstream lock
+
+When Overlay route or Pending apply is evaluated, a corrupt or unreadable Upstream lock MUST fail the evaluation. The system MUST NOT treat that failure as missing blend metadata, Overlay route `fresh`, or Pending apply from empty locks.
+
+#### Scenario: Corrupt lock does not masquerade as never-applied
+
+- **GIVEN** a customized source skill with blend metadata previously recorded in the Upstream lock
+- **AND** `.locks/upstream.json` is truncated or otherwise invalid JSON
+- **WHEN** Overlay route or Pending apply is evaluated
+- **THEN** the evaluation MUST fail
+- **AND** the skill MUST NOT be treated as Overlay route `fresh` from empty locks
+
 ### Requirement: Generator resolution authority
 
 Generator merge resolution for overlay apply, manifest preparation, validation, and extract SHALL use `lib/overlay-yaml.mjs` as the single authority. No overlay lifecycle module SHALL import generator resolution from a module that imports back from the same lifecycle branch.

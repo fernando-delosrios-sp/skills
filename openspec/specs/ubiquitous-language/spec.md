@@ -201,6 +201,24 @@ The glossary SHALL define **Characterization test** as a Node unit test that rec
 - **WHEN** a reader looks for Characterization test
 - **THEN** a `### Term: Characterization test` entry MUST exist
 
+### Requirement: Upstream lock glossary entry
+
+The glossary SHALL define **Upstream lock** as the JSON object stored in `.locks/upstream.json` mapping skill name to sync and overlay blend metadata (including last-synced SHA, `blended_ref`, overlay hashes, and `applied_upstream_sha`).
+
+#### Scenario: Upstream lock definition
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up Upstream lock
+- **THEN** the definition MUST state it is the JSON object in `.locks/upstream.json` mapping skill name to sync and overlay blend metadata
+- **AND** MUST note it is not OS file locking
+- **AND** MUST note the bounded context is upstream-sync / overlays
+
+#### Scenario: Term listed in glossary
+
+- **GIVEN** the ubiquitous-language spec glossary
+- **WHEN** a reader looks for Upstream lock
+- **THEN** a `### Term: Upstream lock` entry MUST exist
+
 ## Term entries
 
 ### Term: Skill
@@ -244,6 +262,12 @@ The glossary SHALL define **Characterization test** as a Node unit test that rec
 **Definition**: The process of pulling upstream-canonical content from foreign repos into `skills/`, overwriting skills that have a `source` reference.
 **Aliases**: none
 **Notes**: Invoked via `npm run sync`. Part of the broader `npm run update` pipeline.
+
+### Term: Upstream lock
+**Context**: upstream-sync / overlays
+**Definition**: The JSON object stored in `.locks/upstream.json` mapping skill name to sync and overlay blend metadata (including last-synced SHA, `blended_ref`, overlay hashes, and `applied_upstream_sha`).
+**Aliases**: lock file, locks
+**Notes**: Not OS file locking. A missing file is empty locks; corrupt JSON must not be treated as empty.
 
 ### Term: Update
 **Context**: upstream-sync
