@@ -71,6 +71,25 @@ describe('readSkillTree', () => {
     ]);
   });
 
+  it('rejects a skill path that escapes the upstream root', async () => {
+    await assert.rejects(
+      () => readSkillTree(root, { skillPath: '../outside', fs }),
+      /path escapes directory/
+    );
+  });
+
+  it('rejects a walk entry that escapes the skill root', async () => {
+    const maliciousFs = {
+      readdir: async () => [{ name: '../escape.md', isDirectory: () => false }],
+      readFile: async () => 'escaped',
+    };
+
+    await assert.rejects(
+      () => readSkillTree(root, { fs: maliciousFs }),
+      /path escapes directory/
+    );
+  });
+
   it('skips .git directories', async () => {
     const flatRoot = resolve('/virtual/flat-root');
     const flatFs = {

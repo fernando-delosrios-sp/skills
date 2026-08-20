@@ -8,6 +8,7 @@ import {
   getAgentsDir,
   getOverlayDir,
   getGitSkillPrefix,
+  resolveContained,
 } from '../lib/skill-paths.mjs';
 
 const fixtureSkill = { name: 'git-commit', category: 'engineering' };
@@ -50,5 +51,25 @@ describe('getGitSkillPrefix', () => {
 describe('getOverlayDir', () => {
   it('accepts skill name without full record', () => {
     assert.equal(getOverlayDir('git-commit'), resolve(ROOT, 'overlays', 'git-commit'));
+  });
+});
+
+describe('resolveContained', () => {
+  const baseDir = resolve('/tmp', 'skill');
+
+  it('resolves a relative path inside the base directory', () => {
+    assert.equal(resolveContained(baseDir, 'foo.md'), resolve(baseDir, 'foo.md'));
+  });
+
+  it('rejects a relative path that escapes the base directory', () => {
+    assert.throws(() => resolveContained(baseDir, '../other/x'), /path escapes directory/);
+  });
+
+  it('allows parent segments when the normalized path remains contained', () => {
+    assert.equal(resolveContained(baseDir, 'nested/../foo.md'), resolve(baseDir, 'foo.md'));
+  });
+
+  it('rejects an absolute path', () => {
+    assert.throws(() => resolveContained(baseDir, resolve('/etc', 'passwd')), /absolute path not allowed/);
   });
 });

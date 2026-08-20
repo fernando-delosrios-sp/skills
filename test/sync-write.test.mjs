@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, writeFile, readFile, access, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, access, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { applySyncResult } from '../lib/sync.mjs';
@@ -46,6 +46,37 @@ describe('applySyncResult pending update writes files and deletes orphans', () =
       assert.equal(applied.status, 'updated_clean');
     } finally {
       await rm(localSkillDir, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects an upstream path that escapes the skill directory', async () => {
+    const fixtureDir = await mkdtemp(join(tmpdir(), 'sync-escape-'));
+    const localSkillDir = join(fixtureDir, 'skill');
+    const escapePath = join(fixtureDir, 'escape.md');
+    await mkdir(localSkillDir);
+    try {
+      const locks = {};
+      await assert.rejects(
+        () =>
+          applySyncResult(
+            {
+              skill: 'example-skill',
+              status: 'pending_update',
+              localSkillDir,
+              upstreamFiles: [{ relPath: '../escape.md', content: 'escaped\n' }],
+              upstreamSha: 'abc123',
+              syncedAt: '2026-08-20T00:00:00.000Z',
+              source: { repo: 'owner/repo', path: 'skills/example-skill' },
+              hasOverlay: false,
+            },
+            locks
+          ),
+        /path escapes directory/
+      );
+      assert.equal(await exists(escapePath), false);
+      assert.deepEqual(locks, {});
+    } finally {
+      await rm(fixtureDir, { recursive: true, force: true });
     }
   });
 });

@@ -77,6 +77,33 @@ describe('applyStaticOverlay static remove deletes a file', () => {
       await rm(skillDir, { recursive: true, force: true });
     }
   });
+
+  it('rejects a target path that escapes the skill directory', async () => {
+    const fixtureDir = await mkdtemp(join(tmpdir(), 'overlay-static-escape-'));
+    const skillDir = join(fixtureDir, 'skill');
+    const overlayDir = join(fixtureDir, 'overlay');
+    const escapePath = join(fixtureDir, 'escape.md');
+    await mkdir(skillDir);
+    await mkdir(overlayDir);
+    await writeFile(escapePath, 'keep', 'utf8');
+    try {
+      await assert.rejects(
+        () =>
+          applyStaticOverlay('fixture-skill', {
+            loadOverlayFn: async () => ({
+              _dir: overlayDir,
+              changes: [{ action: 'remove', file: '../escape.md' }],
+            }),
+            findSkillFn: async () => ({ name: 'fixture-skill' }),
+            getSkillDirFn: () => skillDir,
+          }),
+        /path escapes directory/
+      );
+      assert.equal(await readFile(escapePath, 'utf8'), 'keep');
+    } finally {
+      await rm(fixtureDir, { recursive: true, force: true });
+    }
+  });
 });
 
 describe('applyStaticOverlay missing static source throws', () => {
@@ -101,6 +128,33 @@ describe('applyStaticOverlay missing static source throws', () => {
     } finally {
       await rm(overlayDir, { recursive: true, force: true });
       await rm(skillDir, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects a source path that escapes the overlay directory', async () => {
+    const fixtureDir = await mkdtemp(join(tmpdir(), 'overlay-source-escape-'));
+    const skillDir = join(fixtureDir, 'skill');
+    const overlayDir = join(fixtureDir, 'overlay');
+    const targetPath = join(skillDir, 'extra.md');
+    await mkdir(skillDir);
+    await mkdir(overlayDir);
+    await writeFile(join(fixtureDir, 'secret.md'), 'secret', 'utf8');
+    try {
+      await assert.rejects(
+        () =>
+          applyStaticOverlay('fixture-skill', {
+            loadOverlayFn: async () => ({
+              _dir: overlayDir,
+              changes: [{ action: 'add', file: 'extra.md', from: '../secret.md' }],
+            }),
+            findSkillFn: async () => ({ name: 'fixture-skill' }),
+            getSkillDirFn: () => skillDir,
+          }),
+        /path escapes directory/
+      );
+      assert.equal(await exists(targetPath), false);
+    } finally {
+      await rm(fixtureDir, { recursive: true, force: true });
     }
   });
 });
