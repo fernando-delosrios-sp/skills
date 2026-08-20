@@ -166,6 +166,13 @@ Call sites that need pending detection (`lib/sync.mjs`, `lib/tmp.mjs`, and futur
 - **THEN** it MUST skip removal when `isPendingApply(skillName)` returns `true`
 - **AND** it MUST NOT use timestamp-based pending heuristics
 
+#### Scenario: tmp.mjs avoids pipeline import cycle
+
+- **GIVEN** `overlay-pipeline.mjs` imports `overlay-extract.mjs` which imports `tmp.mjs`
+- **WHEN** `cleanOverlayManifests` needs pending detection
+- **THEN** it MUST call `isPendingApply` from `overlay-audit.mjs` (the same function the pipeline re-exports)
+- **AND** it MUST NOT import `overlay-pipeline.mjs`
+
 #### Scenario: Testable without git checkout
 
 - **GIVEN** a unit test injects mocked lock entries and hash values via `deps`
