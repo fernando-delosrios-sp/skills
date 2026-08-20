@@ -1,8 +1,9 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { access, readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
-import { getOverlayRoute, loadLocks } from '../lib/locks.mjs';
+import { access, mkdtemp, readFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { getOverlayRoute, loadLocks, loadLocksFromPath, parseLocksJson } from '../lib/locks.mjs';
 import { loadSkills, ROOT } from '../lib/index.mjs';
 import { hasOverlay } from '../lib/overlay-yaml.mjs';
 
@@ -53,6 +54,35 @@ describe('getOverlayRoute', () => {
     );
 
     assert.equal(route.route, 'restore');
+  });
+});
+
+describe('Upstream lock load', () => {
+  it('parses a valid object map', () => {
+    assert.deepEqual(parseLocksJson('{"a":{}}'), { a: {} });
+  });
+
+  it('fails the load on invalid JSON without embedding file contents', () => {
+    const raw = '{"truncated';
+    assert.throws(
+      () => parseLocksJson(raw),
+      (err) => {
+        assert.match(err.message, /invalid JSON/i);
+        assert.match(err.message, /\.locks\/upstream\.json/);
+        assert.equal(err.message.includes(raw), false);
+        return true;
+      }
+    );
+  });
+
+  it('fails the load on a JSON array', () => {
+    assert.throws(() => parseLocksJson('[]'), /invalid JSON/i);
+  });
+
+  it('returns an empty object when the lock file is missing', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'locks-fail-closed-'));
+    const missing = join(dir, 'upstream.json');
+    assert.deepEqual(await loadLocksFromPath(missing), {});
   });
 });
 
