@@ -2,7 +2,7 @@
 
 Every plan is written for an executor model that has **zero context**: it has not seen the advisor session, the audit, the other packages, or any prior conversation. It may be a smaller/cheaper model. Assume it is competent at following explicit instructions and weak at filling gaps, recovering from ambiguity, or knowing when to stop.
 
-**OpenSpec mode:** This file is the **section map**, not the output path. Do not write standalone `plans/NNN-slug.md` files. Map sections into `openspec/changes/<slug>/` per [openspec-change.md](./openspec-change.md). Omit the **OpenSpec prerequisite** section — the change package is the proposal.
+**OpenSpec mode:** This file is the **section map**, not the output path. Do not write standalone `plans/NNN-slug.md` files. Map sections into `openspec/changes/<slug>/` per [openspec-change.md](./openspec-change.md). Status / Depends on / Issue map to `proposal.md` **Apply status**. Omit the **OpenSpec prerequisite** section — the change package is the proposal.
 
 **Legacy mode:** Output path is `plans/NNN-short-slug.md`, numbered in recommended execution order.
 

@@ -16,6 +16,7 @@ All notable changes to this skills collection are documented here.
 
 ### 🐛 Fixes
 
+- **improve OpenSpec execute ordering** — OpenSpec `execute` now reads each change's `proposal.md` **Apply status** (Status, Depends on, Issue) instead of a chat-only index, so a later session can refuse apply until dependency slugs are DONE.
 - **update-skills records overlay locks after the blend commit** — After `recordBlend`, the pipeline requires a follow-up commit of `.locks/upstream.json`. **Commit and push** waits until that lock commit is on HEAD, then pushes once. Leaving `overlay_applied_at` unset (locally or on the remote) made the next audit treat an already-landed blend as `fresh` and force another full apply.
 
 ---

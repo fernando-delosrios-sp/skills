@@ -103,7 +103,7 @@ Present **direction findings separately**, after the table — they're options f
 
 Then ask which findings to package (default suggestion: the top 3–5 plus anything they flag). Also surface **dependency ordering** — e.g. "characterization tests for module X must land before the refactor of X."
 
-Wait for the selection. Do not write 30 packages nobody asked for. If running non-interactively (no user available to choose), package the top 3–5 by leverage and record that default in the chat index (OpenSpec) or `plans/README.md` (legacy).
+Wait for the selection. Do not write 30 packages nobody asked for. If running non-interactively (no user available to choose), package the top 3–5 by leverage and record that default in each package's **Apply status** (OpenSpec) or `plans/README.md` (legacy).
 
 ### Phase 4 — Write handoff artifacts
 
@@ -118,7 +118,7 @@ plans/
 
 If `plans/` already exists from a previous run, **reconcile, don't duplicate**: read `plans/README.md`, keep numbering monotonic, skip findings already planned or listed as rejected. Finish with `plans/README.md`.
 
-**OpenSpec mode:** Read [references/openspec-change.md](references/openspec-change.md) before the first package. For each selected finding, write one `openspec/changes/<slug>/` folder — all artifacts for the target schema. Map plan-template sections into the change package; do **not** write `plans/NNN-*.md`. Finish with a **chat index** (slugs, dependency order, status) — no `plans/README.md`. Reconcile against existing non-archive changes; skip duplicates.
+**OpenSpec mode:** Read [references/openspec-change.md](references/openspec-change.md) before the first package. For each selected finding, write one `openspec/changes/<slug>/` folder — all artifacts for the target schema. Map plan-template sections into the change package; do **not** write `plans/NNN-*.md`. Write **Apply status** into each `proposal.md` and report the same table in chat — no `plans/README.md`. Reconcile against existing non-archive changes; skip duplicates.
 
 **Both modes:**
 

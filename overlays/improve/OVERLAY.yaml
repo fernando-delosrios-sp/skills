@@ -28,7 +28,8 @@ changes:
          - Read [references/openspec-change.md](references/openspec-change.md) before writing the first package.
          - For **each selected finding**, write one `openspec/changes/<slug>/` folder per that reference — all artifacts for the target schema (ferspec table in the reference).
          - Map plan-template sections into the change package; do **not** write `plans/NNN-*.md`.
-         - End with a **chat index** (slugs, dependency order, status) — no `plans/README.md`.
+         - Write **Apply status** at the end of each `proposal.md` (Status, Depends on slugs, Issue). Report the same table in chat. No `plans/README.md`.
+         - Non-interactive default selection: record it in those Apply status blocks, not chat-only.
          - Reconcile against existing non-archive changes; monotonic slugs; skip duplicates.
 
       5. **Legacy mode:**
@@ -63,7 +64,7 @@ changes:
       Dual-mode plan template:
 
       - **Legacy mode:** Preserve full template and `plans/NNN-slug.md` output path.
-      - **OpenSpec mode:** This file is the **section map**, not the output path. Do not write standalone plan files. Map sections into `openspec/changes/<slug>/` per [openspec-change.md](./openspec-change.md). Remove or omit the **OpenSpec prerequisite** section — the change package is the proposal.
+      - **OpenSpec mode:** This file is the **section map**, not the output path. Do not write standalone plan files. Map sections into `openspec/changes/<slug>/` per [openspec-change.md](./openspec-change.md). Status / Depends on / Issue map to `proposal.md` **Apply status**. Remove or omit the **OpenSpec prerequisite** section — the change package is the proposal.
       - "Current state" vocabulary bullet: OpenSpec → ubiquitous-language + capability requirements; legacy → CONTEXT.md, ADR ids, DESIGN.md tokens. Cite only paths the advisor actually found.
 
   - file: references/closing-the-loop.md
@@ -71,6 +72,6 @@ changes:
       Dual-mode closing the loop:
 
       - **Legacy mode:** Preserve upstream execute/reconcile/--issues against `plans/` unchanged.
-      - **OpenSpec mode — execute:** Invoke **apply-code-changes** (OpenSpec adapter) on `openspec/changes/<slug>/`. Advisor reviews apply handoff — re-run verify criteria from `tasks.md`, check scope against `design.md`, never edit source. Update chat index status, not `plans/README.md`.
-      - **OpenSpec mode — reconcile:** Walk `openspec/changes/` excluding `archive/`. Per change: refresh drifted `design.md`/`tasks.md`, verify DONE criteria on HEAD, mark BLOCKED/REJECTED. Report executable slugs.
-      - **OpenSpec mode — --issues:** Publish issue body from `proposal.md` + pointer to change folder; record URL in chat index. Same public-repo sensitivity gate as legacy.
+      - **OpenSpec mode — execute:** Confirm `openspec/changes/<slug>/` exists and every **Depends on** slug in that package's Apply status is DONE (archived, Status DONE, or all `tasks.md` `[x]`). Invoke **apply-code-changes**. Advisor reviews apply handoff — re-run verify criteria from `tasks.md`, check scope against `design.md`, never edit source. Write this package's Apply status (`DONE` or `BLOCKED`), not `plans/README.md`.
+      - **OpenSpec mode — reconcile:** Walk `openspec/changes/` excluding `archive/`. Per change: refresh drifted `design.md`/`tasks.md`, verify DONE criteria on HEAD, update that package's Apply status. Report executable slugs.
+      - **OpenSpec mode — --issues:** Publish issue body from `proposal.md` + pointer to change folder; write the URL into that package's Apply status **Issue** field. Same public-repo sensitivity gate as legacy.

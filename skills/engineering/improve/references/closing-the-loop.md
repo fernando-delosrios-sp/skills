@@ -81,11 +81,11 @@ Running verification commands inside the executor's worktree is fine — it's is
 
 ### OpenSpec: `execute <slug>`
 
-1. Confirm `openspec/changes/<slug>/` exists and dependency slugs show DONE in the chat index.
+1. Confirm `openspec/changes/<slug>/` exists. Read **Apply status** from that folder's `proposal.md`. Every **Depends on** slug must be DONE (see [openspec-change.md](./openspec-change.md)); if not, stop and name the missing dependency.
 2. Run the drift check from `design.md` yourself before invoking apply.
 3. Invoke **apply-code-changes** on the change folder — the skill owns venue gate, bind, task execution, and verify-fix.
 4. Review apply handoff like a tech lead: re-run verification criteria from `tasks.md`, check scope against `design.md`, read the diff — never edit source yourself.
-5. Update chat index status (DONE | BLOCKED). **Merging and archive are the user's decision** — never run `/opsx:archive` from improve.
+5. Write this package's **Status** (`DONE` | `BLOCKED`) in `proposal.md` Apply status. **Merging and archive are the user's decision** — never run `/opsx:archive` from improve.
 
 ---
 
@@ -106,9 +106,9 @@ Finish with a short report: what's verified done, what was refreshed, what's rej
 
 Walk `openspec/changes/` excluding `archive/`. Per change:
 
-- **DONE** — spot-check cheap verification criteria on HEAD; update chat index.
-- **BLOCKED** — investigate; refresh `design.md`/`tasks.md` or mark REJECTED.
-- **TODO** — run drift check; refresh excerpts and planned-at SHA in `design.md`; if finding is gone, mark REJECTED.
+- **DONE** — spot-check cheap verification criteria on HEAD; keep **Apply status** at DONE.
+- **BLOCKED** — investigate; refresh `design.md`/`tasks.md` or mark REJECTED in **Apply status**.
+- **TODO** — run drift check; refresh excerpts and planned-at SHA in `design.md`; if finding is gone, mark REJECTED in **Apply status**.
 
 Report executable slugs and dependency order.
 
@@ -123,6 +123,6 @@ Modifier on any planning invocation (`/improve --issues`, `/improve security --i
 3. Show the list of titles about to become issues; confirm once if interactive.
 4. **Legacy:** per plan — `gh issue create --title "<plan title>" --body-file <plan file>`.
 5. **OpenSpec:** per change — `gh issue create --title "<proposal title>" --body-file <proposal.md>` with a footer linking `openspec/changes/<slug>/`.
-6. Record each issue URL in the plan Status block (legacy) or chat index (OpenSpec).
+6. Record each issue URL in the plan Status block (legacy) or that change's `proposal.md` **Apply status** Issue field (OpenSpec).
 
 The handoff artifact remains the source of truth; the issue is distribution.
