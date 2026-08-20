@@ -103,7 +103,7 @@ The glossary SHALL define **Agents tree** as the flat dev working copy under `.a
 
 ### Requirement: Structure validation glossary entry
 
-The glossary SHALL define **Structure validation** as checks that the repository is well-formed without inspecting git blend state.
+The glossary SHALL define **Structure validation** as checks that the repository is well-formed without inspecting git blend state. Notes MAY mention `npm run validate -- --structure-only` as an optional flag. Notes MUST NOT claim that this repository’s Validate workflow is structure-only.
 
 #### Scenario: Structure validation definition
 
@@ -111,6 +111,32 @@ The glossary SHALL define **Structure validation** as checks that the repository
 - **WHEN** they look up Structure validation
 - **THEN** the definition MUST list: manifests, SKILL.md frontmatter, overlay YAML shape, static file refs, generator output presence, and marketplace sync
 - **AND** MUST explicitly state it does not call `auditSkill` or inspect `blended_ref`
+
+#### Scenario: Structure-only is not the Validate workflow
+
+- **GIVEN** a maintainer reads Structure validation notes
+- **WHEN** they compare them to the Validate workflow
+- **THEN** `--structure-only` MUST be described as an optional CLI flag
+- **AND** MUST NOT be equated with this repository’s Validate workflow merge gate
+
+### Requirement: Validate workflow glossary entry
+
+The glossary SHALL define **Validate workflow** as the GitHub Actions workflow in `.github/workflows/validate.yaml` that is this repository’s merge gate on push and pull request to `main`.
+
+#### Scenario: Validate workflow definition
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up Validate workflow
+- **THEN** the definition MUST name `.github/workflows/validate.yaml`
+- **AND** MUST state it is the merge gate for this repository
+- **AND** MUST distinguish it from the Sync workflow in `.github/workflows/sync.yaml`
+
+#### Scenario: Merge gate steps documented
+
+- **GIVEN** the glossary entry for Validate workflow
+- **WHEN** notes describe what the job runs
+- **THEN** they MUST state the job runs `npm test` then full `npm run validate`
+- **AND** MUST NOT describe this repo’s merge gate as structure-only validate
 
 ### Requirement: Blend validation glossary entry
 
@@ -249,11 +275,17 @@ The ubiquitous language spec MUST define **Operation guidance** as advisory stri
 **Aliases**: overlay generator
 **Notes**: Merge resolution lives in `lib/overlay-yaml.mjs`; outputs are agent-applied via the update-skills skill, not executed by npm scripts.
 
+### Term: Validate workflow
+**Context**: tooling
+**Definition**: The GitHub Actions workflow in `.github/workflows/validate.yaml` that is this repository’s merge gate on push and pull request to `main`.
+**Aliases**: none
+**Notes**: Runs `npm test` then full `npm run validate`. Distinct from the Sync workflow (`.github/workflows/sync.yaml`). Not structure-only validate.
+
 ### Term: Structure validation
 **Context**: tooling
 **Definition**: Validation that manifests, SKILL.md frontmatter, overlay YAML shape, static file references, generator outputs, and marketplace sync are well-formed — without git audit or `blended_ref` inspection.
 **Aliases**: structure-only validate
-**Notes**: Implemented by `validateStructure()`; CI may run via `npm run validate -- --structure-only`.
+**Notes**: Implemented by `validateStructure()`. `npm run validate -- --structure-only` is an optional CLI flag. This repository’s Validate workflow is not structure-only.
 
 ### Term: Blend validation
 **Context**: tooling / overlays
