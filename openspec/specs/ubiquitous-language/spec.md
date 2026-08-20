@@ -183,6 +183,24 @@ The ubiquitous language spec MUST define **Operation guidance** as advisory stri
 - **THEN** documentation MUST use **Operation guidance**
 - **AND** MUST NOT conflate with `schema.yaml` apply instruction blocks
 
+### Requirement: Characterization test glossary entry
+
+The glossary SHALL define **Characterization test** as a Node unit test that records current filesystem mutation behavior of Sync write, Import copy, static overlay apply, and Update orchestration so later refactors can detect drift.
+
+#### Scenario: Characterization test definition
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up Characterization test
+- **THEN** the definition MUST state it records existing mutation behavior without changing that behavior
+- **AND** MUST note tests MUST exercise real filesystem writes or deletes on temporary trees, not only source greps
+- **AND** MUST note the bounded context is tooling / upstream-sync
+
+#### Scenario: Term listed in glossary
+
+- **GIVEN** the ubiquitous-language spec glossary
+- **WHEN** a reader looks for Characterization test
+- **THEN** a `### Term: Characterization test` entry MUST exist
+
 ## Term entries
 
 ### Term: Skill
@@ -334,4 +352,10 @@ The ubiquitous language spec MUST define **Operation guidance** as advisory stri
 **Definition**: Advisory strings from `openspec/config.yaml` per-operation `guidance` arrays (e.g. `operations.archive.guidance`), loaded by `openspec instructions archive --change "<name>" --json` and surfaced as `operationGuidance` for workflow agents.
 **Aliases**: archive guidance
 **Notes**: Distinct from `schema.yaml` apply instruction blocks. Agents treat applicable guidance as additive to built-in workflow steps.
+
+### Term: Characterization test
+**Context**: tooling / upstream-sync
+**Definition**: A Node unit test that records current filesystem mutation behavior of Sync write, Import copy, static overlay apply, and Update orchestration so later refactors can detect drift, without changing that behavior.
+**Aliases**: none
+**Notes**: Tests MUST exercise real filesystem writes or deletes on temporary trees, not only source greps. They MUST NOT clone GitHub or write the live canonical catalog or `.locks/upstream.json`.
 
