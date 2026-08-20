@@ -11,6 +11,7 @@ All notable changes to this skills collection are documented here.
 ### 🔧 Improvements
 
 - **Validate workflow runs unit tests** — GitHub Actions `validate.yaml` now runs `npm test` after `npm ci` and before full `npm run validate`, so overlay/sync/import regressions fail CI instead of merging on manifests alone.
+- **improve and improve-codebase-architecture OpenSpec handoffs** — In OpenSpec repos, selected findings and grilled architecture candidates now become advisor-written `openspec/changes/<slug>/` packages (proposal, design, delta specs, `tasks.md`) instead of standalone `plans/` files; legacy repos keep `plans/`.
 - **Upstream overlay reblend** — Re-applied OpenSpec dual-mode overlays and OpenAI manifests after sync (code-review, domain-modeling, grilling, triage, tdd, setup, improve, improve-codebase-architecture, and generator-only skills).
 
 ### 🐛 Fixes

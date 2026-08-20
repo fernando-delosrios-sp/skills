@@ -112,12 +112,12 @@
     "improve": {
       "source": ".",
       "sourceType": "local",
-      "computedHash": "edd3c79214e0da182869c552b0c75b1cc9b80bce22208c20a90e96da29db64fd"
+      "computedHash": "64dd7e877e6a48e49bba273a3f528f70686ff8b57e721eb75802ef8d25a461b3"
     },
     "improve-codebase-architecture": {
       "source": ".",
       "sourceType": "local",
-      "computedHash": "6de40b668826cff010d4509f0f924ea63b3cbc647f0f793243463f4544399344"
+      "computedHash": "49840fbf838a71a023a6cc0e73bf08c791361828cb7d17e727d9908fd1f6a7f7"
     },
     "openspec-init": {
       "source": ".",
@@ -140,11 +140,6 @@
       "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
       "computedHash": "a0c9a0e7dcd8af6f6223c7011515b7c362cf9e968d332038a83033da6830dee6"
     },
-    "update-skills": {
-      "source": ".",
-      "sourceType": "local",
-      "computedHash": "5bd759ba28e109494f1c3c8c908b70d824516c97cc11f54aac774d9e2af7e0ea"
-    },
     "structured-choices": {
       "source": "fernando-delosrios-sp/skills",
       "sourceType": "github",
@@ -166,6 +161,11 @@
       "source": ".",
       "sourceType": "local",
       "computedHash": "d8938509f3400d9977343e11e876fc6e1982b0b9c133a2f2e9d3d730a67a103e"
+    },
+    "update-skills": {
+      "source": ".",
+      "sourceType": "local",
+      "computedHash": "5bd759ba28e109494f1c3c8c908b70d824516c97cc11f54aac774d9e2af7e0ea"
     },
     "wait-what": {
       "source": ".",

@@ -1,5 +1,5 @@
 skill: improve-codebase-architecture
-description: Markdown report format and OpenSpec-aware domain model integration
+description: Markdown report, OpenSpec change after grill, dual-mode domain model
 
 changes:
   - action: remove
@@ -10,38 +10,41 @@ changes:
   - action: add
     file: MARKDOWN-REPORT.md
     from: files/MARKDOWN-REPORT.md
+  - action: add
+    file: OPENSPEC-CHANGE.md
+    from: files/OPENSPEC-CHANGE.md
 
   - file: SKILL.md
     instructions: |
-      Adapt improve-codebase-architecture for dual-mode domain modeling (OpenSpec vs legacy) and markdown reports:
+      Adapt improve-codebase-architecture for dual-mode domain modeling, markdown reports, and OpenSpec change output:
 
-      1. **Mode detection first:** Before domain-model guidance, check whether `openspec/config.yaml` or `openspec/specs/` exists in the target repo. Branch all subsequent domain-model behavior on this — same detection as `/domain-modeling`.
+      1. **Mode detection first:** Before domain-model guidance, check whether `openspec/config.yaml` or `openspec/specs/` exists. Same detection as `/domain-modeling`.
 
-      2. **Architecture vocabulary:** Use [LANGUAGE.md](LANGUAGE.md) for module/interface/depth/seam vocabulary and principles. Do not tell the agent to run `/codebase-design` for vocabulary — it is inlined here.
+      2. **Architecture vocabulary:** Use [LANGUAGE.md](LANGUAGE.md) for module/interface/depth/seam vocabulary. Do not route vocabulary through `/codebase-design`.
 
-      3. **OpenSpec mode** (when detected):
+      3. **OpenSpec mode:**
          - Do NOT reference or write `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/`.
-         - Read `openspec/specs/ubiquitous-language/spec.md` for domain terms that name good seams.
-         - Scan relevant capability specs under `openspec/specs/` for architectural decisions this command should not re-litigate.
-         - During grilling, run `/domain-modeling` for all domain-model side effects — it handles OpenSpec targets (ubiquitous-language spec, capability specs, change workflow).
-         - When a candidate contradicts an existing capability spec requirement, surface it only when friction warrants reopening — mark as spec conflict, not ADR.
+         - Read ubiquitous-language spec and relevant capability specs for seams and settled decisions.
+         - During grilling, run `/domain-modeling` for domain-model side effects.
+         - Spec conflicts only when friction warrants reopening.
 
-      4. **Legacy mode** (no OpenSpec):
-         - Read `CONTEXT.md` (or context-specific CONTEXT via `CONTEXT-MAP.md`) and `docs/adr/` in the area being touched.
-         - During grilling, run `/domain-modeling` for CONTEXT.md and ADR side effects.
-         - ADR conflict callouts use ADR identifiers as today.
+      4. **Legacy mode:**
+         - Read `CONTEXT.md` (or via `CONTEXT-MAP.md`) and `docs/adr/`.
+         - During grilling, run `/domain-modeling` for CONTEXT/ADR side effects.
 
-      5. **Report format:** Replace upstream HTML temp-file report with markdown in chat per [MARKDOWN-REPORT.md](MARKDOWN-REPORT.md). Optional save to `ARCHITECTURE-REVIEW.md` at project root. No HTML, CDN, or browser step.
+      5. **Report format:** Markdown in chat per [MARKDOWN-REPORT.md](MARKDOWN-REPORT.md). Optional save to `ARCHITECTURE-REVIEW.md`. No HTML/CDN/browser.
 
-      6. **Grilling loop:** Replace hardcoded CONTEXT.md/ADR bullet list with delegation to `/domain-modeling` plus `/grilling` and optional `/codebase-design` design-it-twice pattern. Domain-modeling owns when/how to record terms and decisions in either mode.
+      6. **Grilling loop:** `/grilling` + `/domain-modeling`; optional `/codebase-design` design-it-twice. After user confirms shared understanding:
+         - **OpenSpec mode:** Write `openspec/changes/<slug>/` for the picked candidate per [OPENSPEC-CHANGE.md](OPENSPEC-CHANGE.md). `discovery.md` = grill decisions; `design.md` = deepening shape; `tasks.md` = apply plan. Do not implement. Hand off: `/opsx:apply <slug>` or **apply-code-changes**.
+         - **Legacy mode:** Stop after grill — no change folder.
 
-      Preserve upstream process (YAGNI scoping, hot-spot inference, explore subagent, deletion test, recommendation strength badges, pick-one grilling flow).
+      Preserve upstream process (YAGNI scoping, hot-spot inference, explore subagent, deletion test, recommendation badges, pick-one flow).
 
   - file: MARKDOWN-REPORT.md
     instructions: |
       Make report format OpenSpec-aware alongside legacy:
 
-      - **Suggested context** section: note terms worth formalising via `/domain-modeling` — in OpenSpec mode that means the ubiquitous-language spec (and capability specs when relevant); in legacy mode, CONTEXT.md.
-      - Replace single **ADR conflict** bullet with dual-mode **Decision conflict** guidance: OpenSpec → blockquote citing capability spec slug/requirement; legacy → ADR identifier warning.
-      - Example candidate card template should show decision conflict as optional with mode-appropriate label.
-      - Do not instruct agents to create CONTEXT.md or ADRs directly from the report — route through domain-modeling.
+      - **Suggested context:** terms to formalise via `/domain-modeling` — OpenSpec → ubiquitous-language (+ capability specs when relevant); legacy → CONTEXT.md.
+      - **Decision conflict:** OpenSpec → capability spec slug/requirement blockquote; legacy → ADR identifier.
+      - Do not create CONTEXT.md or ADRs from the report — route through domain-modeling.
+      - Optional note after report (OpenSpec only): picked candidates can become change packages after grilling.

@@ -1,47 +1,76 @@
 skill: improve
-description: OpenSpec-aware intent doc ingestion and decision conflict handling
+description: OpenSpec change packages wrap execution plans; dual-mode intent ingestion
 
 changes:
+  - action: add
+    file: references/openspec-change.md
+    from: files/openspec-change.md
+
   - file: SKILL.md
     instructions: |
-      Adapt improve for dual-mode intent/design doc ingestion (OpenSpec vs legacy):
+      Adapt improve for dual-mode output (OpenSpec change packages vs legacy plans) and intent ingestion:
 
-      1. **Mode detection first:** Before intent-doc guidance in Phase 1 Recon, check whether `openspec/config.yaml` or `openspec/specs/` exists in the target repo. Branch all subsequent intent/design doc behavior on this — same detection as `/domain-modeling`.
+      1. **Mode detection first:** Before intent-doc guidance in Phase 1 Recon, check whether `openspec/config.yaml` or `openspec/specs/` exists in the target repo. Branch all subsequent behavior on this — same detection as `/domain-modeling`.
 
-      2. **OpenSpec mode** (when detected):
-         - Do NOT reference or rely on `CONTEXT.md`, `CONTEXT-MAP.md`, `docs/adr/`, PRDs, `PRODUCT.md`, or `DESIGN.md` as intent sources — capability specs under `openspec/specs/` are the canonical record for product, design, and architectural intent.
-         - Read `openspec/specs/ubiquitous-language/spec.md` for domain vocabulary that plans and findings should honor.
-         - Scan relevant capability specs under `openspec/specs/` for product, design, and architectural decisions this audit should not re-litigate.
-         - Treat settled capability spec requirements as by-design — same role ADRs and legacy product/design docs play in legacy mode.
-         - When vetting findings, a candidate that contradicts an existing spec requirement is only worth surfacing when friction warrants reopening — mark as spec conflict, not ADR.
-         - Plans should cite capability spec slugs/requirements (not ADR identifiers or legacy doc paths) when documenting constraints the executor must honor.
-         - **Introducing product or design changes:** when a finding or plan would create or update product/design intent (new features, roadmap items, design-system constraints), do NOT write PRDs, `PRODUCT.md`, or `DESIGN.md`. Route through the OpenSpec change workflow — delta specs under `openspec/changes/<name>/specs/<capability>/spec.md`, with `/opsx:propose` or `/domain-modeling` for side effects (same pattern as `/codebase-design` grilling). Direction and spike plans may include an explicit prerequisite step to open or land the change proposal before implementation.
-         - README roadmaps may still be read as informal signal when no equivalent capability spec exists; prefer capability specs when both are present.
+      2. **Hard Rules — allowed writes:**
+         - **Legacy mode:** `plans/` (or `advisor-plans/` when `plans/` exists for another purpose) only.
+         - **OpenSpec mode:** `openspec/changes/<slug>/` only — never `plans/` on the same run.
+         - Never modify source code in either mode.
 
-      3. **Legacy mode** (no OpenSpec):
-         - Preserve upstream behavior: glob for ADRs (`docs/adr/`, `docs/adrs/`, `docs/decisions/`), `CONTEXT.md`, `DESIGN.md`, `PRODUCT.md`, PRDs/specs.
-         - ADR and CONTEXT.md tradeoffs remain the by-design signal during vet and planning.
+      3. **OpenSpec mode — intent:**
+         - Do NOT use `CONTEXT.md`, `CONTEXT-MAP.md`, `docs/adr/`, PRDs, `PRODUCT.md`, or `DESIGN.md` as intent sources.
+         - Read `openspec/specs/ubiquitous-language/spec.md` and scan relevant capability specs for settled decisions.
+         - Treat settled spec requirements as by-design; spec conflicts only when friction warrants reopening.
+         - Findings and change packages cite capability slugs/requirements, not ADR paths.
+         - README roadmaps as informal signal when no equivalent spec exists.
 
-      4. **Cross-skill:** When OpenSpec is absent and the user needs to initialize it, suggest the `openspec-init` skill. Reference `/domain-modeling` and [OPENSPEC-MODE.md](../domain-modeling/OPENSPEC-MODE.md) for how terms and decisions are recorded in OpenSpec repos.
+      4. **OpenSpec mode — Phase 4 (replace upstream "Write the plans"):**
+         - Read [references/openspec-change.md](references/openspec-change.md) before writing the first package.
+         - For **each selected finding**, write one `openspec/changes/<slug>/` folder per that reference — all artifacts for the target schema (ferspec table in the reference).
+         - Map plan-template sections into the change package; do **not** write `plans/NNN-*.md`.
+         - End with a **chat index** (slugs, dependency order, status) — no `plans/README.md`.
+         - Reconcile against existing non-archive changes; monotonic slugs; skip duplicates.
 
-      5. **Subagent prompts:** In Phase 2, pass mode-appropriate settled-decision hints to subagents (capability spec slugs in OpenSpec mode; ADR identifiers in legacy mode).
+      5. **Legacy mode:**
+         - Preserve upstream Phase 4: `plans/` + plan-template + `plans/README.md`.
+         - Glob ADRs, CONTEXT.md, PRDs, etc. for intent; ADR/CONTEXT tradeoffs are by-design.
 
-      6. **Frontmatter:** Extend description to mention OpenSpec-aware intent ingestion when capability specs exist. Add `disable-model-invocation: true` — this skill is a heavy read-only advisor meant for explicit invocation only; hosts must not auto-invoke it on casual audit or improvement wording.
+      6. **Invocation variants — OpenSpec remaps** (legacy unchanged):
+         - `plan <description>` → one change folder.
+         - `review-plan <path>` → critique `tasks.md` + specs in that change.
+         - `execute <slug>` → invoke **apply-code-changes** on the change folder; advisor reviews, never edits source.
+         - `reconcile` / `--issues` → operate on open changes per openspec-change.md.
 
-      Preserve upstream hard rules, workflow phases, invocation variants, and tone.
+      7. **Cross-skill:** OpenSpec absent → suggest `openspec-init`. Reference `/domain-modeling` and [OPENSPEC-MODE.md](../domain-modeling/OPENSPEC-MODE.md).
+
+      8. **Subagent prompts:** Pass mode-appropriate settled-decision hints (capability slugs vs ADR ids).
+
+      9. **Frontmatter:** Description mentions OpenSpec change packages when capability specs exist. Keep `disable-model-invocation: true`.
+
+      Preserve upstream hard rules (no source edits, no secrets, read-only recon), Phases 1–3, effort levels, tone.
 
   - file: references/audit-playbook.md
     instructions: |
       Make audit playbook OpenSpec-aware alongside legacy:
 
-      - In Security "By-design" bullet: dual-mode settled decisions — OpenSpec capability spec requirements are settled like ADRs; stale spec drift (code contradicts spec) is itself a finding.
-      - In Direction "Stated-but-undelivered": in OpenSpec mode, capability specs are the strongest grounding signal (not PRDs or `PRODUCT.md`); in legacy mode, PRDs and `PRODUCT.md` apply. Never propose something a spec or decision doc already rejected.
-      - Direction plans that introduce new product or design intent: in OpenSpec mode, scope as spike/change-proposal plans routed through `/opsx:propose` or `/domain-modeling` — do not instruct creating PRDs, `PRODUCT.md`, or `DESIGN.md`; in legacy mode, design/spike plans may reference those docs.
-      - Do not instruct agents to create CONTEXT.md, ADRs, PRDs, `PRODUCT.md`, `DESIGN.md`, or capability specs directly from audit findings — route vocabulary/decision/product updates through `/domain-modeling` or the OpenSpec change workflow.
+      - Security "By-design": OpenSpec capability requirements are settled like ADRs; stale spec drift is a finding.
+      - Direction "Stated-but-undelivered": OpenSpec → capability specs strongest signal; legacy → PRDs/`PRODUCT.md`. Never propose what a spec rejected.
+      - Direction selected findings: **OpenSpec mode** → change packages with spike-scoped `tasks.md` (not PRDs/`PRODUCT.md`); **legacy** → design/spike plans may reference those docs.
+      - Do not instruct creating CONTEXT.md, ADRs, PRDs, capability specs, or `PRODUCT.md`/`DESIGN.md` from findings — vocabulary/decisions route through `/domain-modeling` or the change package itself.
 
   - file: references/plan-template.md
     instructions: |
-      Make plan template OpenSpec-aware alongside legacy:
+      Dual-mode plan template:
 
-      - In "Current state" vocabulary bullet: dual-mode — OpenSpec → cite relevant ubiquitous-language terms and capability spec requirements (slug + requirement name), including product/design constraints encoded in specs; legacy → `CONTEXT.md` terms, ADR identifiers, and `DESIGN.md` tokens/components to reuse. Executor must not be told to read OpenSpec paths the advisor did not actually find.
-      - Add optional **OpenSpec prerequisite** section for direction/spike plans in OpenSpec repos: when implementation depends on new product or design intent, list the change proposal step (`/opsx:propose` or `/domain-modeling`) before code steps — do not add steps that create PRDs, `PRODUCT.md`, or `DESIGN.md`.
+      - **Legacy mode:** Preserve full template and `plans/NNN-slug.md` output path.
+      - **OpenSpec mode:** This file is the **section map**, not the output path. Do not write standalone plan files. Map sections into `openspec/changes/<slug>/` per [openspec-change.md](./openspec-change.md). Remove or omit the **OpenSpec prerequisite** section — the change package is the proposal.
+      - "Current state" vocabulary bullet: OpenSpec → ubiquitous-language + capability requirements; legacy → CONTEXT.md, ADR ids, DESIGN.md tokens. Cite only paths the advisor actually found.
+
+  - file: references/closing-the-loop.md
+    instructions: |
+      Dual-mode closing the loop:
+
+      - **Legacy mode:** Preserve upstream execute/reconcile/--issues against `plans/` unchanged.
+      - **OpenSpec mode — execute:** Invoke **apply-code-changes** (OpenSpec adapter) on `openspec/changes/<slug>/`. Advisor reviews apply handoff — re-run verify criteria from `tasks.md`, check scope against `design.md`, never edit source. Update chat index status, not `plans/README.md`.
+      - **OpenSpec mode — reconcile:** Walk `openspec/changes/` excluding `archive/`. Per change: refresh drifted `design.md`/`tasks.md`, verify DONE criteria on HEAD, mark BLOCKED/REJECTED. Report executable slugs.
+      - **OpenSpec mode — --issues:** Publish issue body from `proposal.md` + pointer to change folder; record URL in chat index. Same public-repo sensitivity gate as legacy.

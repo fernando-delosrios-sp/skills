@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Scan a codebase for deepening opportunities, present them as a markdown report, then grill through whichever one you pick. OpenSpec-aware when capability specs exist.
+description: Scan a codebase for deepening opportunities, present them as a markdown report, grill through whichever one you pick, then write an OpenSpec change package when capability specs exist.
 disable-model-invocation: true
 ---
 
@@ -86,3 +86,8 @@ Do NOT propose interfaces yet. After the report, ask the user: "Which of these w
 Once the user picks a candidate, call the Skill tool with "grilling" to walk the decision tree with them: constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
 
 Side effects happen inline as decisions crystallize. Call `/domain-modeling` for all domain-model recording in either mode — it owns when/how to record terms and decisions. Optionally call `/codebase-design` and use its design-it-twice parallel sub-agent pattern when exploring alternative interfaces for the deepened module.
+
+After the user confirms shared understanding (grilling done):
+
+- **OpenSpec mode:** Write `openspec/changes/<slug>/` for the picked candidate per [OPENSPEC-CHANGE.md](OPENSPEC-CHANGE.md). `discovery.md` records grill decisions; `design.md` holds the deepening shape (files, seam, tests that survive); `tasks.md` is the apply plan. Do not implement. Hand off via `/opsx:apply <slug>` or **apply-code-changes**.
+- **Legacy mode:** Stop after grill — no change folder.
