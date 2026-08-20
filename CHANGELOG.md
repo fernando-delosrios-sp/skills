@@ -11,6 +11,7 @@ All notable changes to this skills collection are documented here.
 ### 🔧 Improvements
 
 - **Validate workflow runs unit tests** — GitHub Actions `validate.yaml` now runs `npm test` after `npm ci` and before full `npm run validate`, so overlay/sync/import regressions fail CI instead of merging on manifests alone.
+- **Characterization tests for mutation paths** — Unit tests now record Sync write (`applySyncResult`), Import copy (`copySkillDir` / `doImport`), static overlay add/remove/dryRun, and Update stage order (`runUpdate`) on temporary trees, with optional deps that default to the production pipeline. Later argv, path-confinement, and clone-cache work can detect drift without cloning GitHub or touching live `skills/` / `.locks/`.
 - **improve and improve-codebase-architecture OpenSpec handoffs** — In OpenSpec repos, selected findings and grilled architecture candidates now become advisor-written `openspec/changes/<slug>/` packages (proposal, design, delta specs, `tasks.md`) instead of standalone `plans/` files; legacy repos keep `plans/`.
 - **Upstream overlay reblend** — Re-applied OpenSpec dual-mode overlays and OpenAI manifests after sync (code-review, domain-modeling, grilling, triage, tdd, setup, improve, improve-codebase-architecture, and generator-only skills).
 
