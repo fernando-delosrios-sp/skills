@@ -139,7 +139,7 @@ Per implementation task:
 1. Map related `#### Scenario:` blocks; name tests after scenarios.
 2. Invoke **tdd** when present (non-blocking if absent).
 3. Implement; mark `- [ ]` → `- [x]` only when tests pass.
-4. Invoke **git-commit** for logical units on the active work ref (`ORIGINAL_BRANCH`, `APPLY_REF`, or `FEATURE_BRANCH` per venue matrix).
+4. Invoke **git-commit** for logical units on the active work ref (`ORIGINAL_BRANCH`, `APPLY_REF`, or `FEATURE_BRANCH` per venue matrix). Commit this unit's in-scope paths; **changelog-generator** runs in the Changelog group.
 5. After each `##` group (or end when `single`), invoke **code-review** when present — fixed point = `ORIGINAL_BRANCH`.
 
 **Parallelism `subagent-per-group`:**

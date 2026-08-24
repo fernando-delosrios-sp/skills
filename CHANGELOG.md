@@ -2,6 +2,14 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-08-24 · v0.5.1
+
+### 🐛 Fixes
+
+- **git-commit no longer writes versioned changelog sections** — Commits proceed after the private-data gate. **changelog-generator** still owns dated `vX.Y.Z` release notes, during apply's Changelog group or when the user asks for a changelog. Intermediate apply commits no longer ship extra release sections or skip the intended changelog.
+
+---
+
 ## 2026-08-20 · v0.5.0
 
 ### ✨ New Features
