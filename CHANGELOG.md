@@ -7,6 +7,7 @@ All notable changes to this skills collection are documented here.
 ### 🐛 Fixes
 
 - **git-commit no longer writes versioned changelog sections** — Commits proceed after the private-data gate. **changelog-generator** still owns dated `vX.Y.Z` release notes, during apply's Changelog group or when the user asks for a changelog. Intermediate apply commits no longer ship extra release sections or skip the intended changelog.
+- **changelog-generator reads OpenSpec change folders** — HIGH/MED inputs now resolve `proposal.md`, `tasks.md`, and spec deltas from `ACTIVE_CHANGE_ROOT` / `CHANGE_ROOT`, then `openspec/changes/<name>/`. Apply passes `ACTIVE_CHANGE_ROOT` into the Changelog group so user-visible Capabilities are not skipped.
 
 ---
 

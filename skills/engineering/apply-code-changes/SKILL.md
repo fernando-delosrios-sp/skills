@@ -148,7 +148,7 @@ Per implementation task:
 - **`worktree`:** optional group worktrees on `apply-<name>-<slug>`; orchestrator merges into `APPLY_REF`; merge gate (step 4) squash-merges to `ORIGINAL_BRANCH` before verify.
 - **`remote`:** subagents on runner checkout; orchestrator commits on `FEATURE_BRANCH`.
 
-Documentation group: update files from proposal Impact and tasks. Changelog group: invoke **changelog-generator**.
+Documentation group: update files from proposal Impact and tasks. Changelog group: invoke **changelog-generator** with `ACTIVE_CHANGE_ROOT` as the change root.
 
 ### 4. Merge gate (worktree only — blocking)
 
