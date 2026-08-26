@@ -106,7 +106,7 @@ Optional: invoke a **git worktree skill** when present for naming/cleanup conven
 
 1. Merge on-disk `tracking.md` at adapter `CHANGE_ROOT` when present (field-by-field; trusted-hint rules for Issue/PR/Branch).
 2. When Presets → `venue` is **`remote`**: candidate `FEATURE_BRANCH` = `TRACKING` → Branch, else adapter default. When that branch exists locally or on `origin`, read `CHANGE_ROOT_REL/tracking.md` from it (prefer local, else `origin/<branch>`). When `STORE_SOURCE` is `hint` and path absent, search branch tree for `.../NAME/tracking.md`. Non-empty on-disk Branch ≠ candidate: **STOP**. Change mismatch: defer per store-adoption rules below.
-3. **Merge** remote-branch tracking (step 2 only): non-empty Issue, Branch, PR win; Presets keys merge individually. Overlay `PRESET_OVERRIDES`; set **Change** = full `CHANGE_ROOT`. Never replace `Presets` wholesale.
+3. **Merge** remote-branch tracking (**Pre-bind tracking merge** step 2 only): non-empty Issue, Branch, PR win; Presets keys merge individually. Overlay `PRESET_OVERRIDES`; set **Change** = full `CHANGE_ROOT`. Never replace `Presets` wholesale.
 4. **Store adoption** (unchanged intent): when `STORE_SOURCE` is `hint` and Change mismatch deferred or branch Presets → `store` differs, adopt store, rerun adapter, **restore `TRACKING` from `TRACKING_SETUP`**, restart merge once.
 5. Map legacy Presets → `workspace` to `venue` when `venue` empty.
 
@@ -123,10 +123,10 @@ Optional: invoke a **git worktree skill** when present for naming/cleanup conven
 |---|---|
 | **`local`** | Checkout `ORIGINAL_BRANCH` on main → `WORK_CHECKOUT` = main repo |
 | **`worktree`** | Main on `ORIGINAL_BRANCH`. `git worktree add <path> -b APPLY_REF ORIGINAL_BRANCH` (or attach existing clean `APPLY_REF`) → `WORK_CHECKOUT` = worktree path |
-| **`remote`** | Main on `ORIGINAL_BRANCH`. Resolve `FEATURE_BRANCH` per step 2. Checkout `FEATURE_BRANCH` in worktree or runner checkout; push `-u origin FEATURE_BRANCH` when new. Create **Issue** when empty and `docs/agents/issue-tracker.md` exists. Dispatch cloud/CI runner when platform supports; else orchestrate on `FEATURE_BRANCH` locally |
+| **`remote`** | Main on `ORIGINAL_BRANCH`. Resolve `FEATURE_BRANCH` per **Branch resolution** step 2. Checkout `FEATURE_BRANCH` in worktree or runner checkout; push `-u origin FEATURE_BRANCH` when new. Create **Issue** when empty and `docs/agents/issue-tracker.md` exists. Dispatch cloud/CI runner when platform supports; else orchestrate on `FEATURE_BRANCH` locally |
 
-10. **Persist `tracking.md`** at `ACTIVE_CHANGE_ROOT` (reconcile; never wholesale Presets replace).
-11. **Re-read** planning artifacts from `ACTIVE_CHANGE_ROOT`.
+1. **Persist `tracking.md`** at `ACTIVE_CHANGE_ROOT` (reconcile; never wholesale Presets replace).
+2. **Re-read** planning artifacts from `ACTIVE_CHANGE_ROOT`.
 
 ### 3. Execute tasks
 
