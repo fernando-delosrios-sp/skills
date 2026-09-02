@@ -107,7 +107,7 @@ npm run overlay -- prepare      # remerge manifests
 Declared in universal [`overlays/OVERLAY.yaml`](overlays/OVERLAY.yaml) as an agent generator (`{ id, instructions, file? }`). Applied by **update-skills** after semantic merge. Typical output derived from each skill's `SKILL.md` frontmatter:
 
 - `interface.display_name` — title-cased skill name
-- `interface.short_description` — first sentence of the description
+- `interface.short_description` — first sentence of the description, verbatim (never truncated)
 - `policy.allow_implicit_invocation: false` — when `disable-model-invocation: true`
 
 Per-skill overlays may add more generators in `generators.add` or opt out via `generators.disable`.

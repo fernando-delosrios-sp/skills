@@ -88,6 +88,22 @@ describe('generated path classification', () => {
 describe('expectedContentForPath', () => {
   const skill = { name: 'git-commit', category: 'engineering' };
 
+  async function fixtureSkill(description, frontmatterExtra = '') {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'overlay-yaml-derive-'));
+    const skillDir = join(tempRoot, 'skills', 'test-cat', 'test-skill');
+    await mkdir(skillDir, { recursive: true });
+    await writeFile(
+      join(skillDir, 'SKILL.md'),
+      `---
+name: test-skill
+description: ${JSON.stringify(description)}
+${frontmatterExtra}---
+# Body
+`
+    );
+    return { tempRoot, skillDir };
+  }
+
   it('derives openai-manifest from SKILL.md frontmatter', async () => {
     const skillDir = getSkillDir(skill);
     const derived = await expectedContentForPath(skill, 'agents/openai.yaml', { skillDir });
@@ -95,9 +111,31 @@ describe('expectedContentForPath', () => {
 
     const doc = parse(derived);
     assert.equal(doc.interface.display_name, 'Git Commit');
-    assert.ok(doc.interface.short_description.length > 0);
-    assert.ok(doc.interface.short_description.length <= 72);
+    assert.equal(
+      doc.interface.short_description,
+      'Session-scoped git commit with conventional message analysis and staging.'
+    );
     assert.equal(doc.policy, undefined);
+  });
+
+  it('keeps a long first sentence untruncated', async () => {
+    const sentence =
+      'Execute a planned change from tasks.md through verify-aligned gate, verify-fix loop, and handoff — OpenSpec ferspec apply via /opsx:apply, or any folder with tasks.md (Direct adapter).';
+    const { tempRoot, skillDir } = await fixtureSkill(
+      `${sentence} TDD, commits, changelog.`
+    );
+
+    try {
+      const derived = await expectedContentForPath(
+        { name: 'test-skill', category: 'test-cat' },
+        'agents/openai.yaml',
+        { skillDir }
+      );
+      const doc = parse(derived);
+      assert.equal(doc.interface.short_description, sentence);
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
   });
 
   it('returns null for non-generator paths', async () => {
@@ -107,28 +145,21 @@ describe('expectedContentForPath', () => {
   });
 
   it('includes policy when disable-model-invocation is true', async () => {
-    const tempRoot = await mkdtemp(join(tmpdir(), 'overlay-yaml-derive-'));
-    const skillDir = join(tempRoot, 'skills', 'test-cat', 'test-skill');
-    await mkdir(skillDir, { recursive: true });
-    await writeFile(
-      join(skillDir, 'SKILL.md'),
-      `---
-name: test-skill
-description: A test skill for derivation.
-disable-model-invocation: true
----
-# Body
-`
+    const { tempRoot, skillDir } = await fixtureSkill(
+      'A test skill for derivation.',
+      'disable-model-invocation: true\n'
     );
 
-    const testSkill = { name: 'test-skill', category: 'test-cat' };
-    const derived = await expectedContentForPath(testSkill, 'agents/openai.yaml', { skillDir });
-    assert.notEqual(derived, null);
+    try {
+      const testSkill = { name: 'test-skill', category: 'test-cat' };
+      const derived = await expectedContentForPath(testSkill, 'agents/openai.yaml', { skillDir });
+      assert.notEqual(derived, null);
 
-    const doc = parse(derived);
-    assert.equal(doc.policy?.allow_implicit_invocation, false);
-
-    await rm(tempRoot, { recursive: true, force: true });
+      const doc = parse(derived);
+      assert.equal(doc.policy?.allow_implicit_invocation, false);
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
   });
 });
 

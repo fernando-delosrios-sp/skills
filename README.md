@@ -232,7 +232,7 @@ generators:
     instructions: |
       Build agents/openai.yaml from this skill's SKILL.md frontmatter:
       - interface.display_name: hyphenated name → Title Case words
-      - interface.short_description: first sentence of description, ~72 chars max
+      - interface.short_description: first sentence of description, verbatim, never truncated
       - policy.allow_implicit_invocation: false when disable-model-invocation is true
 ```
 
@@ -312,7 +312,7 @@ Static ops run before semantic apply. A static `add/replace` for a generated pat
 Declared in universal [`overlays/OVERLAY.yaml`](overlays/OVERLAY.yaml) as an agent generator. Applied by **update-skills** after semantic merge. Typical output derived from each skill's `SKILL.md` frontmatter:
 
 - `interface.display_name` — title-cased skill name
-- `interface.short_description` — first sentence of the description
+- `interface.short_description` — first sentence of the description, verbatim (never truncated)
 - `policy.allow_implicit_invocation: false` — when `disable-model-invocation: true`
 
 Per-skill overlays may add more generators in `generators.add` or opt out via `generators.disable`.
