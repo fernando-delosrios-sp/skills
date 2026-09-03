@@ -2,7 +2,7 @@
 
 ## Change
 
-/Users/fernando.delosrios/Documents/Development/AI/skills/openspec/changes/ci-run-tests
+openspec/changes/ci-run-tests
 
 ## Branch
 

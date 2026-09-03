@@ -62,7 +62,7 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 | MED | `TRACKING` / `tracking.md` | Issue/PR linkage + resume Presets |
 | LOW | `docs/agents/issue-tracker.md` | Issue workflow when present |
 
-**Trusted hint:** `TRACKING_HINT` loaded and its Change equals `CHANGE_ROOT`. Branch, Issue, PR, and Presets from an untrusted hint are ignored for merge overlay.
+**Trusted hint:** `TRACKING_HINT` loaded and its Change equals `CHANGE_ROOT_REL` (legacy: equals `CHANGE_ROOT`). Branch, Issue, PR, and Presets from an untrusted hint are ignored for merge overlay.
 
 ## Steps
 
@@ -76,7 +76,7 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 
 **Interactive host** — **structured-choices** venue gate (one message; **must run** — a trusted Issue or filled Presets does not skip it):
 
-1. Initialize **`TRACKING`**: copy non-empty `TRACKING_HINT` fields **field-by-field**, **except Branch, Issue, PR, and Presets keys** — copy those only on a **trusted hint**; set **Change** = full `CHANGE_ROOT`. Initialize empty **`PRESET_OVERRIDES`**. **Do not write to disk.**
+1. Initialize **`TRACKING`**: copy non-empty `TRACKING_HINT` fields **field-by-field**, **except Branch, Issue, PR, and Presets keys** — copy those only on a **trusted hint**; set **Change** = `CHANGE_ROOT_REL`. Initialize empty **`PRESET_OVERRIDES`**. **Do not write to disk.**
 2. **Venue:** `local` | `worktree` | `remote` → set `TRACKING` Presets → `venue` **and** `PRESET_OVERRIDES` → `venue`.
 3. When the OpenSpec adapter set `STORE`, set Presets → `store`; add to `PRESET_OVERRIDES` **only** when `STORE_SOURCE` is `explicit`.
 4. **Parallelism** (agent — not a user gate): choose `single` | `subagent-per-group` using the criteria below; set Presets → `parallelism` and `PRESET_OVERRIDES` → `parallelism`; note one-line rationale in session.
@@ -106,7 +106,7 @@ Optional: invoke a **git worktree skill** when present for naming/cleanup conven
 
 1. Merge on-disk `tracking.md` at adapter `CHANGE_ROOT` when present (field-by-field; trusted-hint rules for Issue/PR/Branch).
 2. When Presets → `venue` is **`remote`**: candidate `FEATURE_BRANCH` = `TRACKING` → Branch, else adapter default. When that branch exists locally or on `origin`, read `CHANGE_ROOT_REL/tracking.md` from it (prefer local, else `origin/<branch>`). When `STORE_SOURCE` is `hint` and path absent, search branch tree for `.../NAME/tracking.md`. Non-empty on-disk Branch ≠ candidate: **STOP**. Change mismatch: defer per store-adoption rules below.
-3. **Merge** remote-branch tracking (**Pre-bind tracking merge** step 2 only): non-empty Issue, Branch, PR win; Presets keys merge individually. Overlay `PRESET_OVERRIDES`; set **Change** = full `CHANGE_ROOT`. Never replace `Presets` wholesale.
+3. **Merge** remote-branch tracking (**Pre-bind tracking merge** step 2 only): non-empty Issue, Branch, PR win; Presets keys merge individually. Overlay `PRESET_OVERRIDES`; set **Change** = `CHANGE_ROOT_REL`. Never replace `Presets` wholesale.
 4. **Store adoption** (unchanged intent): when `STORE_SOURCE` is `hint` and Change mismatch deferred or branch Presets → `store` differs, adopt store, rerun adapter, **restore `TRACKING` from `TRACKING_SETUP`**, restart merge once.
 5. Map legacy Presets → `workspace` to `venue` when `venue` empty.
 
@@ -231,7 +231,7 @@ Verify-fix checks implementation vs specs, design, and tasks — beyond structur
 - No adapter creating on-disk `tracking.md`.
 - No bind without Presets → `venue` and `parallelism`.
 - No wholesale `Presets` replace during tracking merge.
-- No inheritance of `Change` from a tracking file — always current adapter `CHANGE_ROOT`.
+- No inheritance of `Change` from a tracking file — always current adapter `CHANGE_ROOT_REL`.
 - No post-bind artifact I/O via pre-bind `CHANGE_ROOT`.
 - No `gh pr create` without `--base ORIGINAL_BRANCH`.
 - No worktree handoff before merge gate (step 4) completes.

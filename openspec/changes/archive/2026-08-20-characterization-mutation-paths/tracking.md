@@ -2,7 +2,7 @@
 
 ## Change
 
-/Users/fernando.delosrios/Documents/Development/AI/skills/openspec/changes/characterization-mutation-paths
+openspec/changes/characterization-mutation-paths
 
 ## Branch
 
