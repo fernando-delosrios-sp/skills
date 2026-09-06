@@ -13,7 +13,7 @@ changes:
       1. **Explore (step 1):** Also check for `openspec/config.yaml` and `openspec/specs/` — signals OpenSpec mode.
 
       2. **Section C — Domain docs:** Branch on mode:
-         - **OpenSpec detected** (recommended when present): scaffold **OpenSpec layout** — write `docs/agents/domain.md` from [domain-openspec.md](./domain-openspec.md). Do **not** create or reference repo-root `CONTEXT.md` or `CONTEXT-MAP.md`. Summarize as "OpenSpec mode" in the AGENTS block.
+         - **OpenSpec detected** (OpenSpec mode per [OPENSPEC-MODE.md](../domain-modeling/OPENSPEC-MODE.md) §Detection — recommended when present): scaffold **OpenSpec layout** — write `docs/agents/domain.md` from [domain-openspec.md](./domain-openspec.md). Do **not** create or reference repo-root `CONTEXT.md` or `CONTEXT-MAP.md`. Summarize as "OpenSpec mode" in the AGENTS block.
          - **Legacy (no OpenSpec):** preserve upstream — default single-context (`CONTEXT.md` + `docs/adr/`); offer multi-context only when monorepo signals found.
 
       3. **Write (step 4):** Template selection:

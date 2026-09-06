@@ -1,6 +1,6 @@
 ---
 name: apply-code-changes
-description: Execute a planned change from tasks.md through verify-aligned gate, verify-fix loop, and handoff — OpenSpec ferspec apply via /opsx:apply, or any folder with tasks.md (Direct adapter). TDD, commits, changelog; venue gate (local, worktree, remote).
+description: Apply tasks.md through verify-aligned gate, verify-fix loop, and handoff.
 ---
 
 # Apply Code Changes
@@ -212,27 +212,21 @@ Verify-fix checks implementation vs specs, design, and tasks — beyond structur
 | PR / issue | gh + issue-tracker doc | Remote handoff |
 | Cloud dispatch | SDK / Task `environment: cloud` | Remote when available |
 
-## Narrowing
+## Invariants
 
-- No archive or spec sync inside apply.
-- No marking tasks `[x]` before tests pass.
-- No PR before verify-fix PASS (**remote**).
-- No handoff before verify-fix PASS.
-- No verify-fix or verify-aligned gate on a worktree checkout — merge gate (step 4) first.
-- No treating `openspec validate` alone as sufficient — verify-fix is mandatory for OpenSpec apply.
-- No deferring verify FAILs or warnings to the user.
-- No durable feature branch on **local** or **worktree** — only `ORIGINAL_BRANCH` (+ ephemeral `apply-<name>`).
-- No skipping the interactive **venue** gate because Issue or Presets are prefilled.
-- No `FEATURE_BRANCH` on local/worktree bind.
-- No recreating **`FEATURE_BRANCH`** from `ORIGINAL_BRANCH` when it exists on `origin`.
-- No skipping Changelog.
-- No hardcoded `openspec/changes/<name>/`.
-- No concurrent subagents on shared git state.
-- No adapter creating on-disk `tracking.md`.
-- No bind without Presets → `venue` and `parallelism`.
-- No wholesale `Presets` replace during tracking merge.
-- No inheritance of `Change` from a tracking file — always current adapter `CHANGE_ROOT_REL`.
-- No post-bind artifact I/O via pre-bind `CHANGE_ROOT`.
-- No `gh pr create` without `--base ORIGINAL_BRANCH`.
-- No worktree handoff before merge gate (step 4) completes.
-- No mixing superpowers-bridge apply with this skill on the same change.
+Venue-specific handoff and bind semantics live in the **Venue matrix** above. These apply on every apply run:
+
+- Archive and spec sync run only via `/opsx:archive` — never inside apply.
+- Mark tasks `[x]` only after tests pass.
+- Run verify-aligned and verify-fix to PASS before handoff; remote PR creation waits on verify-fix PASS.
+- On **worktree**, complete merge gate (step 4) on `ORIGINAL_BRANCH` before verify-aligned or verify-fix.
+- OpenSpec apply requires verify-fix PASS — `openspec validate` alone is insufficient.
+- Fix verify FAILs and warnings in-session — do not defer to the user.
+- **Local** and **worktree** integrate on `ORIGINAL_BRANCH` (+ ephemeral `apply-<name>`); `FEATURE_BRANCH` exists only for **remote**.
+- Interactive hosts run the venue gate via structured-choices even when Issue or Presets are prefilled.
+- Changelog group runs; paths resolve via adapter `CHANGE_ROOT_REL`, not hardcoded `openspec/changes/<name>/`.
+- Subagents run sequentially — never concurrent on shared git state.
+- Adapters do not create on-disk `tracking.md`; bind requires Presets → `venue` and `parallelism`.
+- Tracking merge is field-by-field; **Change** always equals current adapter `CHANGE_ROOT_REL`.
+- Post-bind artifact I/O uses `ACTIVE_CHANGE_ROOT` only.
+- Remote PRs use `--base ORIGINAL_BRANCH`.

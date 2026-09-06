@@ -29,7 +29,7 @@ Look for the originating spec, in this order:
 
 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.), fetched via the workflow in `docs/agents/issue-tracker.md`.
 2. A path the user passed as an argument.
-3. When `openspec/config.yaml` or `openspec/specs/` exists (OpenSpec mode), search these **before** legacy paths:
+3. OpenSpec mode: see [OPENSPEC-MODE.md](../domain-modeling/OPENSPEC-MODE.md) §Detection — when active, search these **before** legacy paths:
    - Delta specs under `openspec/changes/<change-name>/specs/` — match `<change-name>` to branch name, commit messages, or issue title/slug.
    - Canonical capability specs under `openspec/specs/<domain>/spec.md` for domains touched by the diff or named in commit messages.
    - `openspec/changes/<change-name>/proposal.md` or `design.md` when delta specs are absent but the change folder exists.

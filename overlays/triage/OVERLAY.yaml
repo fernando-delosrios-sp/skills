@@ -6,7 +6,7 @@ changes:
     instructions: |
       Adapt triage for dual-mode domain vocabulary (OpenSpec vs legacy):
 
-      1. **Mode detection:** Before domain glossary reads or grilling side effects, check whether `openspec/config.yaml` or `openspec/specs/` exists — same detection as `/domain-modeling`.
+      1. **Mode detection:** OpenSpec mode: see [OPENSPEC-MODE.md](../domain-modeling/OPENSPEC-MODE.md) §Detection.
 
       2. **Gather context (step 1):** In OpenSpec mode, read `openspec/specs/ubiquitous-language/spec.md` and relevant capability specs under `openspec/specs/` instead of `CONTEXT.md` / `CONTEXT-MAP.md`. In legacy mode, preserve upstream behavior (CONTEXT.md, ADRs).
 

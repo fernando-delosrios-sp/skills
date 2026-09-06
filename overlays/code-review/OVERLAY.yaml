@@ -6,7 +6,7 @@ changes:
     instructions: |
       Extend spec source discovery (step 2) for OpenSpec repos:
 
-      1. **Mode detection:** When `openspec/config.yaml` or `openspec/specs/` exists, search OpenSpec paths **before** legacy `docs/`, `specs/`, and `.scratch/` fallbacks.
+      1. **Mode detection:** OpenSpec mode: see [OPENSPEC-MODE.md](../domain-modeling/OPENSPEC-MODE.md) §Detection — search OpenSpec paths before legacy fallbacks.
 
       2. **OpenSpec search order** (insert after user-provided path, before legacy paths):
          - Delta specs under `openspec/changes/<change-name>/specs/` — match `<change-name>` to branch name, commit messages, or issue title/slug.

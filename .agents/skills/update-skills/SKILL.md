@@ -51,7 +51,7 @@ For each skill with route `remerge` or `fresh`:
 2. Load context: `overlays/<skill>/OVERLAY.yaml`, universal generators, post-static files in `skills/<category>/<skill>/`. **Ignore** previous blended content from git except as intent reference in OVERLAY.yaml
 3. Apply semantic changes — read current file, satisfy instruction **intent**, document adaptations
 4. Apply generators — skip pinned static paths unless instructions require regeneration
-5. Capture **change summary** for this skill (see [Change summary](#change-summary)) — done before moving to the next skill
+5. Capture **change summary** for this skill — see [references/report-templates.md](references/report-templates.md) §Change summary — done before moving to the next skill
 6. Remove manifest: `npm run clean -- --skill <skill>` after blend recorded
 
 Apply each skill in manifest order — semantic changes, then generators per skill. Use single-skill scope only when the user names one skill or passed `--skill <name>`.
@@ -91,94 +91,9 @@ Set in `.locks/upstream.json` via `recordBlend` fields:
 
 ### 6. Report
 
-Present the [update report](#update-report) to the user — routing table plus per-skill change summaries and semantic deltas. Do not skip remerge/fresh skills with empty deltas when `upstream_changed` is true.
+Present the [update report](references/report-templates.md#update-report) to the user — routing table plus per-skill change summaries and semantic deltas. Do not skip remerge/fresh skills with empty deltas when `upstream_changed` is true.
 
 **Done when:** user has a readable summary of what changed and why.
-
----
-
-## Change summary
-
-For every skill processed during update or apply-only, record what changed and **why** — not just file lists.
-
-### Sources
-
-| Source | Lock / audit field | Use |
-|--------|-------------------|-----|
-| Last blend | `blended_ref` | Prior customized tree the maintainer shipped |
-| Last upstream at blend | `applied_upstream_sha` | Upstream base used for the last blend |
-| Current upstream | `sha` (after sync) | Fresh upstream canonical |
-| Final tree | working tree after apply | New blend |
-| Overlay intent | `overlays/<skill>/OVERLAY.yaml` | What local customization must preserve |
-
-Use `git diff` between these refs on the skill dir (`skills/<category>/<skill>/`). Read audit flags (`upstream_changed`, `overlay_changed`, `route`) from manifest or `npm run overlay -- audit`.
-
-### Per-skill delta classes
-
-Classify each meaningful difference:
-
-| Class | Meaning | Example phrasing |
-|-------|---------|------------------|
-| **Upstream** | New upstream content adopted as-is or integrated | "Upstream added HITL loop step; kept verbatim" |
-| **Overlay** | Local intent applied on top of new upstream | "Overlay requires Spanish examples; added under Examples" |
-| **Adaptation** | Intent preserved but target moved because upstream structure shifted | "Intent was 'require tests'; mapped to new Verification section" |
-| **Generator** | Derived file created/updated from generator instructions | "Regenerated agents/openai.yaml from frontmatter" |
-| **Unchanged** | Route `restore` or remerge with no material diff | "Inputs unchanged — restored from blended_ref" |
-
-For route `fresh`, treat the delta as overlay + generator applied onto current upstream — no prior blend to diff.
-
-For skills synced without overlay (no remerge), note upstream-only changes when `git diff` shows material edits under `skills/`.
-
-### Per-skill capture (during apply)
-
-Before moving to the next skill, draft:
-
-- **Upstream delta** — what changed upstream since last blend (`applied_upstream_sha` → `sha`), in plain language
-- **Overlay delta** — what overlay intent added, removed, or altered vs post-sync upstream
-- **Adaptations** — any instruction that no longer mapped cleanly; how intent was satisfied instead
-- **Files touched** — paths changed in the final blend vs `blended_ref` (or vs post-sync tree for `fresh`)
-
----
-
-## Update report
-
-```markdown
-## update-skills
-
-**Update:** npm run update completed
-**Pending applied:** <count> skills (remerge/fresh)
-**Restored (npm):** <count> skills
-**Validated:** pass
-
-### Skills processed
-| Skill | Route | One-line |
-|-------|-------|----------|
-| <name> | remerge \| fresh \| restore \| none | <headline delta> |
-
-### Change summary
-
-#### <skill-name>
-
-**Route:** <route> · **Upstream changed:** <bool> · **Overlay changed:** <bool>
-**SHAs:** `<applied_upstream_sha>` → `<sha>` · **Prior blend:** `<blended_ref>`
-
-**Upstream delta**
-- <what upstream changed since last blend — behavior, sections, constraints>
-
-**Overlay delta**
-- <what local intent added or changed vs new upstream>
-
-**Adaptations** _(omit section when none)_
-- <intent → how it was mapped when structure shifted>
-
-**Files touched**
-- `<path>` — <upstream \| overlay \| generator \| adaptation>
-
-_(Repeat per skill with remerge/fresh, or per skill with material upstream-only sync changes.)_
-
-### Commit
-<committed SHA | skipped — restore will fail next cycle without blend commit>
-```
 
 ---
 
@@ -188,12 +103,11 @@ When the user already ran `npm run update`, references `.tmp/overlay-apply/<skil
 
 ---
 
-## Shared rules (apply modes)
+## Shared rules
 
 1. **Never literal-restore on changed inputs.** If `upstream_changed` or `overlay_changed`, do not copy prior blended files from git history, manifests, or extract drafts.
 2. **Upstream post-sync + static is the merge base** for apply/reconcile.
 3. **Overlay instructions = intent**, not exact final text.
-4. **Restore is npm-only** when audit route = `restore` (both inputs unchanged).
 
 ## Preconditions
 
@@ -268,52 +182,4 @@ When remerge reveals overlay instructions no longer map to upstream:
 
 Use when user explicitly asks to reconcile, or apply surfaces structural conflicts.
 
----
-
-## Merge principles
-
-1. **Upstream is the base** for remerge — not memory of old forks.
-2. **Overlay encodes intent** — not exact final text.
-3. **Minimize gratuitous diffs** when upstream already satisfies intent.
-4. **Prefer integration over insertion** into new upstream sections.
-5. **Explicit overrides win** — find equivalent upstream location.
-6. **Flag uncertainty** — one focused question before guessing.
-
-## Error handling
-
-| Situation | Behavior |
-|-----------|----------|
-| route = restore during apply | Stop; run npm restore |
-| upstream_changed or overlay_changed | Never paste old blended output |
-| blended_ref invalid | remerge; warn |
-| Target file missing | Check static ops; stop if unrecoverable |
-| Upstream section removed | Map intent; document under Adaptations in change summary; consider reconcile |
-| Validation fails | Fix; do not recordBlend until pass |
-| Generators-only skill | Apply generators; record universal_overlay_hash |
-| Static-only overlay | Skip semantic; apply generators; recordBlend |
-
-## Examples
-
-**User:** "update skills"
-
-1. `npm run update`
-2. Apply all remerge/fresh manifests; capture change summary per skill
-3. Validate
-4. Report with semantic deltas
-5. Commit gate
-
-**User:** "apply pending overlays" (update already ran)
-
-1. Audit — collect remerge/fresh skills
-2. Apply each manifest; capture change summary per skill
-3. Validate, report, commit gate
-
-**User:** "update-skills apply domain-modeling" (single-skill scope)
-
-1. Audit — route must be remerge/fresh
-2. Read manifest + OVERLAY.yaml, merge semantic instructions, apply generators, capture change summary
-3. Validate, report, commit gate
-
-**User:** "extract overlay for domain-modeling"
-
-1. Run extract-overlay, refine instructions, hand off to update path after review
+Merge principles, error handling, and invocation examples: [references/report-templates.md](references/report-templates.md).

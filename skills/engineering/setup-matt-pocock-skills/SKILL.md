@@ -60,7 +60,7 @@ The defaults are the five canonical roles, each label string equal to its name: 
 
 **Section C: Domain docs.** Branch on mode:
 
-- **OpenSpec detected** (`openspec/config.yaml` or `openspec/specs/` present — recommended when found): scaffold **OpenSpec layout**. Write `docs/agents/domain.md` from [domain-openspec.md](./domain-openspec.md). Do **not** create or reference repo-root `CONTEXT.md` or `CONTEXT-MAP.md`. Summarize as "OpenSpec mode" in the AGENTS block.
+- **OpenSpec detected** (OpenSpec mode per [OPENSPEC-MODE.md](../domain-modeling/OPENSPEC-MODE.md) §Detection — recommended when found): scaffold **OpenSpec layout**. Write `docs/agents/domain.md` from [domain-openspec.md](./domain-openspec.md). Do **not** create or reference repo-root `CONTEXT.md` or `CONTEXT-MAP.md`. Summarize as "OpenSpec mode" in the AGENTS block.
 - **Legacy (no OpenSpec):** default to **single-context** (one `CONTEXT.md` + `docs/adr/` at the repo root). This fits almost every repo; write it without asking. Offer **multi-context** (a root `CONTEXT-MAP.md` pointing to per-context `CONTEXT.md` files) only when exploration found monorepo signals. Then confirm which layout they want.
 
 ### 3. Confirm and edit

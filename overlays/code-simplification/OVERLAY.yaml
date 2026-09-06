@@ -2,8 +2,12 @@ skill: code-simplification
 description: User-invoked only — no model discovery
 
 changes:
+  - action: add
+    file: references/principles.md
+    from: files/references/principles.md
+
   - file: SKILL.md
     instructions: |
       Set `disable-model-invocation: true` in frontmatter. Keep `description` a one-line human summary; strip trigger lists.
 
-      Preserve upstream simplification process, rules, and examples.
+      Disclose Five Principles, opportunity tables, language examples, rationalizations, and red flags to `references/principles.md`. SKILL keeps the four-step process and verification checklist.

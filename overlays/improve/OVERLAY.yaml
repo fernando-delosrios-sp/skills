@@ -6,11 +6,15 @@ changes:
     file: references/openspec-change.md
     from: files/openspec-change.md
 
+  - action: add
+    file: references/invocation-variants.md
+    from: files/invocation-variants.md
+
   - file: SKILL.md
     instructions: |
       Adapt improve for dual-mode output (OpenSpec change packages vs legacy plans) and intent ingestion:
 
-      1. **Mode detection first:** Before intent-doc guidance in Phase 1 Recon, check whether `openspec/config.yaml` or `openspec/specs/` exists in the target repo. Branch all subsequent behavior on this — same detection as `/domain-modeling`.
+      1. **Mode detection:** OpenSpec mode: see [OPENSPEC-MODE.md](../domain-modeling/OPENSPEC-MODE.md) §Detection.
 
       2. **Hard Rules — allowed writes:**
          - **Legacy mode:** `plans/` (or `advisor-plans/` when `plans/` exists for another purpose) only.
@@ -46,7 +50,9 @@ changes:
 
       8. **Subagent prompts:** Pass mode-appropriate settled-decision hints (capability slugs vs ADR ids).
 
-      9. **Frontmatter:** Description mentions OpenSpec change packages when capability specs exist. Keep `disable-model-invocation: true`.
+      9. **Frontmatter:** Description: `Read-only codebase survey producing executor-ready handoff artifacts.` Keep `disable-model-invocation: true`.
+
+      10. **Invocation variants:** Disclose to `references/invocation-variants.md`; SKILL links to it.
 
       Preserve upstream hard rules (no source edits, no secrets, read-only recon), Phases 1–3, effort levels, tone.
 

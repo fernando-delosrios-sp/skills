@@ -26,6 +26,12 @@ changes:
 
       Preserve upstream tone, session discipline (capture as you go, challenge terms, stress-test scenarios, cross-reference code), and lazy file creation.
 
+      10. **Lean pass (writing-for-agents):**
+         - Mode detection: one line — "OpenSpec mode: see OPENSPEC-MODE.md §Detection".
+         - Extract shared **During the session** (challenge, sharpen, scenarios, cross-reference code) above the mode split; mode sections only cover *where to write*.
+         - Delegate file-structure trees to OPENSPEC-MODE.md and CONTEXT-FORMAT.md; SKILL keeps one-line pointers.
+         - Description: `Build and sharpen a project's domain model.` only.
+
   - file: ADR-FORMAT.md
     instructions: |
       Prepend a short banner: "**OpenSpec repos:** capability specs encode *what* (requirements); ADRs in `docs/adr/` encode *why* (rationale). Use both when the 3 criteria pass — see [OPENSPEC-MODE.md](./OPENSPEC-MODE.md) for routing and cross-linking."
