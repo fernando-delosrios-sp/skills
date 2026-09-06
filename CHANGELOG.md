@@ -2,6 +2,14 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-09-06 · v0.5.3
+
+### ✨ New Features
+
+- **ferspec verify last gate** — Collapsed verify-aligned + verify-fix into one `/opsx:verify` last gate (empty CRITICAL/WARNING/SUGGESTION). Added `operations.apply.guidance` config seam. ferspec bundle 1.2.0; apply-code-changes steps merged.
+
+---
+
 ## 2026-09-06 · v0.5.2
 
 ### ✨ New Features

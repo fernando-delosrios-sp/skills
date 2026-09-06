@@ -1,15 +1,15 @@
 ---
 name: apply-code-changes
-description: Apply tasks.md through verify-aligned gate, verify-fix loop, and handoff.
+description: Apply tasks.md through verify last gate and handoff.
 ---
 
 # Apply Code Changes
 
-Orchestrate **apply**: execute `tasks.md` in order (Changelog group last), run the **verify-aligned** gate and **verify-fix** loop, then hand off per **venue**.
+Orchestrate **apply**: execute `tasks.md` in order (Changelog group last), run the **verify** last gate, then hand off per **venue**.
 
-**Core** = steps 0–7. **Change adapter** = pre-flight path resolution — [change-adapters.md](references/change-adapters.md).
+**Core** = steps 0–6. **Change adapter** = pre-flight path resolution — [change-adapters.md](references/change-adapters.md).
 
-**Verification ref** — branch where gate and verify-fix run: `ORIGINAL_BRANCH` (local/worktree); `FEATURE_BRANCH` (remote).
+**Verification ref** — branch where verify runs: `ORIGINAL_BRANCH` (local/worktree); `FEATURE_BRANCH` (remote).
 
 **Never in apply:** archive, spec sync, archive commit, `/opsx:archive`.
 
@@ -37,7 +37,7 @@ Orchestrate **apply**: execute `tasks.md` in order (Changelog group last), run t
 
 ## Venue matrix (single source of truth)
 
-After bind, follow the row for `venue` × `parallelism`. Step 2 implements bind; step 5 implements handoff — do not contradict this table elsewhere.
+After bind, follow the row for `venue` × `parallelism`. Step 2 implements bind; step 6 implements handoff — do not contradict this table elsewhere.
 
 | Venue | Parallelism | Main repo branch | `WORK_CHECKOUT` | Work ref | Handoff |
 |---|---|---|---|---|---|
@@ -152,7 +152,7 @@ Documentation group: update files from proposal Impact and tasks. Changelog grou
 
 ### 4. Merge gate (worktree only — blocking)
 
-When `venue` is **`worktree`**, squash to **`ORIGINAL_BRANCH`** before step 5. Do not run verify-aligned or verify-fix on the worktree checkout.
+When `venue` is **`worktree`**, squash to **`ORIGINAL_BRANCH`** before step 5. Do not run verify on the worktree checkout.
 
 1. Checkout main repo → **`ORIGINAL_BRANCH`**
 2. Squash merge **`APPLY_REF`** → **`ORIGINAL_BRANCH`** (one commit preferred)
@@ -161,36 +161,28 @@ When `venue` is **`worktree`**, squash to **`ORIGINAL_BRANCH`** before step 5. D
 
 **Done when:** implementation commits live on **`ORIGINAL_BRANCH`** and the session is on main repo — not the worktree path.
 
-### 5. Completion gate — verify-aligned (blocking)
+### 5. Verify (blocking last gate)
 
-Re-run on the **verification ref** at `ACTIVE_CHANGE_ROOT` until every row passes:
+Run on the **verification ref** at `ACTIVE_CHANGE_ROOT`. Repeat until `/opsx:verify` reports empty **CRITICAL**, **WARNING**, and **SUGGESTION** tiers:
 
-1. All `tasks.md` checkboxes `[x]` (including Documentation and Changelog)
-2. Canonical test command from `tasks.md` — exit 0; every `#### Scenario:` has a passing named automated test
-3. Lint/format when `tasks.md` or repo docs name commands — zero new warnings from this change
-4. **Adapter validator** — OpenSpec: `openspec validate --all --json` from `PLANNING_HOME` with `--store` when set; Direct: skip unless user requests
-5. Material `design.md` decisions reflected in specs — material drift = FAIL
-6. Documentation tasks reflect actual behavior
-7. Changelog task complete
-8. `git status --porcelain` empty on the **verification ref**
+1. **PRECHECK** (fix before hunting if any row fails):
+   - All `tasks.md` checkboxes `[x]` (including Documentation and Changelog)
+   - Canonical test command from `tasks.md` — exit 0; every `#### Scenario:` has a passing named automated test
+   - Lint/format when `tasks.md` or repo docs name commands — zero new warnings from this change
+   - **Adapter validator** — OpenSpec: `openspec validate --all --json` from `PLANNING_HOME` with `--store` when set; Direct: skip unless user requests
+   - Material `design.md` decisions reflected in specs — material drift = FAIL
+   - Documentation tasks reflect actual behavior
+   - Changelog task complete
+   - `git status --porcelain` empty on the **verification ref**
+2. Run `/opsx:verify` on the verification ref.
+3. On any CRITICAL, WARNING, or SUGGESTION: fix immediately; return to (1).
+4. **Confirmation scorecard** — run `/opsx:verify` again scorecard-only (no new hunting). All three tiers must stay empty.
 
-On FAIL: fix immediately; do not enter verify-fix or hand off.
+**Done when:** a standalone `/opsx:verify` after this step has no CRITICAL, WARNING, or SUGGESTION issues. Interruption re-runs route failures back here.
 
-### 6. Verify-fix loop (blocking)
+### 6. Handoff
 
-Apply owns verification on the **verification ref**. Repeat until **`openspec-verify-change`** (or `/opsx:verify`) reports ✅ PASS with no unresolved warnings:
-
-1. Invoke **openspec-verify-change** via Skill tool, or run `/opsx:verify`
-2. On ❌ FAIL or new warnings: fix immediately; re-run step 5; return to (1)
-3. Proceed to handoff only on ✅ PASS
-
-**Done when:** a standalone `/opsx:verify` after this step would confirm PASS — not surface new FAILs or warnings. Interruption re-runs route failures back here.
-
-Verify-fix checks implementation vs specs, design, and tasks — beyond structural `openspec validate`. Step 5 owns git housekeeping and lint; verify-fix does not re-check a dirty tree.
-
-### 7. Handoff
-
-**Done when:** verify-fix PASS and the venue handoff row below completes.
+**Done when:** verify tiers empty and the venue handoff row below completes.
 
 | Venue | Parallelism | Handoff |
 |---|---|---|
@@ -208,7 +200,7 @@ Verify-fix checks implementation vs specs, design, and tasks — beyond structur
 | Commits | git-commit | Preferred |
 | Changelog | changelog-generator | Changelog group |
 | Review | code-review | Optional |
-| Verify-fix | openspec-verify-change (`/opsx:verify`) | Blocking before handoff |
+| Verify | `/opsx:verify` | Blocking last gate before handoff |
 | PR / issue | gh + issue-tracker doc | Remote handoff |
 | Cloud dispatch | SDK / Task `environment: cloud` | Remote when available |
 
@@ -218,10 +210,10 @@ Venue-specific handoff and bind semantics live in the **Venue matrix** above. Th
 
 - Archive and spec sync run only via `/opsx:archive` — never inside apply.
 - Mark tasks `[x]` only after tests pass.
-- Run verify-aligned and verify-fix to PASS before handoff; remote PR creation waits on verify-fix PASS.
-- On **worktree**, complete merge gate (step 4) on `ORIGINAL_BRANCH` before verify-aligned or verify-fix.
-- OpenSpec apply requires verify-fix PASS — `openspec validate` alone is insufficient.
-- Fix verify FAILs and warnings in-session — do not defer to the user.
+- Run verify to empty CRITICAL/WARNING/SUGGESTION tiers before handoff; remote PR creation waits on verify PASS.
+- On **worktree**, complete merge gate (step 4) on `ORIGINAL_BRANCH` before verify.
+- OpenSpec apply requires verify PASS — `openspec validate` alone is insufficient.
+- Fix verify issues in-session — do not defer to the user.
 - **Local** and **worktree** integrate on `ORIGINAL_BRANCH` (+ ephemeral `apply-<name>`); `FEATURE_BRANCH` exists only for **remote**.
 - Interactive hosts run the venue gate via structured-choices even when Issue or Presets are prefilled.
 - Changelog group runs; paths resolve via adapter `CHANGE_ROOT_REL`, not hardcoded `openspec/changes/<name>/`.

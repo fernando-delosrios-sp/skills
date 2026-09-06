@@ -71,33 +71,43 @@ The ferspec apply phase MUST NOT run archive, spec sync, or archive commit. Arch
 
 #### Scenario: Apply does not commit archive output
 
-- **GIVEN** apply-code-changes completes with passing verify-fix loop
+- **GIVEN** apply-code-changes completes with passing verify last gate
 - **WHEN** handoff finishes
 - **THEN** apply MUST NOT invoke `/opsx:archive`
 - **AND** MUST NOT commit synced specs or moved archive folders as part of apply
 
-### Requirement: Apply verify-fix loop
+### Requirement: Apply verify last gate
 
-The ferspec apply phase MUST run a blocking verify-fix loop before handoff. The agent MUST invoke **openspec-verify-change** or `/opsx:verify` on the verification ref, fix FAILs and warnings autonomously, re-run the verify-aligned completion gate, and repeat until ✅ PASS.
+The ferspec apply phase MUST run a blocking **verify** last gate before handoff. The agent MUST run `/opsx:verify` on the verification ref, fix every CRITICAL, WARNING, and SUGGESTION issue autonomously, and repeat until all three tiers are empty. A **confirmation scorecard** pass (scorecard-only — no new hunting) MUST confirm the three tiers remain empty before handoff.
 
-#### Scenario: Verify-fix blocks handoff
+#### Scenario: Verify blocks handoff
 
 - **GIVEN** apply-code-changes has finished implementation tasks
-- **AND** verify-aligned completion gate rows pass
-- **WHEN** `/opsx:verify` or openspec-verify-change reports ❌ FAIL or unresolved warnings
+- **WHEN** `/opsx:verify` reports any CRITICAL, WARNING, or SUGGESTION issue
 - **THEN** apply MUST NOT hand off
-- **AND** MUST fix issues and re-run verify-fix until ✅ PASS
+- **AND** MUST fix issues and re-run verify until all three tiers are empty
 
-#### Scenario: Post-apply verify confirms PASS
+#### Scenario: Post-apply verify is empty
 
 - **GIVEN** apply-code-changes reports handoff complete
 - **WHEN** the user runs standalone `/opsx:verify`
-- **THEN** verify MUST confirm ✅ PASS
-- **AND** MUST NOT surface new FAILs or warnings that apply should have fixed
+- **THEN** the report MUST have no CRITICAL, WARNING, or SUGGESTION issues
+- **AND** MUST NOT surface new issues that apply should have fixed
 
 #### Scenario: Worktree verify runs on original branch
 
 - **GIVEN** apply venue is `worktree`
-- **WHEN** verify-aligned gate and verify-fix run
+- **WHEN** the verify last gate runs
 - **THEN** the agent MUST squash-merge `apply-<name>` to `ORIGINAL_BRANCH` on main repo first
 - **AND** MUST NOT run verify on the worktree checkout
+
+### Requirement: Apply operation guidance in config
+
+ferspec projects MUST declare `operations.apply.guidance` in `openspec/config.yaml` with strings that instruct agents not to report apply complete until `/opsx:verify` has empty CRITICAL, WARNING, and SUGGESTION tiers. `openspec instructions apply --change "<name>" --json` MUST surface this guidance as `operationGuidance` for `/opsx:apply`.
+
+#### Scenario: Instructions apply loads guidance
+
+- **GIVEN** `openspec/config.yaml` contains `operations.apply.guidance` with last-gate verify steps
+- **WHEN** `openspec instructions apply --change "<name>" --json` runs
+- **THEN** the JSON output MUST include `operationGuidance` with those strings
+- **AND** agents MUST treat applicable guidance as additive to the built-in apply workflow

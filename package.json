@@ -1,6 +1,6 @@
 {
   "name": "skills",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "private": true,
   "description": "Curated agent skills collection compatible with npx skills",
   "type": "module",

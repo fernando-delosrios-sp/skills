@@ -120,7 +120,7 @@ ${frontmatterExtra}---
 
   it('keeps a long first sentence untruncated', async () => {
     const sentence =
-      'Execute a planned change from tasks.md through verify-aligned gate, verify-fix loop, and handoff — OpenSpec ferspec apply via /opsx:apply, or any folder with tasks.md (Direct adapter).';
+      'Execute a planned change from tasks.md through verify last gate and handoff — OpenSpec ferspec apply via /opsx:apply, or any folder with tasks.md (Direct adapter).';
     const { tempRoot, skillDir } = await fixtureSkill(
       `${sentence} TDD, commits, changelog.`
     );
