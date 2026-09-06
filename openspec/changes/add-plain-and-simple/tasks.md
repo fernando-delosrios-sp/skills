@@ -30,5 +30,5 @@
 
 ## 6. Changelog
 
-- [ ] 6.1 Create or update changelog entry for this change via **changelog-generator**
-- [ ] 6.2 Confirm the entry covers the new local-only `plain-and-simple` skill and catalog listing
+- [x] 6.1 Create or update changelog entry for this change via **changelog-generator**
+- [x] 6.2 Confirm the entry covers the new local-only `plain-and-simple` skill and catalog listing

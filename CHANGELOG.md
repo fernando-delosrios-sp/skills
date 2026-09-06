@@ -2,6 +2,14 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-09-06 · v0.5.2
+
+### ✨ New Features
+
+- **plain-and-simple** — Local-only productivity skill for clarity-first brevity: lead with the conclusion and give the shortest complete plain-English answer. Listed in the productivity catalog; distinct from caveman.
+
+---
+
 ## 2026-08-24 · v0.5.1
 
 ### 🐛 Fixes
