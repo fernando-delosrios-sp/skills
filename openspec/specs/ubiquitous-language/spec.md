@@ -265,6 +265,28 @@ The glossary SHALL define **minimal adaptive formatting** as using the least str
 - **THEN** a `### Term: minimal adaptive formatting` entry MUST exist
 - **AND** the definition MUST describe choosing the least structure the content needs
 
+### Requirement: verify glossary entry
+
+The glossary SHALL define **verify** (ferspec-workflow) as the single apply last gate: run `/opsx:verify` on the verification ref until CRITICAL, WARNING, and SUGGESTION tiers are all empty. Notes MUST reject verify-aligned, verify-fix, and openspec-verify-change as names for this gate.
+
+#### Scenario: verify definition
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up verify in the ferspec-workflow context
+- **THEN** a `### Term: verify` entry MUST exist
+- **AND** the definition MUST state it is the apply last gate that drains CRITICAL, WARNING, and SUGGESTION tiers
+
+### Requirement: confirmation scorecard glossary entry
+
+The glossary SHALL define **confirmation scorecard** as a scorecard-only re-run of `/opsx:verify` that must not invent new SUGGESTIONs from unchanged code.
+
+#### Scenario: confirmation scorecard definition
+
+- **GIVEN** a maintainer reads the ubiquitous-language spec
+- **WHEN** they look up confirmation scorecard
+- **THEN** a `### Term: confirmation scorecard` entry MUST exist
+- **AND** the definition MUST require a scorecard-only re-run with no new hunting
+
 ## Term entries
 
 ### Term: Skill
@@ -425,8 +447,8 @@ The glossary SHALL define **minimal adaptive formatting** as using the least str
 
 ### Term: Operation guidance
 **Context**: ferspec-workflow / openspec-config
-**Definition**: Advisory strings from `openspec/config.yaml` per-operation `guidance` arrays (e.g. `operations.archive.guidance`), loaded by `openspec instructions archive --change "<name>" --json` and surfaced as `operationGuidance` for workflow agents.
-**Aliases**: archive guidance
+**Definition**: Advisory strings from `openspec/config.yaml` per-operation `guidance` arrays (e.g. `operations.archive.guidance`, `operations.apply.guidance`), loaded by `openspec instructions <operation> --change "<name>" --json` and surfaced as `operationGuidance` for workflow agents.
+**Aliases**: archive guidance, apply guidance
 **Notes**: Distinct from `schema.yaml` apply instruction blocks. Agents treat applicable guidance as additive to built-in workflow steps.
 
 ### Term: Characterization test
@@ -452,4 +474,16 @@ The glossary SHALL define **minimal adaptive formatting** as using the least str
 **Definition**: Use the least structure the content needs — prose for one idea, bullets for genuine lists, headings only when separating distinct parts.
 **Aliases**: none
 **Notes**: Reject always bullets, always headings, and decorative markdown.
+
+### Term: verify
+**Context**: ferspec-workflow
+**Definition**: The single apply last gate — run `/opsx:verify` on the verification ref until CRITICAL, WARNING, and SUGGESTION tiers are all empty.
+**Aliases**: last gate, verify last gate
+**Notes**: Avoid verify-aligned, verify-fix, and openspec-verify-change as names for this gate.
+
+### Term: confirmation scorecard
+**Context**: ferspec-workflow
+**Definition**: A scorecard-only re-run of `/opsx:verify` that must not invent new SUGGESTIONs from unchanged code.
+**Aliases**: none
+**Notes**: Used after the hunting pass of verify; all three tiers must remain empty before handoff.
 
