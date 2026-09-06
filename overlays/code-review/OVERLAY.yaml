@@ -18,3 +18,5 @@ changes:
       4. **Spec sub-agent brief:** When reviewing against OpenSpec delta specs, treat ADDED/MODIFIED requirements and `#### Scenario:` blocks as the contract; cite requirement headers and scenario steps.
 
       Preserve upstream Standards axis, smell baseline, parallel sub-agents, and aggregation.
+
+      5. **Frontmatter:** Set `disable-model-invocation: true`. Keep `description` a one-line human summary; strip trigger lists.

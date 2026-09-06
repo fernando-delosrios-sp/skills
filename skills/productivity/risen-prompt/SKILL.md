@@ -1,6 +1,7 @@
 ---
 name: risen-prompt
-description: Create or audit RISEN prompts with structure validation. Use when creating structured prompts from notes, auditing existing RISEN prompts, or improving prompt quality. Triggers include "risen prompt", "edit risen", "create risen", "audit risen", "structure prompt".
+description: Create or audit RISEN prompts with structure validation.
+disable-model-invocation: true
 ---
 
 # Edit RISEN Prompt

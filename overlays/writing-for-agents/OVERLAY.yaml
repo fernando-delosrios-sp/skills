@@ -1,0 +1,9 @@
+skill: writing-for-agents
+description: User-invoked only — no model discovery
+
+changes:
+  - file: SKILL.md
+    instructions: |
+      Set `disable-model-invocation: true` in frontmatter. Keep `description` a one-line human summary; strip trigger lists.
+
+      Preserve upstream writing guidance and pointers to SKILL-MECHANICS.md.

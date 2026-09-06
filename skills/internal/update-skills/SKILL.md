@@ -1,10 +1,7 @@
 ---
 name: update-skills
-description: >-
-  Update this skills repo from upstream and apply pending overlays. Also apply-only
-  after `npm run update`, extract overlay drafts, audit overlay routing, or reconcile
-  overlay instructions that no longer map.
-disable-model-invocation: false
+description: Update this skills repo from upstream and apply pending overlays.
+disable-model-invocation: true
 ---
 
 # Update Skills
