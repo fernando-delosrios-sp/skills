@@ -19,8 +19,8 @@
 ## 4. Verification
 
 - [x] 4.1 Confirm canonical test command: `npm test`
-- [ ] 4.2 Run `npm test` (exit 0)
-- [ ] 4.3 Run `npm run validate` (exit 0) — covers unique name and README catalog set equality (covers: Name remains unique)
+- [x] 4.2 Run `npm test` (exit 0)
+- [x] 4.3 Run `npm run validate` (exit 0) — covers unique name and README catalog set equality (covers: Name remains unique)
 
 ## 5. Documentation
 

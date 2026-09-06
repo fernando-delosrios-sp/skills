@@ -113,7 +113,7 @@ ${frontmatterExtra}---
     assert.equal(doc.interface.display_name, 'Git Commit');
     assert.equal(
       doc.interface.short_description,
-      'Session-scoped git commit with conventional message analysis and staging.'
+      'Session-scoped git commit with conventional message analysis.'
     );
     assert.equal(doc.policy, undefined);
   });

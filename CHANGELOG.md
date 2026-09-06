@@ -8,6 +8,10 @@ All notable changes to this skills collection are documented here.
 
 - **plain-and-simple** — Local-only productivity skill for clarity-first brevity: lead with the conclusion and give the shortest complete plain-English answer. Listed in the productivity catalog; distinct from caveman.
 
+### 🐛 Fixes
+
+- **architecture-decision-records restored** — Canonical tree is back so the engineering catalog, README, and ferspec INSTALL.md match.
+
 ---
 
 ## 2026-08-24 · v0.5.1
