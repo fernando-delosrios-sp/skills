@@ -401,3 +401,21 @@ The glossary SHALL define **Upstream lock** as the JSON object stored in `.locks
 **Aliases**: none
 **Notes**: Tests MUST exercise real filesystem writes or deletes on temporary trees, not only source greps. They MUST NOT clone GitHub or write the live canonical catalog or `.locks/upstream.json`.
 
+### Term: plain-and-simple
+**Context**: global / productivity skills
+**Definition**: A model-invoked communication mode and productivity skill name. The agent leads with the conclusion, uses plain English and short sentences, includes only what the user needs now, and stops when the answer is complete.
+**Aliases**: none
+**Notes**: Avoid treating caveman, terse, ultra-compressed, or token-saving mode as aliases for this term.
+
+### Term: shortest complete answer
+**Context**: global / productivity skills
+**Definition**: The adaptive size bound for plain-and-simple responses — as short as possible without omitting necessary warnings, uncertainty, code, or exact error text.
+**Aliases**: none
+**Notes**: Reject fixed word counts, three-sentence limits, and a TL;DR footer.
+
+### Term: minimal adaptive formatting
+**Context**: global / productivity skills
+**Definition**: Use the least structure the content needs — prose for one idea, bullets for genuine lists, headings only when separating distinct parts.
+**Aliases**: none
+**Notes**: Reject always bullets, always headings, and decorative markdown.
+
