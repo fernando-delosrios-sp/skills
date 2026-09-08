@@ -2,6 +2,15 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-09-08 · v0.5.4
+
+### 🐛 Fixes
+
+- **Apply owns delta spec reconciliation** — When a design fork is re-resolved mid-apply, apply now rewrites the affected scenario title and steps together and deletes superseded scenarios in the change's own `specs/**`. Verify PRECHECK fails on superseded titles, duplicate scenarios, or requirements contradicting their scenarios, and findings phrased as future work ("before archive, rename or drop those leftover titles") must be fixed in-session. Spec sync into `openspec/specs/` stays archive-only. ferspec bundle 1.3.0.
+- **ferspec guidance test no longer pins an archived change** — `openspec instructions apply` assertions resolve a live change from `openspec list --changes --json` and skip when none exists.
+
+---
+
 ## 2026-09-06 · v0.5.3
 
 ### ✨ New Features

@@ -76,6 +76,39 @@ The ferspec apply phase MUST NOT run archive, spec sync, or archive commit. Arch
 - **THEN** apply MUST NOT invoke `/opsx:archive`
 - **AND** MUST NOT commit synced specs or moved archive folders as part of apply
 
+#### Scenario: Editing change-owned delta specs is not spec sync
+
+- **GIVEN** apply edits delta spec files under the active change directory
+- **WHEN** the agent checks whether that work belongs to archive
+- **THEN** those edits MUST be treated as apply work, not spec sync
+- **AND** only merging deltas into canonical `openspec/specs/` MUST wait for `/opsx:archive`
+
+### Requirement: Apply reconciles delta specs
+
+The ferspec apply phase MUST keep the change's own delta specs consistent with shipped behavior. When implementation lands behavior that differs from the scenario that drove it, the agent MUST rewrite that scenario's title and steps together, MUST delete scenarios the new design supersedes, and MUST update promoted `specs/ubiquitous-language/spec.md` entries. Apply MUST NOT reach handoff with a scenario title naming behavior its own steps forbid, nor with duplicate scenarios asserting the same behavior.
+
+#### Scenario: Design fork re-resolved during apply
+
+- **GIVEN** a delta spec scenario titled for behavior the change no longer ships
+- **WHEN** apply implements the replacement behavior
+- **THEN** the agent MUST rename or delete that scenario in the same apply run
+- **AND** MUST NOT leave the superseded title above rewritten steps
+- **AND** MUST NOT add the replacement as a parallel scenario beside it
+
+#### Scenario: Verify PRECHECK rejects inconsistent delta specs
+
+- **GIVEN** the verify last gate PRECHECK runs on the verification ref
+- **WHEN** a delta spec has a superseded scenario title, a duplicate scenario, or a requirement contradicting its own scenarios
+- **THEN** PRECHECK MUST fail
+- **AND** the agent MUST fix the delta spec before running `/opsx:verify` again
+
+#### Scenario: Verify finding deferred to a later phase
+
+- **GIVEN** `/opsx:verify` reports a finding whose recommendation names a later phase, such as "before archive, rename or drop those leftover titles"
+- **WHEN** the fix lives in the working tree or under the active change directory
+- **THEN** apply MUST perform the fix in-session
+- **AND** MUST NOT report apply complete while restating the finding as future work
+
 ### Requirement: Apply verify last gate
 
 The ferspec apply phase MUST run a blocking **verify** last gate before handoff. The agent MUST run `/opsx:verify` on the verification ref, fix every CRITICAL, WARNING, and SUGGESTION issue autonomously, and repeat until all three tiers are empty. A **confirmation scorecard** pass (scorecard-only — no new hunting) MUST confirm the three tiers remain empty before handoff.

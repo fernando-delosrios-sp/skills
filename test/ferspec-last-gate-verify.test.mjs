@@ -64,8 +64,17 @@ describe('Worktree verify runs on original branch', () => {
   });
 });
 
+async function firstActiveChange() {
+  const { stdout } = await execFileAsync('openspec', ['list', '--changes', '--json'], {
+    cwd: ROOT,
+    encoding: 'utf8',
+  });
+  const { changes } = JSON.parse(stdout);
+  return changes?.[0]?.name ?? changes?.[0]?.id ?? null;
+}
+
 describe('Instructions apply loads guidance', () => {
-  it('config.yaml declares operations.apply.guidance and instructions apply JSON surfaces it', async () => {
+  it('config.yaml declares operations.apply.guidance', async () => {
     const config = parse(await readUtf8(configPath));
     const guidance = config?.operations?.apply?.guidance;
     assert.ok(Array.isArray(guidance) && guidance.length > 0);
@@ -73,10 +82,20 @@ describe('Instructions apply loads guidance', () => {
       guidance.some((line) => /empty CRITICAL, WARNING, and SUGGESTION/.test(line)),
       'expected last-gate verify wording in operations.apply.guidance'
     );
+  });
 
+  it('instructions apply JSON surfaces every guidance line', async (t) => {
+    const change = await firstActiveChange();
+    if (!change) {
+      t.skip('no active change in openspec/changes — CLI guidance surfacing not exercisable');
+      return;
+    }
+
+    const config = parse(await readUtf8(configPath));
+    const guidance = config.operations.apply.guidance;
     const { stdout } = await execFileAsync(
       'openspec',
-      ['instructions', 'apply', '--change', 'ferspec-last-gate-verify', '--json'],
+      ['instructions', 'apply', '--change', change, '--json'],
       { cwd: ROOT, encoding: 'utf8' }
     );
     const payload = JSON.parse(stdout);

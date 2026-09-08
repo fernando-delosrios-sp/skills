@@ -11,7 +11,7 @@ Orchestrate **apply**: execute `tasks.md` in order (Changelog group last), run t
 
 **Verification ref** — branch where verify runs: `ORIGINAL_BRANCH` (local/worktree); `FEATURE_BRANCH` (remote).
 
-**Never in apply:** archive, spec sync, archive commit, `/opsx:archive`.
+**Never in apply:** archive, spec sync (merging deltas into `openspec/specs/**`), archive commit, `/opsx:archive`. The change's own `specs/**` deltas **are** apply-editable — see step 3.
 
 ## Invariant
 
@@ -56,7 +56,7 @@ After bind, paths are under `ACTIVE_CHANGE_ROOT`. Prefer OpenSpec `artifactPaths
 | Priority | Source | Purpose |
 |---|---|---|
 | HIGH | `tasks.md` | Checkbox progress |
-| HIGH | `specs/**/*.md` | Scenario → test coverage gate |
+| HIGH | `specs/**/*.md` | Scenario → test coverage gate; reconciled in place when shipped behavior diverges (step 3) |
 | HIGH | `design.md` | Design/spec coherence gate |
 | MED | `proposal.md` | Changelog scope |
 | MED | `TRACKING` / `tracking.md` | Issue/PR linkage + resume Presets |
@@ -139,8 +139,9 @@ Per implementation task:
 1. Map related `#### Scenario:` blocks; name tests after scenarios.
 2. Invoke **tdd** when present (non-blocking if absent).
 3. Implement; mark `- [ ]` → `- [x]` only when tests pass.
-4. Invoke **git-commit** for logical units on the active work ref (`ORIGINAL_BRANCH`, `APPLY_REF`, or `FEATURE_BRANCH` per venue matrix). Commit this unit's in-scope paths; **changelog-generator** runs in the Changelog group.
-5. After each `##` group (or end when `single`), invoke **code-review** when present — fixed point = `ORIGINAL_BRANCH`.
+4. **Reconcile the delta spec** whenever shipped behavior differs from the scenario that drove it — see [Delta spec reconciliation](#delta-spec-reconciliation) below.
+5. Invoke **git-commit** for logical units on the active work ref (`ORIGINAL_BRANCH`, `APPLY_REF`, or `FEATURE_BRANCH` per venue matrix). Commit this unit's in-scope paths; **changelog-generator** runs in the Changelog group.
+6. After each `##` group (or end when `single`), invoke **code-review** when present — fixed point = `ORIGINAL_BRANCH`.
 
 **Parallelism `subagent-per-group`:**
 
@@ -149,6 +150,20 @@ Per implementation task:
 - **`remote`:** subagents on runner checkout; orchestrator commits on `FEATURE_BRANCH`.
 
 Documentation group: update files from proposal Impact and tasks. Changelog group: invoke **changelog-generator** with `ACTIVE_CHANGE_ROOT` as the change root.
+
+#### Delta spec reconciliation
+
+Delta specs under `ACTIVE_CHANGE_ROOT/specs/**` describe the behavior this change ships. When a design fork is re-resolved mid-apply, apply edits them in place — this is not spec sync, which stays archive-only.
+
+| Divergence | Edit |
+|---|---|
+| Scenario body no longer matches shipped behavior | Rewrite the steps **and** rename the title to the behavior that shipped |
+| New design supersedes an existing scenario | Delete the superseded scenario — never leave it beside its replacement |
+| Two scenarios assert the same behavior | Keep one |
+| Requirement wording contradicts its own scenarios | Rewrite the requirement |
+| Promoted term no longer describes shipped behavior | Rename or remove the `specs/ubiquitous-language/spec.md` delta entry |
+
+Superseded titles over rewritten bodies are the common failure — a title naming behavior the `THEN` clauses now forbid. Fix it when the divergence happens; deferring it to archive, to a later phase, or to the user fails the verify gate in step 5.
 
 ### 4. Merge gate (worktree only — blocking)
 
@@ -171,11 +186,13 @@ Run on the **verification ref** at `ACTIVE_CHANGE_ROOT`. Repeat until `/opsx:ver
    - Lint/format when `tasks.md` or repo docs name commands — zero new warnings from this change
    - **Adapter validator** — OpenSpec: `openspec validate --all --json` from `PLANNING_HOME` with `--store` when set; Direct: skip unless user requests
    - Material `design.md` decisions reflected in specs — material drift = FAIL
+   - **Delta specs self-consistent** — every `#### Scenario:` title describes its own GIVEN/WHEN/THEN; no superseded titles, no duplicate scenarios, no requirement contradicting its scenarios (see [Delta spec reconciliation](#delta-spec-reconciliation))
+   - Ubiquitous-language delta entries name behavior this change actually ships
    - Documentation tasks reflect actual behavior
    - Changelog task complete
    - `git status --porcelain` empty on the **verification ref**
 2. Run `/opsx:verify` on the verification ref.
-3. On any CRITICAL, WARNING, or SUGGESTION: fix immediately; return to (1).
+3. On any CRITICAL, WARNING, or SUGGESTION: fix immediately; return to (1). A finding whose recommendation names a later phase ("before archive", "at archive", "the user should") is still apply's to fix when the fix lives in the working tree or under `ACTIVE_CHANGE_ROOT` — restating it is not fixing it.
 4. **Confirmation scorecard** — run `/opsx:verify` again scorecard-only (no new hunting). All three tiers must stay empty.
 
 **Done when:** a standalone `/opsx:verify` after this step has no CRITICAL, WARNING, or SUGGESTION issues. Interruption re-runs route failures back here.
@@ -208,12 +225,13 @@ Run on the **verification ref** at `ACTIVE_CHANGE_ROOT`. Repeat until `/opsx:ver
 
 Venue-specific handoff and bind semantics live in the **Venue matrix** above. These apply on every apply run:
 
-- Archive and spec sync run only via `/opsx:archive` — never inside apply.
+- Archive and spec sync run only via `/opsx:archive` — never inside apply. Editing this change's own delta specs is apply's job, not spec sync.
+- Delta specs under `ACTIVE_CHANGE_ROOT` must match shipped behavior before verify passes — no superseded titles, no duplicate scenarios.
 - Mark tasks `[x]` only after tests pass.
 - Run verify to empty CRITICAL/WARNING/SUGGESTION tiers before handoff; remote PR creation waits on verify PASS.
 - On **worktree**, complete merge gate (step 4) on `ORIGINAL_BRANCH` before verify.
 - OpenSpec apply requires verify PASS — `openspec validate` alone is insufficient.
-- Fix verify issues in-session — do not defer to the user.
+- Fix verify issues in-session — do not defer to the user or to a later phase.
 - **Local** and **worktree** integrate on `ORIGINAL_BRANCH` (+ ephemeral `apply-<name>`); `FEATURE_BRANCH` exists only for **remote**.
 - Interactive hosts run the venue gate via structured-choices even when Issue or Presets are prefilled.
 - Changelog group runs; paths resolve via adapter `CHANGE_ROOT_REL`, not hardcoded `openspec/changes/<name>/`.
