@@ -1,30 +1,24 @@
 ---
 name: harness-proxy
-description: Delegate sub-tasks across AI coding agent harnesses inside isolated Git worktrees.
-argument-hint: "run [--agent <name>] '<prompt>'"
+description: Delegate sub-tasks to isolated AI coding agent harnesses in a single command.
+argument-hint: "[--agent <name>] '<prompt>'"
 disable-model-invocation: true
 ---
 
 # harness-proxy
 
-Delegate tasks to isolated agent harnesses. The CLI binary autonomously manages task classification, quota balancing, model selection, git worktrees, tier failover, and auto-merging.
+Delegate tasks directly to isolated agent harnesses. The `harness-proxy` CLI autonomously manages git worktrees, quota balancing, task classification, model selection, live progress streaming, tier failover, and auto-merging.
 
-## Dispatch Workflow
+## Execution
 
-1. **Match subagent**:
-   Check `.agents/agents/*.md` (or `.claude/agents/*.md`). Read each candidate's frontmatter `description`:
-   - When a specialized subagent fits the task domain, pass `--agent <name>`.
-   - When no specialized subagent matches, omit `--agent`.
+Execute `harness-proxy run` immediately as your single, direct action:
 
-2. **Execute directly**:
-   Invoke `harness-proxy run` as your immediate action:
-   ```bash
-   # General task
-   harness-proxy run "<task description with clear acceptance criteria>"
+```bash
+harness-proxy run [--agent <name>] "<task description with clear acceptance criteria>"
+```
 
-   # Domain-specialized task
-   harness-proxy run --agent codebase-advisor "<task description with clear acceptance criteria>"
-   ```
+### Directives
 
-3. **Report configuration**:
-   When reporting to the user, include the dispatch details emitted by `harness-proxy` (the selected harness, model, effort, and tier).
+- **Immediate dispatch**: Run `harness-proxy run` as your first and only action. All preparatory work (worktree management, quota checking, subagent resolution, routing) is handled internally by the binary.
+- **Subagent selection**: Pass `--agent <name>` when targeting a known specialized agent (e.g., `--agent codebase-advisor`); otherwise omit `--agent`.
+- **User reporting**: Relay the CLI's results and configuration details (harness, model, tier) directly from the command output.
