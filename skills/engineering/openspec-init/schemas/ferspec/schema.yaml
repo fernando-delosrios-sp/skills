@@ -52,7 +52,7 @@ artifacts:
 
       **C4 diagram (conditional)** — change touches 3+ containers (apps, services, databases,
       queues, external systems):
-      - Invoke **c4-diagram** via Skill tool when present.
+      - Invoke **c4-diagram** via Skill tool when present (or read `.agents/skills/c4-diagram/SKILL.md`).
       - Write `diagrams/<change-name>.drawio` in this change directory.
       - Link from design.md §Architecture.
       - Skill absent → skip diagram; do not block design.
@@ -70,7 +70,7 @@ artifacts:
     instruction: |
       Write one delta spec per capability in proposal Capabilities using @./templates/spec.md.
 
-      Invoke **gherkin-authoring** via Skill tool when present.
+      Invoke **gherkin-authoring** via Skill tool when present (or read `.agents/skills/gherkin-authoring/SKILL.md`).
 
       **Promote Language**: terms marked `promote` in discovery.md → ADDED or MODIFIED entries
       in `specs/ubiquitous-language/spec.md` (or the project's ubiquitous-language spec).

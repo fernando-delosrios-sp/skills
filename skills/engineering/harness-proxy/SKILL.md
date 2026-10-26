@@ -1,7 +1,8 @@
 ---
 name: harness-proxy
-description: Delegate sub-tasks across AI coding agent harnesses (Cursor, Antigravity, OpenCode Go) based on task complexity, live quota availability, and benchmark tiers inside isolated Git worktrees.
+description: Delegate sub-tasks across AI coding agent harnesses inside isolated Git worktrees.
 argument-hint: "[command] [flags] — run '<prompt>' | quota | models [provider] | sync-models | tiers | config-jev"
+disable-model-invocation: true
 ---
 
 # harness-proxy
@@ -39,6 +40,9 @@ harness-proxy run --model gemini-4-argon-high "Refactor database connection pool
 
 # Force specific provider and model
 harness-proxy run --provider antigravity --model claude-sonnet-5-5-high "Task prompt"
+
+# Delegate with specialized subagent role instructions or system prompt file
+harness-proxy run --system-prompt .agents/roles/tester.md "Write unit tests for auth service"
 
 # Inspect active subscription quotas and reset countdowns
 harness-proxy quota

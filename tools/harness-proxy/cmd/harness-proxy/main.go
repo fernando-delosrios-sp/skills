@@ -62,11 +62,12 @@ Usage:
   harness-proxy config-jev [flags]      Configure Jev task complexity classifier
 
 Flags for 'run':
-  --tier <name>        Override model tier (frontier, workhorse, lightweight)
-  --provider <name>    Override provider (cursor, antigravity, opencode)
-  --model <name>       Override model (ignores tier classification)
-  --no-merge           Do not auto-merge the task branch into active workspace
-  --task-id <id>       Explicit task identifier
+  --tier <name>                Override model tier (frontier, workhorse, lightweight)
+  --provider <name>            Override provider (cursor, antigravity, opencode)
+  --model <name>               Override model (ignores tier classification)
+  --system-prompt <file|str>   System prompt or path to markdown role instructions
+  --no-merge                   Do not auto-merge the task branch into active workspace
+  --task-id <id>               Explicit task identifier
 
 Flags for 'config-jev':
   --endpoint <url>         OpenAI-compatible endpoint URL (e.g. http://localhost:11434/v1)
@@ -82,6 +83,7 @@ func handleRun(args []string) {
 	tierFlag := fs.String("tier", "", "Override model tier (frontier, workhorse, lightweight)")
 	providerFlag := fs.String("provider", "", "Override provider (cursor, antigravity, opencode)")
 	modelFlag := fs.String("model", "", "Override model (ignores tier classification)")
+	systemPromptFlag := fs.String("system-prompt", "", "System prompt or path to markdown role instructions")
 	noMergeFlag := fs.Bool("no-merge", false, "Do not auto-merge the task branch into active workspace")
 	taskIDFlag := fs.String("task-id", "", "Explicit task identifier")
 
@@ -91,6 +93,16 @@ func handleRun(args []string) {
 		fmt.Fprintf(os.Stderr, "Error: prompt cannot be empty\n")
 		os.Exit(1)
 	}
+
+	var systemPrompt string
+	if *systemPromptFlag != "" {
+		if content, err := os.ReadFile(*systemPromptFlag); err == nil {
+			systemPrompt = string(content)
+		} else {
+			systemPrompt = *systemPromptFlag
+		}
+	}
+	effectivePrompt := driver.ComposePrompt(prompt, systemPrompt)
 
 	taskID := *taskIDFlag
 	if taskID == "" {
@@ -170,7 +182,7 @@ func handleRun(args []string) {
 		activeModel = model
 		fmt.Printf("⚡ Executing via %s (%s)...\n", p, model)
 
-		res, runErr := d.Execute(ctx, session.WorktreeDir, model, prompt)
+		res, runErr := d.Execute(ctx, session.WorktreeDir, model, effectivePrompt)
 		if runErr == nil && res.ExitCode == 0 {
 			execRes = res
 			break
@@ -230,7 +242,7 @@ func handleRun(args []string) {
 		Provider:         activeProvider,
 		Model:            activeModel,
 		Tier:             string(decision.Tier),
-		PromptTokens:     len(prompt) / 4,
+		PromptTokens:     len(effectivePrompt) / 4,
 		CompletionTokens: len(execRes.Stdout) / 4,
 		DurationSeconds:  execRes.Duration.Seconds(),
 		Status:           status,

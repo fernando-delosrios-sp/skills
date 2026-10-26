@@ -5,8 +5,22 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
+	"strings"
 	"time"
 )
+
+// ComposePrompt combines system instructions with the task prompt
+func ComposePrompt(taskPrompt, systemPrompt string) string {
+	sys := strings.TrimSpace(systemPrompt)
+	task := strings.TrimSpace(taskPrompt)
+	if sys == "" {
+		return task
+	}
+	if task == "" {
+		return sys
+	}
+	return fmt.Sprintf("=== SYSTEM INSTRUCTIONS ===\n%s\n\n=== TASK ===\n%s", sys, task)
+}
 
 type ExecutionResult struct {
 	ExitCode int           `json:"exit_code"`

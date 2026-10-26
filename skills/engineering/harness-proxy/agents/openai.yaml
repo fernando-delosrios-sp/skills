@@ -1,3 +1,5 @@
 interface:
   display_name: Harness Proxy
-  short_description: Delegate sub-tasks across AI coding agent harnesses (Cursor, Antigravity, OpenCode Go) based on task complexity, live quota availability, and benchmark tiers inside isolated Git worktrees.
+  short_description: Delegate sub-tasks across AI coding agent harnesses inside isolated Git worktrees.
+policy:
+  allow_implicit_invocation: false

@@ -20,3 +20,16 @@ func TestGetDriver(t *testing.T) {
 		t.Fatal("expected error for unknown driver")
 	}
 }
+
+func TestComposePrompt(t *testing.T) {
+	if got := ComposePrompt("my task", ""); got != "my task" {
+		t.Fatalf("expected 'my task', got '%s'", got)
+	}
+	if got := ComposePrompt("", "system instructions"); got != "system instructions" {
+		t.Fatalf("expected 'system instructions', got '%s'", got)
+	}
+	expected := "=== SYSTEM INSTRUCTIONS ===\nact as reviewer\n\n=== TASK ===\nreview code"
+	if got := ComposePrompt("review code", "act as reviewer"); got != expected {
+		t.Fatalf("expected '%s', got '%s'", expected, got)
+	}
+}
