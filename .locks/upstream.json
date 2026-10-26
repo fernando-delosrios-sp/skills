@@ -76,11 +76,11 @@
     "path": "skills/improve",
     "sha": "03369ee6d7cafbfcecc4346539b05b3dc0a603bb",
     "synced_at": "2026-08-06T09:51:13.182Z",
-    "overlay_applied_at": "2026-09-06T16:21:36.457Z",
+    "overlay_applied_at": "2026-10-26T12:44:14.443Z",
     "applied_upstream_sha": "03369ee6d7cafbfcecc4346539b05b3dc0a603bb",
     "universal_overlay_hash": "65e9acd24638697f58f6e61d0d160000bb6bece9e0fce89dfb78d835e15db1de",
-    "blended_ref": "fc7b1b9b3da9604f4436cb3ee4b0afcbda161e3d",
-    "overlay_hash": "476dac51249e027830bc61b379ad825072647c6f9e11373d3892501b16271375"
+    "blended_ref": "030fd2a99262529fb42f36452835f0026c92a01a",
+    "overlay_hash": "abeac3ab4ecf69ce664cb61323fcbceeaf57a3e4a0c821d04843e97497021510"
   },
   "diagnosing-bugs": {
     "repo": "mattpocock/skills",
@@ -98,11 +98,11 @@
     "path": "skills/engineering/improve-codebase-architecture",
     "sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "synced_at": "2026-09-06T16:21:32.544Z",
-    "overlay_applied_at": "2026-09-06T16:27:43.625Z",
+    "overlay_applied_at": "2026-10-26T12:44:14.446Z",
     "applied_upstream_sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "universal_overlay_hash": "65e9acd24638697f58f6e61d0d160000bb6bece9e0fce89dfb78d835e15db1de",
-    "blended_ref": "855528ac652f8197c1c9a3530613bcfb09f4eb45",
-    "overlay_hash": "fcf28d2672ca71a4fc9c7978fbdcd89121998a442216562124a700a64c32ecc2"
+    "blended_ref": "030fd2a99262529fb42f36452835f0026c92a01a",
+    "overlay_hash": "a02e0e71246955ff25e7e5f881ef37d646c36277299033d0ea20451d24c1f65b"
   },
   "codebase-design": {
     "repo": "mattpocock/skills",
@@ -119,11 +119,11 @@
     "path": "skills/engineering/domain-modeling",
     "sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "synced_at": "2026-09-06T16:21:31.118Z",
-    "overlay_applied_at": "2026-09-06T16:27:43.618Z",
+    "overlay_applied_at": "2026-10-26T12:44:14.440Z",
     "applied_upstream_sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "universal_overlay_hash": "65e9acd24638697f58f6e61d0d160000bb6bece9e0fce89dfb78d835e15db1de",
-    "blended_ref": "855528ac652f8197c1c9a3530613bcfb09f4eb45",
-    "overlay_hash": "54aa960ac0d24083740266d83c7b9341c9c22b183cac4e5b83d87428815f6695"
+    "blended_ref": "030fd2a99262529fb42f36452835f0026c92a01a",
+    "overlay_hash": "57af26632ce1364c742f08503d1bfc8aabfe5c6d20f4b5a5565ec548c1c36d2e"
   },
   "c4-diagram": {
     "repo": "aleksnikolaev/c4-diagram-skill",
@@ -154,11 +154,11 @@
     "path": "skills/code-simplification",
     "sha": "48cb1168aeaaa70dfc2bbf709eddfa2a8ed8129a",
     "synced_at": "2026-09-06T16:21:29.566Z",
-    "overlay_applied_at": "2026-09-06T16:27:43.594Z",
+    "overlay_applied_at": "2026-10-26T12:44:14.433Z",
     "applied_upstream_sha": "48cb1168aeaaa70dfc2bbf709eddfa2a8ed8129a",
     "universal_overlay_hash": "65e9acd24638697f58f6e61d0d160000bb6bece9e0fce89dfb78d835e15db1de",
-    "blended_ref": "855528ac652f8197c1c9a3530613bcfb09f4eb45",
-    "overlay_hash": "9a213fbc12909d468b41c444e1d913006e379964623e2722f39ed852e4fc589b"
+    "blended_ref": "030fd2a99262529fb42f36452835f0026c92a01a",
+    "overlay_hash": "9f8d5c194ae1a9648ee6120fa08dda34450d1f916f8d4427b0eda65c2033968a"
   },
   "grill-with-docs": {
     "repo": "mattpocock/skills",
@@ -185,43 +185,43 @@
     "path": "skills/engineering/code-review",
     "sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "synced_at": "2026-09-06T16:21:30.800Z",
-    "overlay_applied_at": "2026-09-06T16:27:43.601Z",
+    "overlay_applied_at": "2026-10-26T12:44:14.437Z",
     "applied_upstream_sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "universal_overlay_hash": "65e9acd24638697f58f6e61d0d160000bb6bece9e0fce89dfb78d835e15db1de",
-    "blended_ref": "855528ac652f8197c1c9a3530613bcfb09f4eb45",
-    "overlay_hash": "3b4bb03f3913b361c4a298b969bf66bd6a010146b632853e57570d36c6619bdb"
+    "blended_ref": "030fd2a99262529fb42f36452835f0026c92a01a",
+    "overlay_hash": "01b9def4a31106df1d1659c093ae82f577236ef3b23f791f0e5e2fe6a421bc32"
   },
   "tdd": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/tdd",
     "sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "synced_at": "2026-09-06T16:21:32.687Z",
-    "overlay_applied_at": "2026-09-06T16:27:43.630Z",
+    "overlay_applied_at": "2026-10-26T12:44:14.450Z",
     "applied_upstream_sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "universal_overlay_hash": "65e9acd24638697f58f6e61d0d160000bb6bece9e0fce89dfb78d835e15db1de",
-    "blended_ref": "855528ac652f8197c1c9a3530613bcfb09f4eb45",
-    "overlay_hash": "4864d06a7a10f03875c6d1ede6b2e0b2872ad065fb8b41c0729a76d168b8e950"
+    "blended_ref": "030fd2a99262529fb42f36452835f0026c92a01a",
+    "overlay_hash": "82cee9629d8b42adbb20a00411ad9440eb2d7eae8e2de37789de5286715f6261"
   },
   "setup-matt-pocock-skills": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/setup-matt-pocock-skills",
     "sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "synced_at": "2026-09-06T16:21:32.617Z",
-    "overlay_applied_at": "2026-09-06T16:27:43.628Z",
+    "overlay_applied_at": "2026-10-26T12:44:14.448Z",
     "applied_upstream_sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "universal_overlay_hash": "65e9acd24638697f58f6e61d0d160000bb6bece9e0fce89dfb78d835e15db1de",
-    "blended_ref": "855528ac652f8197c1c9a3530613bcfb09f4eb45",
-    "overlay_hash": "a16809a9165cb861ea471fa645867c7ea293e61318a33e60cb30e72c9da52dfd"
+    "blended_ref": "030fd2a99262529fb42f36452835f0026c92a01a",
+    "overlay_hash": "d773cc492debd1563bea03d9a0a0fe5f73b50b7d5938e480ba992bf9f1c3a0df"
   },
   "triage": {
     "repo": "mattpocock/skills",
     "path": "skills/engineering/triage",
     "sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "synced_at": "2026-09-06T16:21:32.763Z",
-    "overlay_applied_at": "2026-09-06T16:27:43.633Z",
+    "overlay_applied_at": "2026-10-26T12:44:14.451Z",
     "applied_upstream_sha": "3cca18b368ae95cdbdebbff572ccafa662551015",
     "universal_overlay_hash": "65e9acd24638697f58f6e61d0d160000bb6bece9e0fce89dfb78d835e15db1de",
-    "blended_ref": "855528ac652f8197c1c9a3530613bcfb09f4eb45",
-    "overlay_hash": "f5c8e25e28186c66de8d1372372abccb61570b4aab2e70e653198e58e4e3d74a"
+    "blended_ref": "030fd2a99262529fb42f36452835f0026c92a01a",
+    "overlay_hash": "e34cded0f50e3f9d61989c678ff468a120193dfea8f8729550bc9949b0dcc842"
   }
 }
