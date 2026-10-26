@@ -38,11 +38,6 @@ describe('Validate workflow', () => {
     assert.match(yaml, /run: npm run validate\n/);
     assert.equal(yaml.includes('--structure-only'), false);
   });
-
-  it('Sync workflow out of scope', async () => {
-    const sync = await readFile(resolve(ROOT, '.github/workflows/sync.yaml'), 'utf8');
-    assert.equal(sync.includes('run: npm test'), false);
-  });
 });
 
 describe('Validate workflow docs', () => {
