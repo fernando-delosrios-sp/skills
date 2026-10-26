@@ -17,6 +17,7 @@
         "./gherkin-authoring",
         "./git-commit",
         "./grill-with-docs",
+        "./harness-proxy",
         "./improve",
         "./improve-codebase-architecture",
         "./openspec-init",

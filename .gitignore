@@ -1,4 +1,5 @@
 .tmp/
 node_modules/
 .local/
+bin/
 .DS_Store

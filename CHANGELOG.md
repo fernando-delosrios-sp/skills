@@ -2,6 +2,14 @@
 
 All notable changes to this skills collection are documented here.
 
+## 2026-10-26 · v0.6.0
+
+### ✨ New Features
+
+- **harness-proxy** — Local-only engineering skill and standalone Go CLI utility (`harness-proxy`) to multiplex coding sub-tasks across Cursor, Antigravity, and OpenCode Go subscriptions. Analyzes task complexity via a Jev classifier and Artificial Analysis benchmarks, queries live/fallback quota balances, mounts isolated Git worktrees (`harness/<task-id>`), and cleanly auto-merges passes while preserving conflict branches.
+
+---
+
 ## 2026-09-08 · v0.5.4
 
 ### 🐛 Fixes

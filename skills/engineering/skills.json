@@ -68,6 +68,9 @@
       }
     },
     {
+      "name": "harness-proxy"
+    },
+    {
       "name": "improve",
       "source": {
         "repo": "shadcn/improve",

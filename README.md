@@ -25,7 +25,7 @@ npm run install
 
 | Category | Skills |
 |----------|--------|
-| **engineering** | apply-code-changes, architecture-decision-records, c4-diagram, changelog-generator, code-review, code-simplification, codebase-design, deploy-mate, diagnosing-bugs, domain-modeling, gherkin-authoring, git-commit, grill-with-docs, improve, improve-codebase-architecture, openspec-init, setup-matt-pocock-skills, tdd, triage, wayfinder, zoom-out |
+| **engineering** | apply-code-changes, architecture-decision-records, c4-diagram, changelog-generator, code-review, code-simplification, codebase-design, deploy-mate, diagnosing-bugs, domain-modeling, gherkin-authoring, git-commit, grill-with-docs, harness-proxy, improve, improve-codebase-architecture, openspec-init, setup-matt-pocock-skills, tdd, triage, wayfinder, zoom-out |
 | **productivity** | caveman, grill-me, grilling, handoff, plain-and-simple, risen-prompt, search, structured-choices, teach, to-questionnaire, wait-what, writing-for-agents |
 | **internal** | update-skills |
 
