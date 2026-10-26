@@ -8,9 +8,10 @@ import (
 )
 
 type JevConfig struct {
-	Endpoint string `yaml:"endpoint"`
-	Model    string `yaml:"model"`
-	APIKey   string `yaml:"api_key"`
+	Endpoint        string `yaml:"endpoint"`
+	Model           string `yaml:"model"`
+	APIKey          string `yaml:"api_key"`
+	CandidateModels int    `yaml:"candidate_models"`
 }
 
 type WorktreeConfig struct {
@@ -30,9 +31,10 @@ type Config struct {
 func DefaultConfig() *Config {
 	return &Config{
 		Jev: JevConfig{
-			Endpoint: "http://localhost:11434/v1",
-			Model:    "qwen2.5-coder:7b",
-			APIKey:   "",
+			Endpoint:        "http://localhost:11434/v1",
+			Model:           "qwen2.5-coder:7b",
+			APIKey:          "",
+			CandidateModels: 5,
 		},
 		Providers: []string{"antigravity", "cursor", "opencode"},
 		Worktree: WorktreeConfig{
@@ -97,6 +99,10 @@ func LoadConfig() (*Config, error) {
 	repoConfigPath := ".harness-proxy.yaml"
 	if data, err := os.ReadFile(repoConfigPath); err == nil {
 		_ = yaml.Unmarshal(data, cfg)
+	}
+
+	if cfg.Jev.CandidateModels <= 0 {
+		cfg.Jev.CandidateModels = 5
 	}
 
 	return cfg, nil

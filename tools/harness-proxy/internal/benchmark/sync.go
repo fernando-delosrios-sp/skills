@@ -184,6 +184,219 @@ func GetModelCost(model string, bd *BenchmarkData) float64 {
 	return baseCost
 }
 
+func GetModelScore(model string, bd *BenchmarkData) float64 {
+	if bd == nil {
+		return 75.0
+	}
+	normalized := strings.ToLower(model)
+
+	cleanName := normalized
+	if idx := strings.Index(cleanName, "/"); idx != -1 {
+		cleanName = cleanName[idx+1:]
+	}
+
+	bestKey := ""
+	for key := range bd.Models {
+		if strings.Contains(cleanName, key) || strings.Contains(normalized, key) {
+			if len(key) > len(bestKey) {
+				bestKey = key
+			}
+		}
+	}
+
+	if bestKey != "" {
+		return bd.Models[bestKey].CodingScore
+	}
+
+	baseScore := 75.0
+	if strings.Contains(cleanName, "opus") {
+		baseScore = 97.0
+	} else if strings.Contains(cleanName, "gpt-6") {
+		baseScore = 96.0
+	} else if strings.Contains(cleanName, "sonnet") {
+		baseScore = 94.0
+	} else if strings.Contains(cleanName, "argon") {
+		baseScore = 93.0
+	} else if strings.Contains(cleanName, "flash") || strings.Contains(cleanName, "mini") {
+		baseScore = 80.0
+	} else if strings.Contains(cleanName, "nano") || strings.Contains(cleanName, "small") {
+		baseScore = 65.0
+	}
+
+	if strings.Contains(cleanName, "high") || strings.Contains(cleanName, "max") || strings.Contains(cleanName, "thinking") {
+		baseScore += 2.0
+	} else if strings.Contains(cleanName, "low") {
+		baseScore -= 2.0
+	}
+
+	return baseScore
+}
+
+func SortModelsByScore(models []string, bd *BenchmarkData) []string {
+	sorted := make([]string, len(models))
+	copy(sorted, models)
+
+	sort.SliceStable(sorted, func(i, j int) bool {
+		scoreI := GetModelScore(sorted[i], bd)
+		scoreJ := GetModelScore(sorted[j], bd)
+		if scoreI != scoreJ {
+			return scoreI > scoreJ // Highest score first!
+		}
+		return sorted[i] < sorted[j]
+	})
+
+	return sorted
+}
+
+// PrioritizeOpenCodeModels orders opencode-go models ahead of opencode (Zen) models when hasQuota is true.
+// Within each partition, the existing score-based ordering is preserved.
+func PrioritizeOpenCodeModels(models []string, hasQuota bool) []string {
+	if !hasQuota {
+		return models
+	}
+
+	goModels := make([]string, 0, len(models))
+	zenModels := make([]string, 0, len(models))
+
+	for _, m := range models {
+		if strings.HasPrefix(m, "opencode-go/") {
+			goModels = append(goModels, m)
+		} else {
+			zenModels = append(zenModels, m)
+		}
+	}
+
+	return append(goModels, zenModels...)
+}
+
+// ExtractBaseModel strips reasoning effort (-low, -medium, -high, -xhigh, -max)
+// and modifier suffixes (-thinking, -fast) from a model name, returning the base model
+// name and the extracted effort ("low", "medium", "high", or "" if none).
+func ExtractBaseModel(model string) (string, string) {
+	curr := model
+	effort := ""
+
+	// Strip trailing -fast
+	if strings.HasSuffix(curr, "-fast") {
+		curr = strings.TrimSuffix(curr, "-fast")
+	}
+
+	// Strip trailing -thinking
+	hasThinking := false
+	if strings.HasSuffix(curr, "-thinking") {
+		curr = strings.TrimSuffix(curr, "-thinking")
+		hasThinking = true
+	}
+
+	// Check and strip effort suffixes
+	if strings.HasSuffix(curr, "-high") {
+		effort = "high"
+		curr = strings.TrimSuffix(curr, "-high")
+	} else if strings.HasSuffix(curr, "-xhigh") {
+		effort = "high"
+		curr = strings.TrimSuffix(curr, "-xhigh")
+	} else if strings.HasSuffix(curr, "-max") {
+		effort = "high"
+		curr = strings.TrimSuffix(curr, "-max")
+	} else if strings.HasSuffix(curr, "-medium") {
+		effort = "medium"
+		curr = strings.TrimSuffix(curr, "-medium")
+	} else if strings.HasSuffix(curr, "-low") {
+		effort = "low"
+		curr = strings.TrimSuffix(curr, "-low")
+	}
+
+	// If there was an inner -thinking (e.g. claude-opus-4-7-thinking-high -> claude-opus-4-7-thinking)
+	if strings.HasSuffix(curr, "-thinking") {
+		curr = strings.TrimSuffix(curr, "-thinking")
+		hasThinking = true
+	}
+
+	if effort == "" && hasThinking {
+		effort = "high"
+	}
+
+	return curr, effort
+}
+
+// FindPreciseModel finds the best concrete model from availableModels matching the baseModel and requested effort.
+func FindPreciseModel(availableModels []string, baseModel string, effort string) string {
+	if len(availableModels) == 0 {
+		return baseModel
+	}
+
+	normEffort := strings.ToLower(strings.TrimSpace(effort))
+	if normEffort == "" {
+		normEffort = "medium"
+	}
+
+	type matchCandidate struct {
+		model      string
+		effort     string
+		isFast     bool
+		isThinking bool
+	}
+
+	var matches []matchCandidate
+	for _, m := range availableModels {
+		base, mEffort := ExtractBaseModel(m)
+		if base == baseModel {
+			matches = append(matches, matchCandidate{
+				model:      m,
+				effort:     mEffort,
+				isFast:     strings.Contains(m, "-fast"),
+				isThinking: strings.Contains(m, "-thinking"),
+			})
+		}
+	}
+
+	if len(matches) == 0 {
+		// If baseModel itself is an exact match in availableModels
+		for _, m := range availableModels {
+			if m == baseModel {
+				return m
+			}
+		}
+		return availableModels[0]
+	}
+
+	// 1. Try exact effort match (prefer non-fast, then fast)
+	for _, c := range matches {
+		if c.effort == normEffort && !c.isFast {
+			return c.model
+		}
+	}
+	for _, c := range matches {
+		if c.effort == normEffort {
+			return c.model
+		}
+	}
+
+	// 2. Try compatible fallback effort
+	fallbackOrder := []string{"medium", "high", "low"}
+	if normEffort == "high" {
+		fallbackOrder = []string{"medium", "low"}
+	} else if normEffort == "low" {
+		fallbackOrder = []string{"medium", "high"}
+	}
+
+	for _, f := range fallbackOrder {
+		for _, c := range matches {
+			if c.effort == f && !c.isFast {
+				return c.model
+			}
+		}
+		for _, c := range matches {
+			if c.effort == f {
+				return c.model
+			}
+		}
+	}
+
+	// 3. Fallback to first matching model for this base
+	return matches[0].model
+}
+
 func SortModelsByCost(models []string, bd *BenchmarkData) []string {
 	sorted := make([]string, len(models))
 	copy(sorted, models)

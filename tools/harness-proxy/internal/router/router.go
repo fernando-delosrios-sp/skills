@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/fernando-delosrios-sp/skills/tools/harness-proxy/internal/benchmark"
 	"github.com/fernando-delosrios-sp/skills/tools/harness-proxy/internal/config"
 	"github.com/fernando-delosrios-sp/skills/tools/harness-proxy/internal/jev"
 	"github.com/fernando-delosrios-sp/skills/tools/harness-proxy/internal/ledger"
@@ -38,7 +39,55 @@ func NewRouter(cfg *config.Config, j *jev.Classifier, tm *tiers.TiersMatrix, qm 
 	}
 }
 
-func (r *Router) Resolve(ctx context.Context, prompt string, preferredTier string, preferredProvider string) (*RouteDecision, error) {
+func (r *Router) Resolve(ctx context.Context, prompt string, preferredTier string, preferredProvider string, preferredModel string) (*RouteDecision, error) {
+	// When model is provided, tier is ignored
+	if preferredModel != "" {
+		targetModel := preferredModel
+		targetProvider := preferredProvider
+		targetTier := tiers.TierName("override")
+
+		// If provider is not specified, attempt to deduce it from tiers matrix
+		if targetProvider == "" {
+			if foundProvider, foundTier := r.tiers.FindModelProvider(preferredModel); foundProvider != "" {
+				targetProvider = foundProvider
+				targetTier = foundTier
+			}
+		}
+
+		// If still no provider, pick the provider with the best remaining quota
+		if targetProvider == "" {
+			quotas := r.quotaMgr.InspectAll(ctx, r.cfg, r.ledger)
+			bestProvider := ""
+			bestRemaining := -1.0
+			for _, q := range quotas {
+				if q.Status != "exhausted" && q.Remaining > bestRemaining {
+					bestRemaining = q.Remaining
+					bestProvider = q.Provider
+				}
+			}
+			if bestProvider != "" {
+				targetProvider = bestProvider
+			} else if len(r.cfg.Providers) > 0 {
+				targetProvider = r.cfg.Providers[0]
+			}
+		}
+
+		alternatives := make([]string, 0)
+		for _, p := range r.cfg.Providers {
+			if p != targetProvider {
+				alternatives = append(alternatives, p)
+			}
+		}
+
+		return &RouteDecision{
+			Tier:                 targetTier,
+			Provider:             targetProvider,
+			Model:                targetModel,
+			Reason:               fmt.Sprintf("explicit model override: %s (tier ignored)", targetModel),
+			AlternativeProviders: alternatives,
+		}, nil
+	}
+
 	// Step 1: Resolve Tier
 	var targetTier tiers.TierName
 	tierReason := ""
@@ -71,69 +120,124 @@ func (r *Router) Resolve(ctx context.Context, prompt string, preferredTier strin
 		quotaMap[q.Provider] = q
 	}
 
-	// Step 3: Find candidate providers that have configured models in this tier
-	type candidate struct {
+	defaultEffort := "medium"
+	switch targetTier {
+	case tiers.TierFrontier:
+		defaultEffort = "high"
+	case tiers.TierLightweight:
+		defaultEffort = "low"
+	}
+
+	// Step 3: Find candidate base models from quota-healthy providers
+	type candidateBaseModel struct {
 		provider  string
-		model     string
+		baseModel string
 		remaining float64
 	}
 
-	candidates := make([]candidate, 0)
-	for _, p := range r.cfg.Providers {
-		models := r.tiers.GetModels(targetTier, p)
-		if len(models) == 0 {
-			continue
-		}
-		q, exists := quotaMap[p]
-		if !exists || q.Remaining > 0 {
-			remaining := 100.0
-			if exists {
-				remaining = q.Remaining
-			}
-			candidates = append(candidates, candidate{
-				provider:  p,
-				model:     models[0], // primary model in tier
-				remaining: remaining,
-			})
+	availableProviders := make([]string, 0)
+	if preferredProvider != "" {
+		q, exists := quotaMap[preferredProvider]
+		if !exists || (q.Status != "exhausted" && q.Remaining > 0) {
+			availableProviders = append(availableProviders, preferredProvider)
 		}
 	}
 
-	if len(candidates) == 0 {
+	if len(availableProviders) == 0 {
+		sortedProviders := make([]string, len(r.cfg.Providers))
+		copy(sortedProviders, r.cfg.Providers)
+		sort.SliceStable(sortedProviders, func(i, j int) bool {
+			remI := 100.0
+			if q, ok := quotaMap[sortedProviders[i]]; ok {
+				remI = q.Remaining
+			}
+			remJ := 100.0
+			if q, ok := quotaMap[sortedProviders[j]]; ok {
+				remJ = q.Remaining
+			}
+			return remI > remJ
+		})
+
+		for _, p := range sortedProviders {
+			q, exists := quotaMap[p]
+			if !exists || (q.Status != "exhausted" && q.Remaining > 0) {
+				availableProviders = append(availableProviders, p)
+			}
+		}
+	}
+
+	allCandidateBaseModels := make([]candidateBaseModel, 0)
+	seenBaseModels := make(map[string]bool)
+
+	for _, p := range availableProviders {
+		remaining := 100.0
+		if q, exists := quotaMap[p]; exists {
+			remaining = q.Remaining
+		}
+		models := r.tiers.GetModels(targetTier, p)
+		if p == "opencode" {
+			q, exists := quotaMap["opencode"]
+			hasQuota := !exists || (q.Status != "exhausted" && q.Remaining > 0)
+			models = benchmark.PrioritizeOpenCodeModels(models, hasQuota)
+		}
+		for _, m := range models {
+			base, _ := benchmark.ExtractBaseModel(m)
+			if !seenBaseModels[base] {
+				seenBaseModels[base] = true
+				allCandidateBaseModels = append(allCandidateBaseModels, candidateBaseModel{
+					provider:  p,
+					baseModel: base,
+					remaining: remaining,
+				})
+			}
+		}
+	}
+
+	if len(allCandidateBaseModels) == 0 {
 		return nil, fmt.Errorf("all subscription providers in tier '%s' are exhausted", targetTier)
 	}
 
-	// If preferred provider requested and available, use it first
-	selectedIdx := -1
-	if preferredProvider != "" {
-		for i, c := range candidates {
-			if c.provider == preferredProvider {
-				selectedIdx = i
-				break
-			}
-		}
+	maxCandidates := r.cfg.Jev.CandidateModels
+	if maxCandidates <= 0 {
+		maxCandidates = 5
 	}
 
-	// Otherwise, sort candidates by remaining quota descending (arbitrage)
-	if selectedIdx == -1 {
-		sort.SliceStable(candidates, func(i, j int) bool {
-			return candidates[i].remaining > candidates[j].remaining
-		})
-		selectedIdx = 0
+	candidateCount := len(allCandidateBaseModels)
+	if candidateCount > maxCandidates {
+		candidateCount = maxCandidates
+	}
+	topCandidates := allCandidateBaseModels[:candidateCount]
+
+	candidateNames := make([]string, len(topCandidates))
+	candidateMap := make(map[string]candidateBaseModel)
+	for i, c := range topCandidates {
+		candidateNames[i] = c.baseModel
+		candidateMap[c.baseModel] = c
 	}
 
-	selected := candidates[selectedIdx]
-	alternatives := make([]string, 0, len(candidates)-1)
-	for i, c := range candidates {
-		if i != selectedIdx {
-			alternatives = append(alternatives, c.provider)
+	// Ask Jev to select the optimal base model and effort (low, medium, high)
+	selectedBaseModel, selectedEffort, err := r.classifier.SelectModel(ctx, prompt, candidateNames, defaultEffort)
+	selected, ok := candidateMap[selectedBaseModel]
+	if !ok || err != nil {
+		selected = topCandidates[0]
+	}
+
+	// Combine base model and effort to find the right precise model
+	providerModels := r.tiers.GetModels(targetTier, selected.provider)
+	preciseModel := benchmark.FindPreciseModel(providerModels, selected.baseModel, selectedEffort)
+
+	alternatives := make([]string, 0)
+	for _, p := range r.cfg.Providers {
+		if p != selected.provider {
+			alternatives = append(alternatives, p)
 		}
 	}
 
 	return &RouteDecision{
 		Tier:                 targetTier,
 		Provider:             selected.provider,
-		Model:                selected.model,
-		Reason:               fmt.Sprintf("%s; selected %s with %.1f remaining allowance", tierReason, selected.provider, selected.remaining),
+		Model:                preciseModel,
+		Reason:               fmt.Sprintf("%s; selected %s (effort: %s) on %s (%.1f remaining allowance)", tierReason, preciseModel, selectedEffort, selected.provider, selected.remaining),
 		AlternativeProviders: alternatives,
 	}, nil
 }

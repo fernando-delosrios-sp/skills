@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -63,21 +64,24 @@ Usage:
 Flags for 'run':
   --tier <name>        Override model tier (frontier, workhorse, lightweight)
   --provider <name>    Override provider (cursor, antigravity, opencode)
+  --model <name>       Override model (ignores tier classification)
   --no-merge           Do not auto-merge the task branch into active workspace
   --task-id <id>       Explicit task identifier
 
 Flags for 'config-jev':
-  --endpoint <url>     OpenAI-compatible endpoint URL (e.g. http://localhost:11434/v1)
-  --model <name>       Classifier model name (e.g. qwen2.5-coder:7b)
-  --api-key <key>      Bearer token / API key for remote providers
-  --local              Save to local repo (.harness-proxy.yaml) instead of global config
-  --wizard             Launch interactive configuration wizard`)
+  --endpoint <url>         OpenAI-compatible endpoint URL (e.g. http://localhost:11434/v1)
+  --model <name>           Classifier model name (e.g. qwen2.5-coder:7b)
+  --api-key <key>          Bearer token / API key for remote providers
+  --candidate-models <n>   Number of candidate models passed to Jev for evaluation (default 5)
+  --local                  Save to local repo (.harness-proxy.yaml) instead of global config
+  --wizard                 Launch interactive configuration wizard`)
 }
 
 func handleRun(args []string) {
 	fs := flag.NewFlagSet("run", flag.ExitOnError)
 	tierFlag := fs.String("tier", "", "Override model tier (frontier, workhorse, lightweight)")
 	providerFlag := fs.String("provider", "", "Override provider (cursor, antigravity, opencode)")
+	modelFlag := fs.String("model", "", "Override model (ignores tier classification)")
 	noMergeFlag := fs.Bool("no-merge", false, "Do not auto-merge the task branch into active workspace")
 	taskIDFlag := fs.String("task-id", "", "Explicit task identifier")
 
@@ -116,7 +120,7 @@ func handleRun(args []string) {
 	r := router.NewRouter(cfg, classifier, tm, qm, l)
 
 	ctx := context.Background()
-	decision, err := r.Resolve(ctx, prompt, *tierFlag, *providerFlag)
+	decision, err := r.Resolve(ctx, prompt, *tierFlag, *providerFlag, *modelFlag)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Routing Error: %v\n", err)
 		os.Exit(2)
@@ -148,6 +152,17 @@ func handleRun(args []string) {
 		models := tm.GetModels(decision.Tier, p)
 		model := decision.Model
 		if p != decision.Provider && len(models) > 0 {
+			if p == "opencode" {
+				qList := qm.InspectAll(ctx, cfg, l)
+				hasQuota := true
+				for _, q := range qList {
+					if q.Provider == "opencode" {
+						hasQuota = q.Status != "exhausted" && q.Remaining > 0
+						break
+					}
+				}
+				models = benchmark.PrioritizeOpenCodeModels(models, hasQuota)
+			}
 			model = models[0]
 		}
 
@@ -329,14 +344,39 @@ func handleSyncModels(args []string) {
 			}
 		}
 
+		hasQuota := true
+		if p == "opencode" {
+			qm := quota.NewQuotaManager(cfg.GlobalDir)
+			l, _ := ledger.LoadLedger(cfg.GlobalDir)
+			qList := qm.InspectAll(context.Background(), cfg, l)
+			for _, q := range qList {
+				if q.Provider == "opencode" {
+					hasQuota = q.Status != "exhausted" && q.Remaining > 0
+					break
+				}
+			}
+		}
+
 		if len(frontierList) > 0 {
-			tm.Frontier[p] = benchmark.SortModelsByCost(frontierList, bd)
+			sorted := benchmark.SortModelsByScore(frontierList, bd)
+			if p == "opencode" {
+				sorted = benchmark.PrioritizeOpenCodeModels(sorted, hasQuota)
+			}
+			tm.Frontier[p] = sorted
 		}
 		if len(workhorseList) > 0 {
-			tm.Workhorse[p] = benchmark.SortModelsByCost(workhorseList, bd)
+			sorted := benchmark.SortModelsByScore(workhorseList, bd)
+			if p == "opencode" {
+				sorted = benchmark.PrioritizeOpenCodeModels(sorted, hasQuota)
+			}
+			tm.Workhorse[p] = sorted
 		}
 		if len(lightweightList) > 0 {
-			tm.Lightweight[p] = benchmark.SortModelsByCost(lightweightList, bd)
+			sorted := benchmark.SortModelsByScore(lightweightList, bd)
+			if p == "opencode" {
+				sorted = benchmark.PrioritizeOpenCodeModels(sorted, hasQuota)
+			}
+			tm.Lightweight[p] = sorted
 		}
 
 		fmt.Printf("  • %-12s: %d models discovered (%d frontier, %d workhorse, %d lightweight)\n",
@@ -447,6 +487,7 @@ func handleConfigJev(args []string) {
 	endpointFlag := fs.String("endpoint", "", "Jev OpenAI-compatible endpoint URL (e.g. http://localhost:11434/v1)")
 	modelFlag := fs.String("model", "", "Jev classifier model (e.g. qwen2.5-coder:7b)")
 	apiKeyFlag := fs.String("api-key", "", "API key for Jev endpoint (optional)")
+	candidateModelsFlag := fs.Int("candidate-models", 0, "Number of candidate models passed to Jev for evaluation (default 5)")
 	localFlag := fs.Bool("local", false, "Save to local .harness-proxy.yaml instead of global config")
 	wizardFlag := fs.Bool("wizard", false, "Force interactive wizard mode")
 
@@ -458,7 +499,7 @@ func handleConfigJev(args []string) {
 		os.Exit(1)
 	}
 
-	var endpointSet, modelSet, apiKeySet bool
+	var endpointSet, modelSet, apiKeySet, candidateModelsSet bool
 	fs.Visit(func(f *flag.Flag) {
 		switch f.Name {
 		case "endpoint":
@@ -467,10 +508,12 @@ func handleConfigJev(args []string) {
 			modelSet = true
 		case "api-key":
 			apiKeySet = true
+		case "candidate-models":
+			candidateModelsSet = true
 		}
 	})
 
-	if *wizardFlag || (!endpointSet && !modelSet && !apiKeySet) {
+	if *wizardFlag || (!endpointSet && !modelSet && !apiKeySet && !candidateModelsSet) {
 		runJevWizard(cfg, *localFlag)
 		return
 	}
@@ -484,6 +527,9 @@ func handleConfigJev(args []string) {
 	if apiKeySet {
 		cfg.Jev.APIKey = *apiKeyFlag
 	}
+	if candidateModelsSet && *candidateModelsFlag > 0 {
+		cfg.Jev.CandidateModels = *candidateModelsFlag
+	}
 
 	savedPath, err := cfg.Save(*localFlag)
 	if err != nil {
@@ -492,12 +538,13 @@ func handleConfigJev(args []string) {
 	}
 
 	fmt.Printf("✓ Jev configuration updated in %s\n", savedPath)
-	fmt.Printf("  Endpoint: %s\n", cfg.Jev.Endpoint)
-	fmt.Printf("  Model:    %s\n", cfg.Jev.Model)
+	fmt.Printf("  Endpoint:         %s\n", cfg.Jev.Endpoint)
+	fmt.Printf("  Model:            %s\n", cfg.Jev.Model)
+	fmt.Printf("  Candidate Models: %d\n", cfg.Jev.CandidateModels)
 	if cfg.Jev.APIKey != "" {
-		fmt.Printf("  API Key:  [configured]\n")
+		fmt.Printf("  API Key:          [configured]\n")
 	} else {
-		fmt.Printf("  API Key:  [none]\n")
+		fmt.Printf("  API Key:          [none]\n")
 	}
 }
 
@@ -553,7 +600,25 @@ func runJevWizard(cfg *config.Config, defaultLocal bool) {
 		}
 	}
 
-	// 4. Scope
+	// 4. Candidate Models
+	currCandidateModels := cfg.Jev.CandidateModels
+	if currCandidateModels <= 0 {
+		currCandidateModels = 5
+	}
+	fmt.Printf("Number of candidate models to evaluate [%d]: ", currCandidateModels)
+	candInput, _ := reader.ReadString('\n')
+	candInput = strings.TrimSpace(candInput)
+	if candInput != "" {
+		if val, err := strconv.Atoi(candInput); err == nil && val > 0 {
+			cfg.Jev.CandidateModels = val
+		} else {
+			cfg.Jev.CandidateModels = currCandidateModels
+		}
+	} else {
+		cfg.Jev.CandidateModels = currCandidateModels
+	}
+
+	// 5. Scope
 	isLocal := defaultLocal
 	if !defaultLocal {
 		fmt.Print("Save configuration to [G]lobal (~/.config/harness-proxy/config.yaml) or [L]ocal (.harness-proxy.yaml)? [G]: ")
@@ -572,12 +637,13 @@ func runJevWizard(cfg *config.Config, defaultLocal bool) {
 
 	fmt.Println()
 	fmt.Printf("✓ Jev configuration successfully saved to %s\n", savedPath)
-	fmt.Printf("  Endpoint: %s\n", cfg.Jev.Endpoint)
-	fmt.Printf("  Model:    %s\n", cfg.Jev.Model)
+	fmt.Printf("  Endpoint:         %s\n", cfg.Jev.Endpoint)
+	fmt.Printf("  Model:            %s\n", cfg.Jev.Model)
+	fmt.Printf("  Candidate Models: %d\n", cfg.Jev.CandidateModels)
 	if cfg.Jev.APIKey != "" {
-		fmt.Printf("  API Key:  [configured]\n")
+		fmt.Printf("  API Key:          [configured]\n")
 	} else {
-		fmt.Printf("  API Key:  [none]\n")
+		fmt.Printf("  API Key:          [none]\n")
 	}
 }
 

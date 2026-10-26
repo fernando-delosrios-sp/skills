@@ -34,8 +34,11 @@ harness-proxy run "Implement unit tests for user profile service"
 # Delegate with explicit tier override (frontier, workhorse, lightweight)
 harness-proxy run --tier frontier "Refactor authentication middleware to use JWT"
 
-# Force specific provider
-harness-proxy run --provider cursor "Fix failing test in internal/driver"
+# Delegate with explicit model override (tier classification is ignored)
+harness-proxy run --model gemini-4-argon-high "Refactor database connection pool"
+
+# Force specific provider and model
+harness-proxy run --provider antigravity --model claude-sonnet-5-5-high "Task prompt"
 
 # Inspect active subscription quotas and reset countdowns
 harness-proxy quota
@@ -59,9 +62,10 @@ harness-proxy config-jev --endpoint http://localhost:11434/v1 --model qwen2.5-co
 
 ## How It Works
 
-1. **Two-Pass Routing:**
-   - **Pass 1 (Jev Complexity Classifier):** Analyzes task prompt difficulty using a local LLM endpoint (Ollama/llama.cpp by default) or rule heuristics to map to `frontier`, `workhorse`, or `lightweight`.
+1. **Three-Pass Routing:**
+   - **Pass 1 (Jev Complexity Classifier):** Analyzes task prompt difficulty using an OpenAI-compatible LLM endpoint or rule heuristics to map to `frontier`, `workhorse`, or `lightweight`.
    - **Pass 2 (Quota & Provider Selection):** Inspects remaining allowances across providers in the selected tier and routes to the provider with the best remaining quota balance.
+   - **Pass 3 (Model & Effort Selection via Jev):** Deduplicates provider models down to unique base models (stripping effort and modifier suffixes like `-low`, `-high`, `-thinking`, `-fast`) so variants do not dominate the candidate pool. Gathers the top base models sorted by benchmark score across quota-healthy providers (up to `candidate_models`, default 5, with `opencode-go/` prioritized over Zen when Go quota is healthy). Jev selects the best base model along with the required reasoning effort (`low`, `medium`, `high`), and the proxy resolves the precise concrete variant. Explicit `--model` overrides skip tier classification and candidate model selection.
 
 2. **Isolated Worktree Sandbox:**
    - Mounts an ephemeral Git worktree on branch `harness/<task-id>` from `HEAD`.
@@ -80,21 +84,21 @@ harness-proxy config-jev --endpoint http://localhost:11434/v1 --model qwen2.5-co
 Stored under the XDG standard:
 * **Global Base (`~/.config/harness-proxy/`):**
   * `config.yaml`: Classifier settings, provider priority order, worktree options.
-  * `tiers.yaml`: Model tier mappings across providers.
+  * `tiers.yaml`: Model tier mappings across providers, ranked by benchmark score descending.
   * `ledger.json`: Historical execution timestamps, estimated tokens, and consumption.
   * `cache/`: 7-day TTL benchmark cache and quota status snapshots.
 * **Workspace Override (`.harness-proxy.yaml`):** Optional repo-root file to override base directories or provider restrictions for a specific project.
 
 ### Jev Classifier Configuration
 
-Jev classifies task difficulty using an OpenAI-compatible `/chat/completions` endpoint. Configure it directly using the binary:
+Jev classifies task difficulty and selects the optimal model using an OpenAI-compatible `/chat/completions` endpoint. Configure it directly using the binary:
 
 ```bash
-# Interactive wizard mode (prompts for endpoint, model, and optional api-key):
+# Interactive wizard mode (prompts for endpoint, model, api-key, and candidate models):
 harness-proxy config-jev
 
 # Or non-interactively via flags:
-harness-proxy config-jev --endpoint http://localhost:11434/v1 --model qwen2.5-coder:7b
+harness-proxy config-jev --endpoint http://localhost:11434/v1 --model qwen2.5-coder:7b --candidate-models 5
 
 # Remote provider with API key:
 harness-proxy config-jev --endpoint https://openrouter.ai/api/v1 --model meta-llama/llama-3.3-70b-instruct --api-key sk-or-xxx
@@ -110,6 +114,7 @@ jev:
   endpoint: "http://localhost:11434/v1"   # Default local Ollama endpoint
   model: "qwen2.5-coder:7b"              # Classifier model
   api_key: ""                            # Optional API key for remote providers
+  candidate_models: 5                    # Number of top benchmark models passed to Jev (default: 5)
 ```
 
-Timeouts (5s) and heuristic fallbacks are handled automatically by the binary: if the endpoint is unreachable or times out, Jev immediately falls back to built-in keyword and task-scope heuristics.
+Timeouts (5s) and heuristic fallbacks are handled automatically by the binary: if the endpoint is unreachable or times out, Jev immediately falls back to built-in keyword/task heuristics and defaults to the top benchmark-scored model.

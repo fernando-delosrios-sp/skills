@@ -60,6 +60,134 @@ func (c *Classifier) Classify(ctx context.Context, prompt string) (tiers.TierNam
 	return tier, reason, nil
 }
 
+func (c *Classifier) SelectModel(ctx context.Context, prompt string, candidates []string, defaultEffort string) (string, string, error) {
+	if defaultEffort == "" {
+		defaultEffort = "medium"
+	}
+	if len(candidates) == 0 {
+		return "", defaultEffort, fmt.Errorf("no candidate models provided")
+	}
+	if len(candidates) == 1 || c.cfg.Jev.Endpoint == "" {
+		return candidates[0], defaultEffort, nil
+	}
+
+	endpoint := strings.TrimRight(c.cfg.Jev.Endpoint, "/")
+	if !strings.HasSuffix(endpoint, "/chat/completions") {
+		endpoint += "/chat/completions"
+	}
+
+	var candidateList strings.Builder
+	for i, m := range candidates {
+		fmt.Fprintf(&candidateList, "%d. %s\n", i+1, m)
+	}
+
+	reqBody := ChatCompletionRequest{
+		Model: c.cfg.Jev.Model,
+		Messages: []ChatMessage{
+			{
+				Role: "system",
+				Content: "You are an AI model selector for a software engineering task.\n" +
+					"Given the task prompt and candidate base models:\n" +
+					"1. Select the single best base model from the candidates.\n" +
+					"2. Select reasoning effort: \"low\", \"medium\", or \"high\" based on task complexity (low for simple/typos, medium for features/refactoring, high for deep/complex architecture).\n" +
+					"When choosing among OpenCode models, favour opencode-go/ subscription models over opencode/ (Zen) models.\n\n" +
+					"Respond in this exact two-line format:\n" +
+					"Model: <exact base model from candidates>\n" +
+					"Effort: <low|medium|high>",
+			},
+			{
+				Role: "user",
+				Content: fmt.Sprintf("Task prompt:\n%s\n\nCandidate base models:\n%s\nSelection:", prompt, candidateList.String()),
+			},
+		},
+		Temperature: 0.0,
+		MaxTokens:   60,
+	}
+
+	data, err := json.Marshal(reqBody)
+	if err != nil {
+		return candidates[0], defaultEffort, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", endpoint, bytes.NewReader(data))
+	if err != nil {
+		return candidates[0], defaultEffort, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if c.cfg.Jev.APIKey != "" {
+		req.Header.Set("Authorization", "Bearer "+c.cfg.Jev.APIKey)
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return candidates[0], defaultEffort, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return candidates[0], defaultEffort, fmt.Errorf("model selector returned status %d", resp.StatusCode)
+	}
+
+	var chatResp ChatCompletionResponse
+	if err := json.NewDecoder(resp.Body).Decode(&chatResp); err != nil {
+		return candidates[0], defaultEffort, err
+	}
+
+	if len(chatResp.Choices) == 0 {
+		return candidates[0], defaultEffort, fmt.Errorf("no choices returned by model selector")
+	}
+
+	raw := strings.TrimSpace(chatResp.Choices[0].Message.Content)
+	selectedModel := candidates[0]
+	selectedEffort := defaultEffort
+
+	lines := strings.Split(raw, "\n")
+	modelFound := false
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		lower := strings.ToLower(line)
+		if strings.HasPrefix(lower, "model:") {
+			val := strings.TrimSpace(line[6:])
+			for _, m := range candidates {
+				if strings.EqualFold(val, m) || strings.Contains(strings.ToLower(val), strings.ToLower(m)) {
+					selectedModel = m
+					modelFound = true
+					break
+				}
+			}
+		} else if strings.HasPrefix(lower, "effort:") {
+			val := strings.TrimSpace(lower[7:])
+			if strings.Contains(val, "high") {
+				selectedEffort = "high"
+			} else if strings.Contains(val, "low") {
+				selectedEffort = "low"
+			} else if strings.Contains(val, "medium") {
+				selectedEffort = "medium"
+			}
+		}
+	}
+
+	if !modelFound {
+		for _, m := range candidates {
+			if strings.EqualFold(raw, m) || strings.Contains(strings.ToLower(raw), strings.ToLower(m)) {
+				selectedModel = m
+				break
+			}
+		}
+	}
+
+	lowerRaw := strings.ToLower(raw)
+	if strings.Contains(lowerRaw, "effort: high") || strings.Contains(lowerRaw, "effort:high") {
+		selectedEffort = "high"
+	} else if strings.Contains(lowerRaw, "effort: low") || strings.Contains(lowerRaw, "effort:low") {
+		selectedEffort = "low"
+	} else if strings.Contains(lowerRaw, "effort: medium") || strings.Contains(lowerRaw, "effort:medium") {
+		selectedEffort = "medium"
+	}
+
+	return selectedModel, selectedEffort, nil
+}
+
 func (c *Classifier) classifyWithEndpoint(ctx context.Context, prompt string) (tiers.TierName, string, error) {
 	endpoint := strings.TrimRight(c.cfg.Jev.Endpoint, "/")
 	if !strings.HasSuffix(endpoint, "/chat/completions") {

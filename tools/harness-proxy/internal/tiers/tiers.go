@@ -130,3 +130,28 @@ func (tm *TiersMatrix) GetModels(tier TierName, provider string) []string {
 	}
 	return pm[provider]
 }
+
+func (tm *TiersMatrix) FindModelProvider(model string) (string, TierName) {
+	for p, models := range tm.Frontier {
+		for _, m := range models {
+			if m == model {
+				return p, TierFrontier
+			}
+		}
+	}
+	for p, models := range tm.Workhorse {
+		for _, m := range models {
+			if m == model {
+				return p, TierWorkhorse
+			}
+		}
+	}
+	for p, models := range tm.Lightweight {
+		for _, m := range models {
+			if m == model {
+				return p, TierLightweight
+			}
+		}
+	}
+	return "", ""
+}
