@@ -176,8 +176,14 @@ func handleRun(args []string) {
 		os.Exit(2)
 	}
 
-	fmt.Printf("🚀 Routing task [%s]: Tier=%s Provider=%s Model=%s\n", taskID, decision.Tier, decision.Provider, decision.Model)
-	fmt.Printf("   Reason: %s\n", decision.Reason)
+	fmt.Printf("🚀 Routing Decision [%s]:\n", taskID)
+	fmt.Printf("   • Harness:  %s\n", decision.Provider)
+	fmt.Printf("   • Model:    %s\n", decision.Model)
+	if decision.Effort != "" {
+		fmt.Printf("   • Effort:   %s\n", decision.Effort)
+	}
+	fmt.Printf("   • Tier:     %s\n", decision.Tier)
+	fmt.Printf("   • Reason:   %s\n", decision.Reason)
 
 	// Worktree setup
 	wtMgr := worktree.NewManager(cfg.Worktree.BaseDir)

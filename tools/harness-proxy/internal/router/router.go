@@ -17,6 +17,7 @@ type RouteDecision struct {
 	Tier                 tiers.TierName `json:"tier"`
 	Provider             string         `json:"provider"`
 	Model                string         `json:"model"`
+	Effort               string         `json:"effort"`
 	Reason               string         `json:"reason"`
 	AlternativeProviders []string       `json:"alternative_providers"`
 }
@@ -237,6 +238,7 @@ func (r *Router) Resolve(ctx context.Context, prompt string, preferredTier strin
 		Tier:                 targetTier,
 		Provider:             selected.provider,
 		Model:                preciseModel,
+		Effort:               selectedEffort,
 		Reason:               fmt.Sprintf("%s; selected %s (effort: %s) on %s (%.1f remaining allowance)", tierReason, preciseModel, selectedEffort, selected.provider, selected.remaining),
 		AlternativeProviders: alternatives,
 	}, nil
