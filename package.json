@@ -15,7 +15,7 @@
     "validate": "node scripts/sync.mjs validate",
     "build:harness-proxy": "cd tools/harness-proxy && go build -o ../../bin/harness-proxy ./cmd/harness-proxy",
     "test:go": "cd tools/harness-proxy && go test ./...",
-    "test": "node --test test/**/*.test.mjs"
+    "test": "node --test"
   },
   "dependencies": {
     "@inquirer/ansi": "^2.0.7",
