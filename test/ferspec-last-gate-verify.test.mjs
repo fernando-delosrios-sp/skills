@@ -65,12 +65,16 @@ describe('Worktree verify runs on original branch', () => {
 });
 
 async function firstActiveChange() {
-  const { stdout } = await execFileAsync('openspec', ['list', '--changes', '--json'], {
-    cwd: ROOT,
-    encoding: 'utf8',
-  });
-  const { changes } = JSON.parse(stdout);
-  return changes?.[0]?.name ?? changes?.[0]?.id ?? null;
+  try {
+    const { stdout } = await execFileAsync('openspec', ['list', '--changes', '--json'], {
+      cwd: ROOT,
+      encoding: 'utf8',
+    });
+    const { changes } = JSON.parse(stdout);
+    return changes?.[0]?.name ?? changes?.[0]?.id ?? null;
+  } catch {
+    return null;
+  }
 }
 
 describe('Instructions apply loads guidance', () => {
