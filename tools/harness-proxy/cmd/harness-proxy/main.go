@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -65,6 +66,7 @@ Flags for 'run':
   --tier <name>                Override model tier (frontier, workhorse, lightweight)
   --provider <name>            Override provider (cursor, antigravity, opencode)
   --model <name>               Override model (ignores tier classification)
+  --agent <name>               Named subagent to load as system prompt (searches .agents/agents/, .claude/agents/)
   --system-prompt <file|str>   System prompt or path to markdown role instructions
   --no-merge                   Do not auto-merge the task branch into active workspace
   --task-id <id>               Explicit task identifier
@@ -78,11 +80,39 @@ Flags for 'config-jev':
   --wizard                 Launch interactive configuration wizard`)
 }
 
+func resolveAgentPrompt(name string) (string, string, error) {
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return "", "", fmt.Errorf("agent name cannot be empty")
+	}
+
+	candidates := []string{
+		filepath.Join(".agents", "agents", name+".md"),
+		filepath.Join(".agents", "agents", name),
+		filepath.Join(".claude", "agents", name+".md"),
+		filepath.Join(".claude", "agents", name),
+		filepath.Join("agents", name+".md"),
+		filepath.Join(".agents", "roles", name+".md"),
+	}
+
+	for _, cand := range candidates {
+		if info, err := os.Stat(cand); err == nil && !info.IsDir() {
+			content, err := os.ReadFile(cand)
+			if err == nil {
+				return string(content), cand, nil
+			}
+		}
+	}
+
+	return "", "", fmt.Errorf("could not find agent '%s' (checked: %s)", name, strings.Join(candidates, ", "))
+}
+
 func handleRun(args []string) {
 	fs := flag.NewFlagSet("run", flag.ExitOnError)
 	tierFlag := fs.String("tier", "", "Override model tier (frontier, workhorse, lightweight)")
 	providerFlag := fs.String("provider", "", "Override provider (cursor, antigravity, opencode)")
 	modelFlag := fs.String("model", "", "Override model (ignores tier classification)")
+	agentFlag := fs.String("agent", "", "Named subagent to load as system prompt (searches .agents/agents/, .claude/agents/)")
 	systemPromptFlag := fs.String("system-prompt", "", "System prompt or path to markdown role instructions")
 	noMergeFlag := fs.Bool("no-merge", false, "Do not auto-merge the task branch into active workspace")
 	taskIDFlag := fs.String("task-id", "", "Explicit task identifier")
@@ -95,7 +125,15 @@ func handleRun(args []string) {
 	}
 
 	var systemPrompt string
-	if *systemPromptFlag != "" {
+	if *agentFlag != "" {
+		agentPrompt, agentPath, err := resolveAgentPrompt(*agentFlag)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("🤖 Loaded subagent [%s] from %s\n", *agentFlag, agentPath)
+		systemPrompt = agentPrompt
+	} else if *systemPromptFlag != "" {
 		if content, err := os.ReadFile(*systemPromptFlag); err == nil {
 			systemPrompt = string(content)
 		} else {
@@ -215,25 +253,40 @@ func handleRun(args []string) {
 		fmt.Fprintf(os.Stderr, "Commit error: %v\n", err)
 	}
 
-	// Merge handling
-	autoMerge := cfg.Worktree.AutoMerge && !*noMergeFlag
-	mergeResult, err := session.MergeIntoActive(autoMerge)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Merge error: %v\n", err)
+	status := "success"
+	if sha == "" {
+		fmt.Println("ℹ️  No file modifications detected (read-only / advisory task).")
+	} else {
+		// Merge handling
+		autoMerge := cfg.Worktree.AutoMerge && !*noMergeFlag
+		mergeResult, err := session.MergeIntoActive(autoMerge)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Merge error: %v\n", err)
+		}
+
+		if mergeResult != nil && mergeResult.Conflict {
+			status = "conflict"
+			fmt.Printf("⚠️  Merge conflict detected! Task branch '%s' has been preserved.\n", mergeResult.Branch)
+			fmt.Printf("   Conflicting files:\n")
+			for _, f := range mergeResult.ConflictingFiles {
+				fmt.Printf("   - %s\n", f)
+			}
+		} else if mergeResult != nil && mergeResult.Merged {
+			fmt.Printf("✅ Changes successfully merged into active branch (commit %s).\n", mergeResult.CommitHash[:8])
+		} else if mergeResult != nil {
+			fmt.Printf("📦 Changes committed to task branch '%s' (merge skipped).\n", mergeResult.Branch)
+		}
 	}
 
-	status := "success"
-	if mergeResult.Conflict {
-		status = "conflict"
-		fmt.Printf("⚠️  Merge conflict detected! Task branch '%s' has been preserved.\n", mergeResult.Branch)
-		fmt.Printf("   Conflicting files:\n")
-		for _, f := range mergeResult.ConflictingFiles {
-			fmt.Printf("   - %s\n", f)
+	// Output agent response text
+	if execRes != nil && strings.TrimSpace(execRes.Stdout) != "" {
+		response := driver.ExtractResponse(execRes.Stdout)
+		if strings.TrimSpace(response) != "" {
+			fmt.Println("\n📋 Agent Response:")
+			fmt.Println("--------------------------------------------------------------------------------")
+			fmt.Println(response)
+			fmt.Println("--------------------------------------------------------------------------------")
 		}
-	} else if mergeResult.Merged {
-		fmt.Printf("✅ Changes successfully merged into active branch (commit %s).\n", mergeResult.CommitHash[:8])
-	} else {
-		fmt.Printf("📦 Changes committed to task branch '%s' (merge skipped).\n", mergeResult.Branch)
 	}
 
 	// Record in ledger

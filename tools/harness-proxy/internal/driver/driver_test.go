@@ -33,3 +33,28 @@ func TestComposePrompt(t *testing.T) {
 		t.Fatalf("expected '%s', got '%s'", expected, got)
 	}
 }
+
+func TestExtractResponse(t *testing.T) {
+	// Empty
+	if got := ExtractResponse(""); got != "" {
+		t.Fatalf("expected empty string, got '%s'", got)
+	}
+
+	// Plain text
+	raw := "Hello, I found 3 memory leaks."
+	if got := ExtractResponse(raw); got != raw {
+		t.Fatalf("expected '%s', got '%s'", raw, got)
+	}
+
+	// JSON with "response"
+	jsonAgy := `{"status":"SUCCESS","response":"pong\n","duration_seconds":1.2}`
+	if got := ExtractResponse(jsonAgy); got != "pong" {
+		t.Fatalf("expected 'pong', got '%s'", got)
+	}
+
+	// JSON with "result"
+	jsonResult := `{"result":"completed analysis"}`
+	if got := ExtractResponse(jsonResult); got != "completed analysis" {
+		t.Fatalf("expected 'completed analysis', got '%s'", got)
+	}
+}

@@ -41,7 +41,10 @@ harness-proxy run --model gemini-4-argon-high "Refactor database connection pool
 # Force specific provider and model
 harness-proxy run --provider antigravity --model claude-sonnet-5-5-high "Task prompt"
 
-# Delegate with specialized subagent role instructions or system prompt file
+# Delegate with named subagent (searches .agents/agents/, .claude/agents/)
+harness-proxy run --agent codebase-advisor "find memory optimisation opportunities"
+
+# Delegate with explicit system prompt file
 harness-proxy run --system-prompt .agents/roles/tester.md "Write unit tests for auth service"
 
 # Inspect active subscription quotas and reset countdowns
@@ -82,6 +85,14 @@ harness-proxy config-jev --endpoint http://localhost:11434/v1 --model qwen2.5-co
 
 4. **Tier-Level Failover:**
    - If a target harness hits rate limits (HTTP 429) or errors during execution, `harness-proxy` automatically retries on the next available provider in the same tier.
+
+## Dynamic Subagent Selection
+
+When delegating tasks via `harness-proxy`:
+1. **Discover available agents**: Inspect definitions in `.agents/agents/*.md` (or `.claude/agents/*.md`).
+2. **Match domain intent**: Read each candidate agent's frontmatter `description`. If an agent's specialization fits the task intent (e.g. auditing/optimization, green-field architecture, testing, diff review), pass `--agent <name>`.
+3. **Execute**: `harness-proxy run --agent <name> "<task prompt>"` automatically loads the agent definition as the system prompt.
+4. **Fallback**: If no specialized agent matches the domain, omit `--agent` to run the baseline model.
 
 ## Configuration & Storage
 

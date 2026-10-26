@@ -3,6 +3,7 @@ package driver
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"os/exec"
 	"strings"
@@ -20,6 +21,29 @@ func ComposePrompt(taskPrompt, systemPrompt string) string {
 		return sys
 	}
 	return fmt.Sprintf("=== SYSTEM INSTRUCTIONS ===\n%s\n\n=== TASK ===\n%s", sys, task)
+}
+
+// ExtractResponse extracts the human-readable response from tool JSON formats (agy, agent, etc.) or raw text.
+func ExtractResponse(stdout string) string {
+	trimmed := strings.TrimSpace(stdout)
+	if trimmed == "" {
+		return ""
+	}
+
+	var obj map[string]interface{}
+	if err := json.Unmarshal([]byte(trimmed), &obj); err == nil {
+		if resp, ok := obj["response"].(string); ok && strings.TrimSpace(resp) != "" {
+			return strings.TrimSpace(resp)
+		}
+		if result, ok := obj["result"].(string); ok && strings.TrimSpace(result) != "" {
+			return strings.TrimSpace(result)
+		}
+		if content, ok := obj["content"].(string); ok && strings.TrimSpace(content) != "" {
+			return strings.TrimSpace(content)
+		}
+	}
+
+	return trimmed
 }
 
 type ExecutionResult struct {
