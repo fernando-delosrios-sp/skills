@@ -131,7 +131,7 @@ func handleRun(args []string) {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("🤖 Loaded subagent [%s] from %s\n", *agentFlag, agentPath)
+		fmt.Fprintf(os.Stderr, "🤖 Loaded subagent [%s] from %s\n", *agentFlag, agentPath)
 		systemPrompt = agentPrompt
 	} else if *systemPromptFlag != "" {
 		if content, err := os.ReadFile(*systemPromptFlag); err == nil {
@@ -176,14 +176,14 @@ func handleRun(args []string) {
 		os.Exit(2)
 	}
 
-	fmt.Printf("🚀 Routing Decision [%s]:\n", taskID)
-	fmt.Printf("   • Harness:  %s\n", decision.Provider)
-	fmt.Printf("   • Model:    %s\n", decision.Model)
+	fmt.Fprintf(os.Stderr, "🚀 Routing Decision [%s]:\n", taskID)
+	fmt.Fprintf(os.Stderr, "   • Harness:  %s\n", decision.Provider)
+	fmt.Fprintf(os.Stderr, "   • Model:    %s\n", decision.Model)
 	if decision.Effort != "" {
-		fmt.Printf("   • Effort:   %s\n", decision.Effort)
+		fmt.Fprintf(os.Stderr, "   • Effort:   %s\n", decision.Effort)
 	}
-	fmt.Printf("   • Tier:     %s\n", decision.Tier)
-	fmt.Printf("   • Reason:   %s\n", decision.Reason)
+	fmt.Fprintf(os.Stderr, "   • Tier:     %s\n", decision.Tier)
+	fmt.Fprintf(os.Stderr, "   • Reason:   %s\n", decision.Reason)
 
 	// Worktree setup
 	wtMgr := worktree.NewManager(cfg.Worktree.BaseDir)
@@ -224,7 +224,7 @@ func handleRun(args []string) {
 
 		activeProvider = p
 		activeModel = model
-		fmt.Printf("⚡ Executing via %s (%s)...\n", p, model)
+		fmt.Fprintf(os.Stderr, "⚡ Executing via %s (%s)...\n", p, model)
 
 		res, runErr := d.Execute(ctx, session.WorktreeDir, model, effectivePrompt)
 		if runErr == nil && res.ExitCode == 0 {
@@ -232,7 +232,7 @@ func handleRun(args []string) {
 			break
 		}
 
-		fmt.Printf("⚠️  Provider %s failed (exit %d), attempting failover...\n", p, res.ExitCode)
+		fmt.Fprintf(os.Stderr, "⚠️  Provider %s failed (exit %d), attempting failover...\n", p, res.ExitCode)
 		_ = l.Record(ledger.Entry{
 			ID:              taskID,
 			Provider:        p,
@@ -261,7 +261,7 @@ func handleRun(args []string) {
 
 	status := "success"
 	if sha == "" {
-		fmt.Println("ℹ️  No file modifications detected (read-only / advisory task).")
+		fmt.Fprintln(os.Stderr, "ℹ️  No file modifications detected (read-only / advisory task).")
 	} else {
 		// Merge handling
 		autoMerge := cfg.Worktree.AutoMerge && !*noMergeFlag
@@ -272,26 +272,23 @@ func handleRun(args []string) {
 
 		if mergeResult != nil && mergeResult.Conflict {
 			status = "conflict"
-			fmt.Printf("⚠️  Merge conflict detected! Task branch '%s' has been preserved.\n", mergeResult.Branch)
-			fmt.Printf("   Conflicting files:\n")
+			fmt.Fprintf(os.Stderr, "⚠️  Merge conflict detected! Task branch '%s' has been preserved.\n", mergeResult.Branch)
+			fmt.Fprintf(os.Stderr, "   Conflicting files:\n")
 			for _, f := range mergeResult.ConflictingFiles {
-				fmt.Printf("   - %s\n", f)
+				fmt.Fprintf(os.Stderr, "   - %s\n", f)
 			}
 		} else if mergeResult != nil && mergeResult.Merged {
-			fmt.Printf("✅ Changes successfully merged into active branch (commit %s).\n", mergeResult.CommitHash[:8])
+			fmt.Fprintf(os.Stderr, "✅ Changes successfully merged into active branch (commit %s).\n", mergeResult.CommitHash[:8])
 		} else if mergeResult != nil {
-			fmt.Printf("📦 Changes committed to task branch '%s' (merge skipped).\n", mergeResult.Branch)
+			fmt.Fprintf(os.Stderr, "📦 Changes committed to task branch '%s' (merge skipped).\n", mergeResult.Branch)
 		}
 	}
 
-	// Output agent response text
+	// Emit primary result payload to stdout
 	if execRes != nil && strings.TrimSpace(execRes.Stdout) != "" {
 		response := driver.ExtractResponse(execRes.Stdout)
 		if strings.TrimSpace(response) != "" {
-			fmt.Println("\n📋 Agent Response:")
-			fmt.Println("--------------------------------------------------------------------------------")
 			fmt.Println(response)
-			fmt.Println("--------------------------------------------------------------------------------")
 		}
 	}
 
