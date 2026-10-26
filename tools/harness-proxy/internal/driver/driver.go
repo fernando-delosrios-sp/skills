@@ -67,7 +67,7 @@ func (d *AntigravityDriver) Execute(ctx context.Context, worktreeDir string, mod
 		"-p", prompt,
 		"--dangerously-skip-permissions",
 		"--output-format", "json",
-		"--add-dir", worktreeDir,
+		"--new-project",
 	}
 	if model != "" {
 		args = append(args, "--model", model)
