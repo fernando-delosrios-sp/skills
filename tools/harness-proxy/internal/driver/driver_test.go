@@ -57,4 +57,24 @@ func TestExtractResponse(t *testing.T) {
 	if got := ExtractResponse(jsonResult); got != "completed analysis" {
 		t.Fatalf("expected 'completed analysis', got '%s'", got)
 	}
+
+	// NDJSON stream (Antigravity result event)
+	ndjsonAgy := "{\"event\":\"init\",\"init\":{}}\n" +
+		"{\"event\":\"step_update\",\"step_update\":{\"step_type\":\"tool\",\"tool_name\":\"run_command\"}}\n" +
+		"{\"event\":\"result\",\"result\":{\"status\":\"SUCCESS\",\"response\":\"analysis complete\\n\"}}\n"
+	if got := ExtractResponse(ndjsonAgy); got != "analysis complete" {
+		t.Fatalf("expected 'analysis complete', got '%s'", got)
+	}
+}
+
+func TestSummarizeToolCall(t *testing.T) {
+	if got := summarizeToolCall("run_command", map[string]interface{}{"CommandLine": "git status"}); got != "run_command: git status" {
+		t.Fatalf("unexpected summary: %s", got)
+	}
+	if got := summarizeToolCall("view_file", map[string]interface{}{"AbsolutePath": "src/main.ts"}); got != "view_file: src/main.ts" {
+		t.Fatalf("unexpected summary: %s", got)
+	}
+	if got := summarizeToolCall("custom_action", nil); got != "custom_action" {
+		t.Fatalf("unexpected summary: %s", got)
+	}
 }
