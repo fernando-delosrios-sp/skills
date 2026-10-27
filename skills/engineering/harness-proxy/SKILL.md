@@ -21,11 +21,12 @@ harness-proxy run [--agent <name>] "<task description with clear acceptance crit
 
 1. **First action is execution**: Issue `harness-proxy run` immediately. All preparatory steps (worktree lifecycle, quota discovery, subagent loading, routing heuristics) are executed internally by the CLI binary.
 2. **Target scope**: Always scope the prompt to the current workspace repository. Ignore unrelated open editor tabs or historical transcripts.
-3. **Subagent routing cheat-sheet**: Map the user's intent to `--agent <name>` directly:
+3. **Pre-dispatch commit**: Worktrees branch from git `HEAD`. Commit any untracked change artifacts or task files on the active branch before running so the worktree inherits them.
+4. **Subagent routing cheat-sheet**: Map the user's intent to `--agent <name>` directly:
    - **Code audits, simplification, tech debt, surveys**: `--agent codebase-advisor`
    - **Code review, diff analysis, PR checks**: `--agent code-reviewer`
    - **Feature development, bug fixes, refactoring**: `--agent software-engineer`
    - **System architecture, schemas, high-level design**: `--agent software-architect`
    - **General tasks or unlisted domains**: omit `--agent` (the router handles it)
-4. **Prompt framing**: Expand brief user phrases into clear, goal-driven prompts with concrete deliverables.
-5. **Result presentation**: Relay the CLI's completed stdout report to the user along with the routing metadata (harness, model, tier) from stderr.
+5. **Prompt framing**: Expand brief user phrases into clear, goal-driven prompts with concrete deliverables.
+6. **Result presentation**: Relay the CLI's completed stdout report to the user along with the routing metadata (harness, model, tier) from stderr.
