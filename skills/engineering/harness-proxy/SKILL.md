@@ -7,18 +7,25 @@ disable-model-invocation: true
 
 # harness-proxy
 
-Delegate tasks directly to isolated agent harnesses. The `harness-proxy` CLI autonomously manages git worktrees, quota balancing, task classification, model selection, live progress streaming, tier failover, and auto-merging.
+Delegate tasks directly to isolated agent harnesses. The `harness-proxy` CLI autonomously manages git worktree creation, quota balancing, task classification, model selection, live progress streaming to stderr, tier failover, and auto-merging.
 
 ## Execution
 
-Execute `harness-proxy run` immediately as your single, direct action:
+Your very first tool call in response to this skill MUST be `run_command` executing `harness-proxy run`:
 
 ```bash
 harness-proxy run [--agent <name>] "<task description with clear acceptance criteria>"
 ```
 
-### Directives
+### Turn-1 Dispatch Rules
 
-- **Immediate dispatch**: Run `harness-proxy run` as your first and only action. All preparatory work (worktree management, quota checking, subagent resolution, routing) is handled internally by the binary.
-- **Subagent selection**: Pass `--agent <name>` when targeting a known specialized agent (e.g., `--agent codebase-advisor`); otherwise omit `--agent`.
-- **User reporting**: Relay the CLI's results and configuration details (harness, model, tier) directly from the command output.
+1. **First action is execution**: Issue `harness-proxy run` immediately. All preparatory steps (worktree lifecycle, quota discovery, subagent loading, routing heuristics) are executed internally by the CLI binary.
+2. **Target scope**: Always scope the prompt to the current workspace repository. Ignore unrelated open editor tabs or historical transcripts.
+3. **Subagent routing cheat-sheet**: Map the user's intent to `--agent <name>` directly:
+   - **Code audits, simplification, tech debt, surveys**: `--agent codebase-advisor`
+   - **Code review, diff analysis, PR checks**: `--agent code-reviewer`
+   - **Feature development, bug fixes, refactoring**: `--agent software-engineer`
+   - **System architecture, schemas, high-level design**: `--agent software-architect`
+   - **General tasks or unlisted domains**: omit `--agent` (the router handles it)
+4. **Prompt framing**: Expand brief user phrases into clear, goal-driven prompts with concrete deliverables.
+5. **Result presentation**: Relay the CLI's completed stdout report to the user along with the routing metadata (harness, model, tier) from stderr.
