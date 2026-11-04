@@ -21,6 +21,7 @@
         "./improve",
         "./improve-codebase-architecture",
         "./openspec-init",
+        "./playwright-bowser",
         "./setup-matt-pocock-skills",
         "./tdd",
         "./triage",

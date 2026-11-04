@@ -1,0 +1,5 @@
+interface:
+  display_name: Playwright Bowser
+  short_description: Headless browser automation with the Playwright CLI.
+policy:
+  allow_implicit_invocation: false

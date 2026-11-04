@@ -88,6 +88,9 @@
       "name": "openspec-init"
     },
     {
+      "name": "playwright-bowser"
+    },
+    {
       "name": "setup-matt-pocock-skills",
       "source": {
         "repo": "mattpocock/skills",
