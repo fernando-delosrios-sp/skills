@@ -12,7 +12,41 @@ Work down this page in order and use the first form the host supports.
 
 ## 1. A question tool under another name
 
-Most hosts expose an equivalent of `AskQuestion` — `prompt_user_decision` is the common one. Same content, different field names:
+### T3 Code / Antigravity (`ask_question`)
+
+In T3 Code or under the Antigravity harness, the interactive question tool is `ask_question` (or `default_api:ask_question`). Execution renders an interactive modal and blocks until the user responds.
+
+| Need | Cursor `AskQuestion` | T3 Code `ask_question` |
+| --- | --- | --- |
+| Tool name | `AskQuestion` | `ask_question` |
+| The question | `questions[].prompt` | `questions[].question` |
+| Option choices | `options[].id` + `options[].label` | `options: string[]` (`"<id>: <label>"`, recommended first) |
+| Several answers | `allow_multiple: true` | `is_multi_select: true` |
+| Confirm | two-option question | two-option question |
+| Action envelope | N/A | `toolAction`: string (e.g. `"Selecting issue tracker"`) |
+| Summary envelope | N/A | `toolSummary`: string (e.g. `"Issue tracker selection"`) |
+
+Payload example:
+```json
+{
+  "questions": [
+    {
+      "question": "Where should issues live for this repo?",
+      "options": [
+        "(Recommended) github: GitHub — the remote already points there",
+        "local-md: Local markdown — files under .scratch/"
+      ],
+      "is_multi_select": false
+    }
+  ],
+  "toolAction": "Selecting issue tracker",
+  "toolSummary": "Issue tracker selection"
+}
+```
+
+### Generic decision tool (`prompt_user_decision`)
+
+Other hosts expose generic equivalents like `prompt_user_decision`:
 
 | Need | Cursor `AskQuestion` | Generic decision tool |
 | --- | --- | --- |
@@ -25,7 +59,7 @@ Most hosts expose an equivalent of `AskQuestion` — `prompt_user_decision` is t
 | Free-text answer | built-in "Other" | `allow_custom_input` |
 | Round of questions | `questions` array | repeat the gate, or a host batch API |
 
-Cursor payload shapes to map from: [`payload-examples.md`](payload-examples.md).
+Cursor and T3 Code payload shapes to map from: [`payload-examples.md`](payload-examples.md).
 
 ## 2. A host that parses the contract
 

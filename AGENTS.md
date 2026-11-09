@@ -158,7 +158,7 @@ OpenSpec mode — vocabulary in `openspec/specs/ubiquitous-language/spec.md`; AD
 
 ### User gates
 
-Present forks and confirmations via **structured-choices** — a gate is a direct call to the question tool (in Cursor, built-in `AskQuestion`, invoked like `Read` or `Grep`), made as your first move because the call itself is the check, not your reading of the tool list; one gate per message, options carried by the call.
+Present forks and confirmations via **structured-choices** — a gate is a direct call to the question tool (in Cursor, built-in `AskQuestion`; in T3 Code / Antigravity, built-in `ask_question`), made as your first move because the call itself is the check, not your reading of the tool list; one gate per message, options carried by the call.
 
 ### Custom subagents
 

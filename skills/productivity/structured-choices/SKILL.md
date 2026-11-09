@@ -38,9 +38,13 @@ A skill that never mentions gates still gets one. Nothing needs to opt in.
 
 ### Emit the gate
 
-Call the question tool. In Cursor it is **`AskQuestion`**, built in: invoke it directly, the way you invoke `Read` or `Grep`.
+Call the host's question tool.
+- In **Cursor**: built-in **`AskQuestion`**.
+- In **T3 Code / Antigravity**: built-in **`ask_question`** (requires `toolAction`, `toolSummary`, and string array `options`).
 
-**The call is the check.** Make it your first move. Its result is the only evidence about the tool that exists — a reading of your tool list is not evidence, and neither is a conclusion about which host you are on.
+**The call is the check.** Make it your first move. Its result is the only evidence about the tool that exists — do not degrade to prose when an interactive question tool is available.
+
+#### Cursor (`AskQuestion`)
 
 ```json
 {
@@ -57,7 +61,26 @@ Call the question tool. In Cursor it is **`AskQuestion`**, built in: invoke it d
 }
 ```
 
-An option carries `id` and `label`; explanatory detail rides inside the `label`. Halt after the call and let the user answer.
+#### T3 Code / Antigravity (`ask_question`)
+
+```json
+{
+  "questions": [
+    {
+      "question": "Where should issues live for this repo?",
+      "options": [
+        "(Recommended) github: GitHub — the remote already points there",
+        "local-md: Local markdown — files under .scratch/"
+      ],
+      "is_multi_select": false
+    }
+  ],
+  "toolAction": "Selecting issue tracker",
+  "toolSummary": "Issue tracker selection"
+}
+```
+
+An option carries `id` and `label`; explanatory detail rides inside the `label`. In `ask_question`, format options as string entries (`"<id>: <label>"`) with `(Recommended)` prefix on the first option. Halt after the call and let the user answer.
 
 More shapes — confirm, multi-select, grilling rounds: [`payload-examples.md`](references/payload-examples.md).
 
