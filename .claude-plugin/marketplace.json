@@ -23,6 +23,7 @@
         "./openspec-init",
         "./playwright-bowser",
         "./setup-matt-pocock-skills",
+        "./t3-tools",
         "./tdd",
         "./triage",
         "./wayfinder",

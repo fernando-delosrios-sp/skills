@@ -98,6 +98,9 @@
       }
     },
     {
+      "name": "t3-tools"
+    },
+    {
       "name": "tdd",
       "source": {
         "repo": "mattpocock/skills",

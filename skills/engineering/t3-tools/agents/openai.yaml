@@ -1,0 +1,5 @@
+interface:
+  display_name: T3 Tools
+  short_description: Use T3 Code's t3-code MCP tools for thread, project, worktree, delegation, preview, PR-linking, and scheduling work.
+policy:
+  allow_implicit_invocation: false
