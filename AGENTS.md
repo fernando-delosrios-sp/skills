@@ -160,6 +160,17 @@ OpenSpec mode — vocabulary in `openspec/specs/ubiquitous-language/spec.md`; AD
 
 Present forks and confirmations via **structured-choices** — a gate is a direct call to the question tool (in Cursor, built-in `AskQuestion`, invoked like `Read` or `Grep`), made as your first move because the call itself is the check, not your reading of the tool list; one gate per message, options carried by the call.
 
+### Custom subagents
+
+The repository defines 5 specialized agents under `agents/<name>.md`:
+- `bowser`: Headless browser automation via Playwright CLI (`playwright-bowser` skill)
+- `code-reviewer`: Code reviews and quality audits (`code-review`, `code-simplification`, `diagnosing-bugs`)
+- `codebase-advisor`: Architecture surveys and modernization roadmaps (`improve`, `improve-codebase-architecture`)
+- `software-architect`: System design, ADRs, C4 diagrams (`codebase-design`, `domain-modeling`, `architecture-decision-records`, `c4-diagram`)
+- `software-engineer`: Test-driven development and implementation (`tdd`, `code-simplification`)
+
+In tools with directory-based agent discovery (Cursor, Pi, OpenCode, Grok), these load from their respective agent folders. In Antigravity, define the subagent dynamically using `define_subagent` from the corresponding `agents/<name>.md` definition before calling `invoke_subagent`.
+
 <!-- Source: ferspec/templates/adopters/AGENTS.md.fragment.md -->
 <!-- Drop this section into your project's AGENTS.md so agents route future work using this schema correctly. -->
 
