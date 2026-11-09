@@ -163,7 +163,7 @@ Present forks and confirmations via **structured-choices** — a gate is a direc
 ### Custom subagents
 
 The repository defines 5 specialized agents under `agents/<name>.md`:
-- `bowser`: Headless browser automation via Playwright CLI (`playwright-bowser` skill)
+- `bowser`: Browser automation via Playwright CLI (invoked ONLY when 'bowser' or 'playwright' is explicitly requested; never competes with host browser tools; `playwright-bowser` skill)
 - `code-reviewer`: Code reviews and quality audits (`code-review`, `code-simplification`, `diagnosing-bugs`)
 - `codebase-advisor`: Architecture surveys and modernization roadmaps (`improve`, `improve-codebase-architecture`)
 - `software-architect`: System design, ADRs, C4 diagrams (`codebase-design`, `domain-modeling`, `architecture-decision-records`, `c4-diagram`)
